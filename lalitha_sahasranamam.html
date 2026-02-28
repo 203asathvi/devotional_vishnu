@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Lalitha Sahasranamam</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8c96a;--deep:#1a0005;--bg:#0d0005;--card:#1c0208;--border:rgba(201,100,140,0.25);--text:#f0e6c8;--muted:#a88090;--pink:#d47ab3;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(201,100,140,0.12) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(224,26,92,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,0,5,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
+.nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
+.nav-controls{display:flex;gap:6px;align-items:center;}
+.nav-btn{background:rgba(201,100,140,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(201,100,140,0.25);border-color:var(--gold);}
+.nav-home{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;text-decoration:none;display:flex;align-items:center;transition:all .2s;}
+.nav-home:hover{background:rgba(201,168,76,0.25);}
+.progress-bar{position:fixed;top:52px;left:0;z-index:99;height:2px;background:linear-gradient(90deg,var(--pink),var(--gold));width:0%;box-shadow:0 0 8px var(--pink);}
+.hero{position:relative;z-index:1;text-align:center;padding:44px 16px 24px;border-bottom:1px solid var(--border);}
+.hero-om{font-size:50px;line-height:1;color:var(--gold);margin-bottom:6px;animation:pulse 4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 12px rgba(201,100,140,0.4));}50%{filter:drop-shadow(0 0 28px rgba(201,100,140,0.8));}}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,30px);font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:4px;}
+.hero-dev{font-size:clamp(16px,4vw,24px);color:var(--gold-light);margin-bottom:8px;}
+.hero-sub{font-size:13px;color:var(--muted);font-style:italic;}
+.divider{display:flex;align-items:center;gap:10px;max-width:360px;margin:14px auto 0;color:var(--gold);font-size:16px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);}
+.search-bar{position:relative;z-index:1;padding:10px 14px;border-bottom:1px solid var(--border);display:none;}
+.search-bar.active{display:block;}
+.search-bar input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:6px;font-size:16px;font-family:'EB Garamond',serif;outline:none;}
+.search-bar input:focus{border-color:var(--gold);}
+.search-bar input::placeholder{color:var(--muted);}
+.toc{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:14px;}
+.toc-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 13px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Cinzel',serif;transition:all .2s;}
+.toc-btn:hover{border-color:var(--pink);color:var(--pink);}
+main{position:relative;z-index:1;padding:0 14px 80px;max-width:880px;margin:0 auto;}
+.section{margin-top:24px;}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;user-select:none;}
+.section-header h2{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--pink) 0%,transparent 100%);opacity:.4;}
+.section-toggle{color:var(--gold);font-size:16px;transition:transform .3s;}
+.section-toggle.collapsed{transform:rotate(-90deg);}
+.shloka{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:13px 15px;margin-bottom:9px;transition:border-color .2s,background .2s;}
+.shloka:hover{border-color:rgba(201,100,140,0.4);background:#230610;}
+.shloka.highlight{border-color:var(--pink);background:rgba(201,100,140,0.07);}
+.shloka-num{font-family:'Cinzel',serif;font-size:10px;color:var(--pink);letter-spacing:1px;margin-bottom:5px;opacity:.75;}
+.shloka-line{line-height:1.65;}
+.shloka-line.indent{padding-left:14px;color:#d4c49a;}
+.note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--pink);margin:9px 0;background:rgba(201,100,140,0.04);border-radius:0 4px 4px 0;}
+.back-top{position:fixed;bottom:18px;right:18px;z-index:200;background:linear-gradient(135deg,var(--pink),var(--gold));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(201,100,140,0.4);}
+.back-top.visible{display:flex;}
+body.light-mode{--bg:#fdf0f5;--card:#fff0f6;--text:#2a0010;--muted:#7a4060;--border:rgba(160,40,100,0.25);}
+mark{background:rgba(201,100,140,0.3);color:inherit;border-radius:2px;}
+@media(max-width:600px){body{font-size:16px;}.shloka{padding:11px 12px;}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progress"></div>
+<nav>
+  <div class="nav-title">ॐ Sri Lalitha Sahasranamam</div>
+  <div class="nav-controls">
+    <a class="nav-home" href="index.html">🏠 Home</a>
+    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
+    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
+  </div>
+</nav>
+<div class="search-bar" id="searchBar">
+  <input type="text" id="searchInput" placeholder="Search name or verse…" oninput="doSearch(this.value)">
+</div>
+<div class="hero">
+  <div class="hero-om">ஓம்</div>
+  <h1>Sri Lalitha Sahasranama Stotram</h1>
+  <div class="hero-dev">श्री ललिता सहस्रनाम स्तोत्रम्</div>
+  <div class="hero-sub">Brahmanda Purana · Uttara Khanda · Sri Hayagriva-Agastya Samvada</div>
+  <div class="divider">✦</div>
+</div>
+<div class="toc">
+  <button class="toc-btn" onclick="gotoSection('nyasam')">Nyāsaḥ</button>
+  <button class="toc-btn" onclick="gotoSection('dhyanam')">Dhyānam</button>
+  <button class="toc-btn" onclick="gotoSection('stotram')">Stotram (1–182)</button>
+  <button class="toc-btn" onclick="gotoSection('phalam')">Phalashruti</button>
+</div>
+<main>
+
+<div class="section" id="nyasam">
+  <div class="section-header" onclick="toggle('ny-body','ny-tog')">
+    <h2>Nyāsaḥ — Invocation</h2><div class="section-line"></div><span class="section-toggle" id="ny-tog">▾</span>
+  </div>
+  <div id="ny-body">
+    <div class="shloka">
+      <div class="shloka-line">asya śrīlalitāsahasranāmastotramālā mantrasya .</div>
+      <div class="shloka-line indent">vaśinyādivāgdevatā ṛṣayaḥ . anuṣṭup chandaḥ .</div>
+      <div class="shloka-line indent">śrīlalitāparameśvarī devatā .</div>
+      <div class="shloka-line indent">śrīmadvāgbhavakūṭeti bījam . madhyakūṭeti śaktiḥ . śaktikūṭeti kīlakam .</div>
+      <div class="shloka-line indent">śrīlalitāmahātripurasundarī-prasādasiddhidvārā</div>
+      <div class="shloka-line indent">cintitaphalāvāptyarthe jape viniyogaḥ .</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="dhyanam">
+  <div class="section-header" onclick="toggle('dh-body','dh-tog')">
+    <h2>Dhyānam — Meditation</h2><div class="section-line"></div><span class="section-toggle" id="dh-tog">▾</span>
+  </div>
+  <div id="dh-body">
+    <div class="note">Meditation Verses upon Śrī Lalitā Devī</div>
+    <div class="shloka">
+      <div class="shloka-line">sindūrāruṇa vigrahāṃ trinayanāṃ māṇikyamauli sphurat</div>
+      <div class="shloka-line indent">tārā nāyaka śekharāṃ smitamukhī māpīna vakṣoruhām .</div>
+      <div class="shloka-line">pāṇibhyāmalipūrṇa ratna caṣakaṃ raktotpalaṃ bibhratīṃ</div>
+      <div class="shloka-line indent">saumyāṃ ratna ghaṭastha raktacaraṇāṃ dhyāyet parāmambikām ..</div>
+    </div>
+    <div class="shloka">
+      <div class="shloka-line">aruṇāṃ karuṇā taraṅgitākṣīṃ</div>
+      <div class="shloka-line indent">dhṛta pāśāṅkuśa puṣpa bāṇacāpām .</div>
+      <div class="shloka-line">aṇimādibhi rāvṛtāṃ mayūkhairahamityeva vibhāvaye bhavānīm ..</div>
+    </div>
+    <div class="shloka">
+      <div class="shloka-line">dhyāyet padmāsanasthāṃ vikasitavadanāṃ padmapatrāyatākṣīṃ</div>
+      <div class="shloka-line indent">hemābhāṃ pītavastrāṃ karakalitalasaddhemapadmāṃ varāṅgīm .</div>
+      <div class="shloka-line">sarvālaṅkāra yuktāṃ satata mabhayadāṃ bhaktanamrāṃ bhavānīṃ</div>
+      <div class="shloka-line indent">śrīvidyāṃ śānta mūrtiṃ sakala suranutāṃ sarva sampatpradātrīm ..</div>
+    </div>
+    <div class="shloka">
+      <div class="shloka-line">sakuṅkuma vilepanāmalikacumbi kastūrikāṃ</div>
+      <div class="shloka-line indent">samanda hasitekṣaṇāṃ saśara cāpa pāśāṅkuśām .</div>
+      <div class="shloka-line">aśeṣajana mohinīṃ aruṇa mālya bhūṣāmbarāṃ</div>
+      <div class="shloka-line indent">japākusuma bhāsurāṃ japavidhau smare dambikām ..</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="stotram">
+  <div class="section-header" onclick="toggle('st-body','st-tog')">
+    <h2>Stotram — 1000 Names</h2><div class="section-line"></div><span class="section-toggle" id="st-tog">▾</span>
+  </div>
+  <div id="st-body">
+    <div class="note" style="text-align:center;border-left:none;border:1px solid var(--border);">ॐ श्रीमाता — Oṃ Śrīmātā</div>
+    <div id="shlokas-container"></div>
+  </div>
+</div>
+
+<div class="section" id="phalam">
+  <div class="section-header" onclick="toggle('ph-body','ph-tog')">
+    <h2>Phalashruti — Conclusion</h2><div class="section-line"></div><span class="section-toggle" id="ph-tog">▾</span>
+  </div>
+  <div id="ph-body">
+    <div class="shloka">
+      <div class="shloka-line">śrīśivā śiva-śaktyaikya-rūpiṇī lalitāmbikā .</div>
+      <div class="shloka-line indent">evaṃ śrīlalitā devyā nāmnāṃ sāhasrakaṃ jaguḥ ..</div>
+    </div>
+    <div class="note">iti śrībrahmāṇḍapurāṇe uttarakhaṇḍe śrīhayagrīvāgastyasaṃvāde śrīlalitā sahasranāma stotra kathanaṃ sampūrṇam</div>
+    <div style="text-align:center;padding:24px 0 8px;font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:2px;">
+      || Sarvam Śrī Lalitārpaṇam Astu ||<br>
+      <span style="font-size:20px;display:block;margin-top:8px;animation:pulse 3s infinite;">ॐ ऐं ह्रीं श्रीं</span>
+    </div>
+  </div>
+</div>
+
+</main>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const S=[
+[1,"oṃ śrīmātā śrīmahārājñī śrīmat-siṃhāsaneśvarī .","cidagni-kuṇḍa-sambhūtā devakārya-samudyatā .. 1.."],
+[2,"udyadbhānu-sahasrābhā caturbāhu-samanvitā .","rāgasvarūpa-pāśāḍhyā krodhākārāṅkuśojjvalā .. 2.."],
+[3,"manorūpekṣu-kodaṇḍā pañcatanmātra-sāyakā .","nijāruṇa-prabhāpūra-majjadbrahmāṇḍa-maṇḍalā .. 3.."],
+[4,"campakāśoka-punnāga-saugandhika-lasatkacā .","kuruvindamaṇi-śreṇī-kanatkoṭīra-maṇḍitā .. 4.."],
+[5,"aṣṭamīcandra-vibhrāja-dalikasthala-śobhitā .","mukhacandra-kalaṅkābha-mṛganābhi-viśeṣakā .. 5.."],
+[6,"vadanasmara-māṅgalya-gṛhatoraṇa-cillikā .","vaktralakṣmī-parīvāha-calanmīnābha-locanā .. 6.."],
+[7,"navacampaka-puṣpābha-nāsādaṇḍa-virājitā .","tārākānti-tiraskāri-nāsābharaṇa-bhāsurā .. 7.."],
+[8,"kadambamañjarī-kḷpta-karṇapūra-manoharā .","tāṭaṅka-yugalī-bhūta-tapanoḍupa-maṇḍalā .. 8.."],
+[9,"padmarāga-śilādarśa-paribhāvi-kapolabhūḥ .","navavidruma-bimbaśrī-nyakkāri-radanacchadā .. 9.."],
+[10,"śuddha-vidyāṅkurākāra-dvijapaṅkti-dvayojjvalā .","karpūra-vīṭikāmoda-samākarṣi-digantarā .. 10.."],
+[11,"nija-sallāpa-mādhurya-vinirbhartsita-kacchapī .","mandasmita-prabhāpūra-majjatkāmeśa-mānasā .. 11.."],
+[12,"anākalita-sādṛśya-cibukaśrī-virājitā .","kāmeśa-baddha-māṅgalya-sūtra-śobhita-kandharā .. 12.."],
+[13,"kanakāṅgada-keyūra-kamanīya-bhujānvitā .","ratnagraiveya-cintāka-lola-muktā-phalānvitā .. 13.."],
+[14,"kāmeśvara-premaratna-maṇi-pratipaṇa-stanī .","nābhyālavāla-romāli-latā-phala-kucadvayī .. 14.."],
+[15,"lakṣyaroma-latādhāratā-samunneya-madhyamā .","stanabhāra-dalanmadhya-paṭṭabandha-valitrayā .. 15.."],
+[16,"aruṇāruṇa-kausumbha-vastra-bhāsvat-kaṭītaṭī .","ratna-kiṅkiṇikā-ramya-raśanā-dāma-bhūṣitā .. 16.."],
+[17,"kāmeśa-jñāta-saubhāgya-mārdavoru-dvayānvitā .","māṇikya-mukuṭākāra-jānudvaya-virājitā .. 17.."],
+[18,"indragopa-parikṣipta-smaratūṇābha-jaṅghikā .","gūḍhagulphā kūrmapṛṣṭha-jayiṣṇu-prapadānvitā .. 18.."],
+[19,"nakha-dīdhiti-saṃchanna-namajjana-tamoguṇā .","padadvaya-prabhājāla-parākṛta-saroruhā .. 19.."],
+[20,"siñjāna-maṇimañjīra-maṇḍita-śrī-padāmbujā .","marālī-mandagamanā mahālāvaṇya-śevadhiḥ .. 20.."],
+[21,"sarvāruṇā'navadyāṅgī sarvābharaṇa-bhūṣitā .","śiva-kāmeśvarāṅkasthā śivā svādhīna-vallabhā .. 21.."],
+[22,"sumeru-madhya-śṛṅgasthā śrīmannagara-nāyikā .","cintāmaṇi-gṛhāntasthā pañca-brahmāsana-sthitā .. 22.."],
+[23,"mahāpadmāṭavī-saṃsthā kadambavana-vāsinī .","sudhāsāgara-madhyasthā kāmākṣī kāmadāyinī .. 23.."],
+[24,"devarṣi-gaṇa-saṃghāta-stūyamānātma-vaibhavā .","bhaṇḍāsura-vadhodyukta-śaktisenā-samanvitā .. 24.."],
+[25,"sampatkarī-samārūḍha-sindhura-vraja-sevitā .","aśvārūḍhādhiṣṭhitāśva-koṭi-koṭibhirāvṛtā .. 25.."],
+[26,"cakrarāja-rathārūḍha-sarvāyudha-pariṣkṛtā .","geyacakra-rathārūḍha-mantriṇī-parisevitā .. 26.."],
+[27,"kiricakra-rathārūḍha-daṇḍanāthā-puraskṛtā .","jvālā-mālinikākṣipta-vahniprākāra-madhyagā .. 27.."],
+[28,"bhaṇḍasainya-vadhodyukta-śakti-vikrama-harṣitā .","nityā-parākramāṭopa-nirīkṣaṇa-samutsukā .. 28.."],
+[29,"bhaṇḍaputra-vadhodyukta-bālā-vikrama-nanditā .","mantriṇyambā-viracita-viṣaṅga-vadha-toṣitā .. 29.."],
+[30,"viśukra-prāṇaharaṇa-vārāhī-vīrya-nanditā .","kāmeśvara-mukhāloka-kalpita-śrīgaṇeśvarā .. 30.."],
+[31,"mahāgaṇeśa-nirbhinna-vighnayantra-praharṣitā .","bhaṇḍāsurendra-nirmukta-śastra-pratyastra-varṣiṇī .. 31.."],
+[32,"karāṅguli-nakhotpanna-nārāyaṇa-daśākṛtiḥ .","mahā-pāśupatāstrāgni-nirdagdhāsura-sainikā .. 32.."],
+[33,"kāmeśvarāstra-nirdagdha-sabhaṇḍāsura-śūnyakā .","brahmopendra-mahendrādi-deva-saṃstuta-vaibhavā .. 33.."],
+[34,"hara-netrāgni-saṃdagdha-kāma-sañjīvanauṣadhiḥ .","śrīmadvāgbhava-kūṭaika-svarūpa-mukha-paṅkajā .. 34.."],
+[35,"kaṇṭhādhaḥ-kaṭi-paryanta-madhyakūṭa-svarūpiṇī .","śakti-kūṭaikatāpanna-kaṭyadhobhāga-dhāriṇī .. 35.."],
+[36,"mūla-mantrātmikā mūlakūṭatraya-kalebarā .","kulāmṛtaika-rasikā kulasaṃketa-pālinī .. 36.."],
+[37,"kulāṅganā kulāntasthā kaulinī kulayoginī .","akulā samayāntasthā samayācāra-tatparā .. 37.."],
+[38,"mūlādhāraika-nilayā brahmagranthi-vibhedinī .","maṇi-pūrāntaruditā viṣṇugranthi-vibhedinī .. 38.."],
+[39,"ājñā-cakrāntarālasthā rudragranthi-vibhedinī .","sahasrārāmbujārūḍhā sudhā-sārābhivarṣiṇī .. 39.."],
+[40,"taḍillatā-samaruciḥ ṣaṭcakropari-saṃsthitā .","mahāsaktiḥ kuṇḍalinī bisatantu-tanīyasī .. 40.."],
+[41,"bhavānī bhāvanāgamyā bhavāraṇya-kuṭhārikā .","bhadrapriyā bhadramūrtir bhakta-saubhāgyadāyinī .. 41.."],
+[42,"bhaktipriyā bhaktigamyā bhaktivaśyā bhayāpahā .","śāmbhavī śāradārādhyā śarvāṇī śarmadāyinī .. 42.."],
+[43,"śāṅkarī śrīkarī sādhvī śaraccandra-nibhānanā .","śātodarī śāntimatī nirādhārā nirañjanā .. 43.."],
+[44,"nirlepā nirmalā nityā nirākārā nirākulā .","nirguṇā niṣkalā śāntā niṣkāmā nirupaplavā .. 44.."],
+[45,"nityamuktā nirvikārā niṣprapañcā nirāśrayā .","nityaśuddhā nityabuddhā niravadyā nirantarā .. 45.."],
+[46,"niṣkāraṇā niṣkalaṅkā nirupādhir nirīśvarā .","nīrāgā rāgamathanī nirmadā madanāśinī .. 46.."],
+[47,"niścintā nirahaṃkārā nirmohā mohanāśinī .","nirmamā mamatāhantrī niṣpāpā pāpanāśinī .. 47.."],
+[48,"niṣkrodhā krodhaśamanī nirlobhā lobhanāśinī .","niḥsaṃśayā saṃśayaghnī nirbhavā bhavanāśinī .. 48.."],
+[49,"nirvikalpā nirābādhā nirbhedā bhedanāśinī .","nirnāśā mṛtyumathanī niṣkriyā niṣparigrahā .. 49.."],
+[50,"nistulā nīlacikurā nirapāyā niratyayā .","durlabhā durgamā durgā duḥkhahantrī sukhapradā .. 50.."],
+[51,"duṣṭadūrā durācāra-śamanī doṣavarjitā .","sarvajñā sāndrakaruṇā samānādhika-varjitā .. 51.."],
+[52,"sarvaśaktimayī sarva-maṅgalā sadgatipradā .","sarveśvarī sarvamayī sarvamantra-svarūpiṇī .. 52.."],
+[53,"sarva-yantrātmikā sarva-tantrarūpā manonmanī .","māheśvarī mahādevī mahālakṣmīr mṛḍapriyā .. 53.."],
+[54,"mahārūpā mahāpūjyā mahāpātaka-nāśinī .","mahāmāyā mahāsattvā mahāśaktir mahāratiḥ .. 54.."],
+[55,"mahābhogā mahaiśvaryā mahāvīryā mahābalā .","mahābuddhir mahāsiddhir mahāyogeśvareśvarī .. 55.."],
+[56,"mahātantrā mahāmantrā mahāyantrā mahāsanā .","mahāyāga-kramārādhyā mahābhairava-pūjitā .. 56.."],
+[57,"maheśvara-mahākalpa-mahātāṇḍava-sākṣiṇī .","mahākāmeśa-mahiṣī mahātripura-sundarī .. 57.."],
+[58,"catuḥṣaṣṭyupacārāḍhyā catuḥṣaṣṭikalāmayī .","mahācatuḥ-ṣaṣṭikoṭi-yoginī-gaṇasevitā .. 58.."],
+[59,"manuvidyā candravidyā candramaṇḍala-madhyagā .","cārurūpā cāruhāsā cārucandra-kalādharā .. 59.."],
+[60,"carācara-jagannāthā cakrarāja-niketanā .","pārvatī padmanayanā padmarāga-samaprabhā .. 60.."],
+[61,"pañca-pretāsanāsīnā pañcabrahma-svarūpiṇī .","cinmayī paramānandā vijñāna-ghanarūpiṇī .. 61.."],
+[62,"dhyāna-dhyātṛ-dhyeyarūpā dharmādharma-vivarjitā .","viśvarūpā jāgariṇī svapantī taijasātmikā .. 62.."],
+[63,"suptā prājñātmikā turyā sarvāvasthā-vivarjitā .","sṛṣṭikartrī brahmarūpā goptrī govindarūpiṇī .. 63.."],
+[64,"saṃhāriṇī rudrarūpā tirodhāna-karīśvarī .","sadāśivā'nugrahadā pañcakṛtya-parāyaṇā .. 64.."],
+[65,"bhānumaṇḍala-madhyasthā bhairavī bhagamālinī .","padmāsanā bhagavatī padmanābha-sahodarī .. 65.."],
+[66,"unmeṣa-nimiṣotpanna-vipanna-bhuvanāvalī .","sahasra-śīrṣavadanā sahasrākṣī sahasrapāt .. 66.."],
+[67,"ābrahma-kīṭa-jananī varṇāśrama-vidhāyinī .","nijājñārūpa-nigamā puṇyāpuṇya-phalapradā .. 67.."],
+[68,"śruti-sīmanta-sindūrī-kṛta-pādābja-dhūlikā .","sakalāgama-sandoha-śukti-sampuṭa-mauktikā .. 68.."],
+[69,"puruṣārthapradā pūrṇā bhoginī bhuvaneśvarī .","ambikā'nādi-nidhanā haribrahmendra-sevitā .. 69.."],
+[70,"nārāyaṇī nādarūpā nāmarūpa-vivarjitā .","hrīṃkārī hrīmatī hṛdyā heyopādeya-varjitā .. 70.."],
+[71,"rājarājārcitā rājñī ramyā rājīvalocanā .","rañjanī ramaṇī rasyā raṇatkiṅkiṇi-mekhalā .. 71.."],
+[72,"ramā rākenduvadanā ratirūpā ratipriyā .","rakṣākarī rākṣasaghnī rāmā ramaṇalampaṭā .. 72.."],
+[73,"kāmyā kāmakalārūpā kadamba-kusuma-priyā .","kalyāṇī jagatīkandā karuṇā-rasa-sāgarā .. 73.."],
+[74,"kalāvatī kalālāpā kāntā kādambarīpriyā .","varadā vāmanayanā vāruṇī-mada-vihvalā .. 74.."],
+[75,"viśvādhikā vedavedyā vindhyācala-nivāsinī .","vidhātrī vedajananī viṣṇumāyā vilāsinī .. 75.."],
+[76,"kṣetrasvarūpā kṣetreśī kṣetra-kṣetrajña-pālinī .","kṣayavṛddhi-vinirmuktā kṣetrapāla-samarcitā .. 76.."],
+[77,"vijayā vimalā vandyā vandāru-jana-vatsalā .","vāgvādinī vāmakeśī vahnimaṇḍala-vāsinī .. 77.."],
+[78,"bhaktimat-kalpalatikā paśupāśa-vimocinī .","saṃhṛtāśeṣa-pāṣaṇḍā sadācāra-pravartikā .. 78.."],
+[79,"tāpatrayāgni-santapta-samāhlādana-candrikā .","taruṇī tāpasārādhyā tanumadhyā tamo'pahā .. 79.."],
+[80,"citistatpada-lakṣyārthā cidekarasa-rūpiṇī .","svātmānanda-lavībhūta-brahmādyānanda-santatiḥ .. 80.."],
+[81,"parā pratyakcitīrūpā paśyantī paradevatā .","madhyamā vaikharīrūpā bhakta-mānasa-haṃsikā .. 81.."],
+[82,"kāmeśvara-prāṇanāḍī kṛtajñā kāmapūjitā .","śṛṅgāra-rasa-sampūrṇā jayā jālandhara-sthitā .. 82.."],
+[83,"oḍyāṇapīṭha-nilayā bindu-maṇḍalavāsinī .","rahoyāga-kramārādhyā rahastarpaṇa-tarpitā .. 83.."],
+[84,"sadyaḥprasādinī viśva-sākṣiṇī sākṣivarjitā .","ṣaḍaṅgadevatā-yuktā ṣāḍguṇya-paripūritā .. 84.."],
+[85,"nityaklinnā nirupamā nirvāṇa-sukha-dāyinī .","nityā-ṣoḍaśikā-rūpā śrīkaṇṭhārdha-śarīriṇī .. 85.."],
+[86,"prabhāvatī prabhārūpā prasiddhā parameśvarī .","mūlaprakṛtir avyaktā vyaktāvyakta-svarūpiṇī .. 86.."],
+[87,"vyāpinī vividhākārā vidyāvidyā-svarūpiṇī .","mahākāmeśa-nayana-kumudāhlāda-kaumudī .. 87.."],
+[88,"bhakta-hārda-tamobheda-bhānumadbhānu-santatiḥ .","śivadūtī śivārādhyā śivamūrtiḥ śivaṅkarī .. 88.."],
+[89,"śivapriyā śivaparā śiṣṭeṣṭā śiṣṭapūjitā .","aprameyā svaprakāśā manovācāmagocarā .. 89.."],
+[90,"cicchaktiś cetanārūpā jaḍaśaktir jaḍātmikā .","gāyatrī vyāhṛtiḥ sandhyā dvijabṛnda-niṣevitā .. 90.."],
+[91,"tattvāsanā tattvamayī pañca-kośāntara-sthitā .","niḥsīma-mahimā nitya-yauvanā madaśālinī .. 91.."],
+[92,"madaghūrṇita-raktākṣī madapāṭala-gaṇḍabhūḥ .","candana-drava-digdhāṅgī cāmpeya-kusuma-priyā .. 92.."],
+[93,"kuśalā komalākārā kurukullā kuleśvarī .","kulakuṇḍālayā kaula-mārga-tatpara-sevitā .. 93.."],
+[94,"kumāra-gaṇanāthāmbā tuṣṭiḥ puṣṭir matir dhṛtiḥ .","śāntiḥ svastimatī kāntir nandinī vighnanāśinī .. 94.."],
+[95,"tejovatī trinayanā lolākṣī-kāmarūpiṇī .","mālinī haṃsinī mātā malayācala-vāsinī .. 95.."],
+[96,"sumukhī nalinī subhrūḥ śobhanā suranāyikā .","kālakaṇṭhī kāntimatī kṣobhiṇī sūkṣmarūpiṇī .. 96.."],
+[97,"vajreśvarī vāmadevī vayo'vasthā-vivarjitā .","siddheśvarī siddhavidyā siddhamātā yaśasvinī .. 97.."],
+[98,"viśuddhicakra-nilayā''raktavarṇā trilocanā .","khaṭvāṅgādi-praharaṇā vadanaika-samanvitā .. 98.."],
+[99,"pāyasānnapriyā tvaksthā paśuloka-bhayaṅkarī .","amṛtādi-mahāśakti-saṃvṛtā ḍākinīśvarī .. 99.."],
+[100,"anāhatābja-nilayā śyāmābhā vadanadvayā .","daṃṣṭrojjvalā'kṣa-mālādi-dharā rudhirasaṃsthitā .. 100.."],
+[101,"kālarātryādi-śaktyaugha-vṛtā snigdhaudanapriyā .","mahāvīrendra-varadā rākiṇyambā-svarūpiṇī .. 101.."],
+[102,"maṇipūrābja-nilayā vadanatraya-saṃyutā .","vajrādikāyudhopetā ḍāmaryādibhirāvṛtā .. 102.."],
+[103,"raktavarṇā māṃsaniṣṭhā guḍānna-prīta-mānasā .","samastabhakta-sukhadā lākinyambā-svarūpiṇī .. 103.."],
+[104,"svādhiṣṭhānāmbuja-gatā caturvaktra-manoharā .","śūlādyāyudha-sampannā pītavarṇā'tigarvitā .. 104.."],
+[105,"medoniṣṭhā madhuprītā bandhinyādi-samanvitā .","dadhyannāsakta-hṛdayā kākinī-rūpa-dhāriṇī .. 105.."],
+[106,"mūlādhārāmbujārūḍhā pañca-vaktrā'sthi-saṃsthitā .","aṅkuśādi-praharaṇā varadādi-niṣevitā .. 106.."],
+[107,"mudgaudanāsakta-cittā sākinyambā-svarūpiṇī .","ājñā-cakrābja-nilayā śuklavarṇā ṣaḍānanā .. 107.."],
+[108,"majjāsaṃsthā haṃsavatī-mukhya-śakti-samanvitā .","haridrānnaika-rasikā hākinī-rūpa-dhāriṇī .. 108.."],
+[109,"sahasradala-padmasthā sarva-varṇopa-śobhitā .","sarvāyudhadharā śukla-saṃsthitā sarvatomukhī .. 109.."],
+[110,"sarvaudana-prītacittā yākinyambā-svarūpiṇī .","svāhā svadhā'matir medhā śrutiḥ smṛtir anuttamā .. 110.."],
+[111,"puṇyakīrtiḥ puṇyalabhyā puṇyaśravaṇa-kīrtanā .","pulomajārcitā bandha-mocanī bandhurālakā .. 111.."],
+[112,"vimarśarūpiṇī vidyā viyadādi-jagatprasūḥ .","sarvavyādhi-praśamanī sarvamṛtyu-nivāriṇī .. 112.."],
+[113,"agragaṇyā'cintyarūpā kalikalmaṣa-nāśinī .","kātyāyanī kālahantrī kamalākṣa-niṣevitā .. 113.."],
+[114,"tāmbūla-pūrita-mukhī dāḍimī-kusuma-prabhā .","mṛgākṣī mohinī mukhyā mṛḍānī mitrarūpiṇī .. 114.."],
+[115,"nityatṛptā bhaktanidhir niyantrī nikhileśvarī .","maitryādi-vāsanālabhyā mahāpralaya-sākṣiṇī .. 115.."],
+[116,"parā śaktiḥ parā niṣṭhā prajñānaghana-rūpiṇī .","mādhvīpānālasā mattā mātṛkā-varṇa-rūpiṇī .. 116.."],
+[117,"mahākailāsa-nilayā mṛṇāla-mṛdu-dorlatā .","mahanīyā dayāmūrtir mahāsāmrājya-śālinī .. 117.."],
+[118,"ātmavidyā mahāvidyā śrīvidyā kāmasevitā .","śrī-ṣoḍaśākṣarī-vidyā trikūṭā kāmakoṭikā .. 118.."],
+[119,"kaṭākṣa-kiṅkarī-bhūta-kamalā-koṭi-sevitā .","śiraḥsthitā candranibhā bhālasthendra-dhanuḥprabhā .. 119.."],
+[120,"hṛdayasthā raviprakhyā trikoṇāntara-dīpikā .","dākṣāyaṇī daityahantrī dakṣayajña-vināśinī .. 120.."],
+[121,"darāndolita-dīrghākṣī dara-hāsojjvalan-mukhī .","gurumūrtir guṇanidhir gomātā guhajanmabhūḥ .. 121.."],
+[122,"deveśī daṇḍanītisthā daharākāśa-rūpiṇī .","pratipanmukhya-rākānta-tithi-maṇḍala-pūjitā .. 122.."],
+[123,"kalātmikā kalānāthā kāvyālāpa-vinodinī .","sacāmara-ramā-vāṇī-savya-dakṣiṇa-sevitā .. 123.."],
+[124,"ādiśaktir ameyā''tmā paramā pāvanākṛtiḥ .","anekakoṭi-brahmāṇḍa-jananī divyavigrahā .. 124.."],
+[125,"klīṃkārī kevalā guhyā kaivalya-padadāyinī .","tripurā trijagadvandyā trimūrtis tridaśeśvarī .. 125.."],
+[126,"tryakṣarī divya-gandhāḍhyā sindūra-tilakāñcitā .","umā śailendratanayā gaurī gandharva-sevitā .. 126.."],
+[127,"viśvagarbhā svarṇagarbhā'varadā vāgadhīśvarī .","dhyānagamyā'paricchedyā jñānadā jñānavigrahā .. 127.."],
+[128,"sarvavedānta-saṃvedyā satyānanda-svarūpiṇī .","lopāmudrārcitā līlā-kḷpta-brahmāṇḍa-maṇḍalā .. 128.."],
+[129,"adṛśyā dṛśyarahitā vijñātrī vedyavarjitā .","yoginī yogadā yogyā yogānandā yugandharā .. 129.."],
+[130,"icchāśakti-jñānaśakti-kriyāśakti-svarūpiṇī .","sarvādhārā supratiṣṭhā sadasadrūpa-dhāriṇī .. 130.."],
+[131,"aṣṭamūrtir ajājaitrī lokayātrā-vidhāyinī .","ekākinī bhūmarūpā nirdvaitā dvaitavarjitā .. 131.."],
+[132,"annadā vasudā vṛddhā brahmātmaikya-svarūpiṇī .","bṛhatī brāhmaṇī brāhmī brahmānandā balipriyā .. 132.."],
+[133,"bhāṣārūpā bṛhatsenā bhāvābhāva-vivarjitā .","sukhārādhyā śubhakarī śobhanā sulabhā gatiḥ .. 133.."],
+[134,"rāja-rājeśvarī rājya-dāyinī rājya-vallabhā .","rājatkṛpā rājapīṭha-niveśita-nijāśritā .. 134.."],
+[135,"rājyalakṣmīḥ kośanāthā caturaṅga-baleśvarī .","sāmrājya-dāyinī satyasandhā sāgaramekhalā .. 135.."],
+[136,"dīkṣitā daityaśamanī sarvaloka-vaśaṅkarī .","sarvārthadātrī sāvitrī saccidānanda-rūpiṇī .. 136.."],
+[137,"deśa-kālāparicchinnā sarvagā sarvamohinī .","sarasvatī śāstramayī guhāmbā guhyarūpiṇī .. 137.."],
+[138,"sarvopādhi-vinirmuktā sadāśiva-pativratā .","sampradāyeśvarī sādhvī gurumaṇḍala-rūpiṇī .. 138.."],
+[139,"kulottīrṇā bhagārādhyā māyā madhumatī mahī .","gaṇāmbā guhyakārādhyā komalāṅgī gurupriyā .. 139.."],
+[140,"svatantrā sarvatantreśī dakṣiṇāmūrti-rūpiṇī .","sanakādi-samārādhyā śivajñāna-pradāyinī .. 140.."],
+[141,"citkalā''nanda-kalikā premarūpā priyaṅkarī .","nāmapārāyaṇa-prītā nandividyā naṭeśvarī .. 141.."],
+[142,"mithyā-jagadadhiṣṭhānā muktidā muktirūpiṇī .","lāsyapriyā layakarī lajjā rambhādivanditā .. 142.."],
+[143,"bhavadāva-sudhāvṛṣṭiḥ pāpāraṇya-davānalā .","daurbhāgya-tūlavātūlā jarādhvānta-raviprabhā .. 143.."],
+[144,"bhāgyābdhi-candrikā bhakta-cittakeki-ghanāghanā .","rogaparvata-dambholir mṛtyudāru-kuṭhārikā .. 144.."],
+[145,"maheśvarī mahākālī mahāgrāsā mahāśanā .","aparṇā caṇḍikā caṇḍamuṇḍāsura-niṣūdinī .. 145.."],
+[146,"kṣarākṣarātmikā sarva-lokeśī viśvadhāriṇī .","trivargadātrī subhagā tryambakā triguṇātmikā .. 146.."],
+[147,"svargāpavargadā śuddhā japāpuṣpa-nibhākṛtiḥ .","ojovatī dyutidharā yajñarūpā priyavratā .. 147.."],
+[148,"durārādhyā durādharṣā pāṭalī-kusuma-priyā .","mahatī merunilayā mandāra-kusuma-priyā .. 148.."],
+[149,"vīrārādhyā virāḍrūpā virajā viśvatomukhī .","pratyagrūpā parākāśā prāṇadā prāṇarūpiṇī .. 149.."],
+[150,"mārtāṇḍa-bhairavārādhyā mantriṇīnyasta-rājyadhūḥ .","tripureśī jayatsenā nistraiguṇyā parāparā .. 150.."],
+[151,"satya-jñānānanda-rūpā sāmarasya-parāyaṇā .","kapardinī kalāmālā kāmadhuk kāmarūpiṇī .. 151.."],
+[152,"kalānidhiḥ kāvyakalā rasajñā rasaśevadhiḥ .","puṣṭā purātanā pūjyā puṣkarā puṣkarekṣaṇā .. 152.."],
+[153,"paraṃjyotiḥ paraṃdhāma paramāṇuḥ parātparā .","pāśahastā pāśahantrī paramantra-vibhedinī .. 153.."],
+[154,"mūrtā'mūrtā'nityatṛptā munimānasa-haṃsikā .","satyavratā satyarūpā sarvāntaryāminī satī .. 154.."],
+[155,"brahmāṇī brahmajananī bahurūpā budhārcitā .","prasavitrī pracaṇḍā''jñā pratiṣṭhā prakaṭākṛtiḥ .. 155.."],
+[156,"prāṇeśvarī prāṇadātrī pañcāśatpīṭha-rūpiṇī .","viśṛṅkhalā viviktasthā vīramātā viyatprasūḥ .. 156.."],
+[157,"mukundā muktinilayā mūlavigraha-rūpiṇī .","bhāvajñā bhavarogaghnī bhavacakra-pravartinī .. 157.."],
+[158,"chandaḥsārā śāstrasārā mantrasārā talodarī .","udārakīrtir uddāmavaibhavā varṇarūpiṇī .. 158.."],
+[159,"janmamṛtyu-jarātapta-janaviśrānti-dāyinī .","sarvopaniṣa-dud-ghuṣṭā śāntyatīta-kalātmikā .. 159.."],
+[160,"gambhīrā gaganāntasthā garvitā gānalolupā .","kalpanā-rahitā kāṣṭhā'kāntā kāntārdha-vigrahā .. 160.."],
+[161,"kāryakāraṇa-nirmuktā kāmakeli-taraṅgitā .","kanatkanakatā-ṭaṅkā līlā-vigraha-dhāriṇī .. 161.."],
+[162,"ajā kṣayavinirmuktā mugdhā kṣipra-prasādinī .","antarmukha-samārādhyā bahirmukha-sudurlabhā .. 162.."],
+[163,"trayī trivarganilayā tristhā tripuramālinī .","nirāmayā nirālambā svātmārāmā sudhāsṛtiḥ .. 163.."],
+[164,"saṃsārapaṅka-nirmagna-samuddharaṇa-paṇḍitā .","yajñapriyā yajñakartrī yajamāna-svarūpiṇī .. 164.."],
+[165,"dharmādhārā dhanādhyakṣā dhanadhānya-vivardhinī .","viprapriyā viprarūpā viśvabhramaṇa-kāriṇī .. 165.."],
+[166,"viśvagrāsā vidrumābhā vaiṣṇavī viṣṇurūpiṇī .","ayonir yoninilayā kūṭasthā kularūpiṇī .. 166.."],
+[167,"vīragoṣṭhīpriyā vīrā naiṣkarmyā nādarūpiṇī .","vijñānakalanā kalyā vidagdhā baindavāsanā .. 167.."],
+[168,"tattvādhikā tattvamayī tattvamartha-svarūpiṇī .","sāmagānapriyā saumyā sadāśiva-kuṭumbinī .. 168.."],
+[169,"savyāpasavya-mārgasthā sarvāpadvinivāriṇī .","svasthā svabhāvamadhurā dhīrā dhīrasamarcitā .. 169.."],
+[170,"caitanyārghya-samārādhyā caitanya-kusumapriyā .","sadoditā sadātuṣṭā taruṇāditya-pāṭalā .. 170.."],
+[171,"dakṣiṇā-dakṣiṇārādhyā darasmera-mukhāmbujā .","kaulinī-kevalā'narghya-kaivalya-padadāyinī .. 171.."],
+[172,"stotrapriyā stutimatī śruti-saṃstuta-vaibhavā .","manasvinī mānavatī maheśī maṅgalākṛtiḥ .. 172.."],
+[173,"viśvamātā jagaddhātrī viśālākṣī virāgiṇī .","pragalbhā paramodārā parāmodā manomayī .. 173.."],
+[174,"vyomakeśī vimānasthā vajriṇī vāmakeśvarī .","pañcayajña-priyā pañca-preta-mañcādhiśāyinī .. 174.."],
+[175,"pañcamī pañcabhūteśī pañca-saṃkhyopacāriṇī .","śāśvatī śāśvataiśvaryā śarmadā śambhumohinī .. 175.."],
+[176,"dharā dharasutā dhanyā dharmiṇī dharmavardhinī .","lokātītā guṇātītā sarvātītā śamātmikā .. 176.."],
+[177,"bandhūka-kusumaprakhyā bālā līlāvinodinī .","sumaṅgalī sukhakarī suveṣāḍhyā suvāsinī .. 177.."],
+[178,"suvāsinyarcana-prītā''śobhanā śuddhamānasā .","bindu-tarpaṇa-santuṣṭā pūrvajā tripurāmbikā .. 178.."],
+[179,"daśamudrā-samārādhyā tripurāśrī-vaśaṅkarī .","jñānamudrā jñānagamyā jñānajñeya-svarūpiṇī .. 179.."],
+[180,"yonimudrā trikhaṇḍeśī triguṇāmbā trikoṇagā .","anaghā'dbhuta-cāritrā vāñchitārtha-pradāyinī .. 180.."],
+[181,"abhyāsātiśaya-jñātā ṣaḍadhvātīta-rūpiṇī .","avyāja-karuṇā-mūrtir ajñāna-dhvānta-dīpikā .. 181.."],
+[182,"ābāla-gopa-viditā sarvānullaṅghya-śāsanā .","śrīcakrarāja-nilayā śrīmat-tripurasundarī .. 182.."]
+];
+
+document.getElementById('shlokas-container').innerHTML=S.map(([n,l1,l2])=>
+`<div class="shloka" id="s${n}"><div class="shloka-num">VERSE ${n}</div><div class="shloka-line">${l1}</div><div class="shloka-line indent">${l2}</div></div>`).join('');
+
+function toggle(id,tid){
+  const b=document.getElementById(id),t=document.getElementById(tid);
+  const c=b.style.display==='none';
+  b.style.display=c?'':'none';
+  t.classList.toggle('collapsed',!c);
+}
+function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+let fs=17;
+function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
+function toggleMode(){
+  document.body.classList.toggle('light-mode');
+  document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
+}
+function toggleSearch(){
+  const b=document.getElementById('searchBar');
+  b.classList.toggle('active');
+  document.getElementById('searchBtn').classList.toggle('active',b.classList.contains('active'));
+  if(b.classList.contains('active'))document.getElementById('searchInput').focus();
+  else doSearch('');
+}
+function doSearch(q){
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('.shloka').forEach(el=>{
+    if(!q){el.classList.remove('highlight');el.style.display='';return;}
+    const t=el.textContent.toLowerCase();
+    el.classList.toggle('highlight',t.includes(q));
+    el.style.display=t.includes(q)?'':'none';
+  });
+}
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY,tot=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('progress').style.width=(s/tot*100)+'%';
+  document.getElementById('backTop').classList.toggle('visible',s>400);
+});
+</script>
+</body>
+</html>
