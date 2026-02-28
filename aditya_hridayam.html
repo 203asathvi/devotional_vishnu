@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aditya Hridayam</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c9a84c;--gold-light:#e8c96a;
+  --deep:#1a0800;--bg:#0d0600;--card:#1c1002;
+  --border:rgba(255,160,30,0.25);--text:#f0e6c8;--muted:#a89060;
+  --sun:#f0a030;--sun2:#ff6a00;--amber:#ffb347;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;min-height:100vh;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -5%,rgba(240,160,48,0.14) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 40% at 90% 90%,rgba(255,106,0,0.06) 0%,transparent 60%);
+}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,6,0,0.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
+.nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
+.nav-controls{display:flex;gap:6px;align-items:center;}
+.nav-btn{background:rgba(240,160,48,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(240,160,48,0.25);border-color:var(--gold);}
+.nav-home{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;text-decoration:none;display:flex;align-items:center;transition:all .2s;font-family:'Cinzel',serif;}
+.nav-home:hover{background:rgba(201,168,76,0.25);}
+.progress-bar{position:fixed;top:52px;left:0;z-index:99;height:2px;background:linear-gradient(90deg,var(--sun2),var(--gold),var(--sun));width:0%;box-shadow:0 0 8px var(--sun);}
+
+.hero{position:relative;z-index:1;text-align:center;padding:44px 16px 28px;border-bottom:1px solid var(--border);}
+.hero-sun{
+  font-size:56px;line-height:1;margin-bottom:8px;display:inline-block;
+  animation:sunrise 5s ease-in-out infinite;
+}
+@keyframes sunrise{
+  0%,100%{filter:drop-shadow(0 0 16px rgba(240,160,48,0.4));}
+  50%{filter:drop-shadow(0 0 40px rgba(255,106,0,0.75));}
+}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,30px);font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:4px;}
+.hero-dev{font-size:clamp(17px,4vw,26px);color:var(--gold-light);margin-bottom:4px;}
+.hero-dev2{font-size:clamp(14px,3vw,18px);color:var(--sun);margin-bottom:8px;font-style:italic;}
+.hero-sub{font-size:13px;color:var(--muted);font-style:italic;}
+.divider{display:flex;align-items:center;gap:10px;max-width:380px;margin:14px auto 0;color:var(--gold);font-size:18px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--sun),transparent);}
+
+.search-bar{position:relative;z-index:1;padding:10px 14px;border-bottom:1px solid var(--border);display:none;}
+.search-bar.active{display:block;}
+.search-bar input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:6px;font-size:16px;font-family:'EB Garamond',serif;outline:none;}
+.search-bar input:focus{border-color:var(--gold);}
+.search-bar input::placeholder{color:var(--muted);}
+
+.toc{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:14px;}
+.toc-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 13px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Cinzel',serif;transition:all .2s;}
+.toc-btn:hover{border-color:var(--sun);color:var(--sun);}
+
+main{position:relative;z-index:1;padding:0 14px 80px;max-width:880px;margin:0 auto;}
+.section{margin-top:24px;}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;user-select:none;}
+.section-header h2{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--sun) 0%,transparent 100%);opacity:.4;}
+.section-toggle{color:var(--gold);font-size:16px;transition:transform .3s;}
+.section-toggle.collapsed{transform:rotate(-90deg);}
+
+.shloka{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:15px 17px;margin-bottom:10px;transition:border-color .2s,background .2s;}
+.shloka:hover{border-color:rgba(240,160,48,0.45);background:#231402;}
+.shloka.highlight{border-color:var(--sun);background:rgba(240,160,48,0.07);}
+.shloka-num{font-family:'Cinzel',serif;font-size:10px;color:var(--sun);letter-spacing:1px;margin-bottom:6px;opacity:.8;}
+.shloka-sanskrit{font-size:18px;color:var(--gold-light);line-height:1.75;margin-bottom:6px;}
+.shloka-iast{font-size:15px;color:#c4b090;font-style:italic;line-height:1.65;margin-bottom:8px;padding-left:4px;border-left:2px solid rgba(240,160,48,0.25);}
+.shloka-meaning{font-size:15px;color:var(--sun);line-height:1.65;padding:8px 12px;background:rgba(240,160,48,0.06);border-radius:4px;border-left:2px solid var(--sun2);}
+
+.speaker{font-family:'Cinzel',serif;font-size:10px;color:var(--amber);letter-spacing:1.5px;text-transform:uppercase;margin:18px 0 8px;display:flex;align-items:center;gap:8px;}
+.speaker::after{content:'';flex:1;height:1px;background:rgba(255,179,71,0.25);}
+.note{font-style:italic;color:var(--muted);padding:8px 14px;border-left:2px solid var(--gold);margin:10px 0;background:rgba(201,168,76,0.05);border-radius:0 4px 4px 0;font-size:14px;}
+
+.back-top{position:fixed;bottom:18px;right:18px;z-index:200;background:linear-gradient(135deg,var(--sun2),var(--gold));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(240,160,48,0.4);}
+.back-top.visible{display:flex;}
+body.light-mode{--bg:#fdf8ec;--card:#fffaf0;--text:#2a1800;--muted:#7a6030;--border:rgba(200,130,20,0.25);}
+mark{background:rgba(240,160,48,0.3);color:inherit;border-radius:2px;}
+@media(max-width:600px){body{font-size:16px;}.shloka{padding:12px 13px;}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progress"></div>
+<nav>
+  <div class="nav-title">☀️ Āditya Hṛdayam</div>
+  <div class="nav-controls">
+    <a class="nav-home" href="index.html">🏠 Home</a>
+    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
+    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
+  </div>
+</nav>
+<div class="search-bar" id="searchBar">
+  <input type="text" id="searchInput" placeholder="Search verse or meaning…" oninput="doSearch(this.value)">
+</div>
+
+<div class="hero">
+  <div class="hero-sun">🌞</div>
+  <h1>Āditya Hṛdayam</h1>
+  <div class="hero-dev">आदित्यहृदयम्</div>
+  <div class="hero-dev2">The Heart of Āditya — the Sun God</div>
+  <div class="hero-sub">Vālmīki Rāmāyaṇa · Yuddha Kāṇḍa · Sarga 107 · Revealed by Agastya Maharṣi to Śrī Rāma</div>
+  <div class="divider">✦</div>
+</div>
+
+<div class="toc">
+  <button class="toc-btn" onclick="gotoSection('context')">Context</button>
+  <button class="toc-btn" onclick="gotoSection('intro')">Introduction (1–5)</button>
+  <button class="toc-btn" onclick="gotoSection('hymn')">The Hymn (6–21)</button>
+  <button class="toc-btn" onclick="gotoSection('phalam')">Phalashruti (22–31)</button>
+</div>
+
+<main>
+
+<!-- CONTEXT -->
+<div class="section" id="context">
+  <div class="section-header" onclick="toggle('ctx-body','ctx-tog')">
+    <h2>Context — The Battle Scene</h2><div class="section-line"></div><span class="section-toggle" id="ctx-tog">▾</span>
+  </div>
+  <div id="ctx-body">
+    <div class="note">
+      From the Yuddha Kāṇḍa of the Vālmīki Rāmāyaṇa — On the battlefield of Lanka, Śrī Rāma stood exhausted and absorbed in deep thought, facing the mighty Rāvaṇa. Seeing this, the divine sage Agastya descended from the heavens in the company of gods and taught Rāma this eternal secret hymn — the Āditya Hṛdayam — to bestow victory.
+    </div>
+  </div>
+</div>
+
+<!-- INTRO VERSES -->
+<div class="section" id="intro">
+  <div class="section-header" onclick="toggle('in-body','in-tog')">
+    <h2>Introduction — Verses 1–5</h2><div class="section-line"></div><span class="section-toggle" id="in-tog">▾</span>
+  </div>
+  <div id="in-body">
+    <div class="speaker">Agastya Maharṣi speaks to Śrī Rāma</div>
+
+    <div class="shloka" id="v1">
+      <div class="shloka-num">VERSE 1–2</div>
+      <div class="shloka-sanskrit">ततो युद्धपरिश्रान्तं समरे चिन्तया स्थितम् ।<br>रावणं चाग्रतो दृष्ट्वा युद्धाय समुपस्थितम् ॥ १ ॥<br><br>दैवतैश्च समागम्य द्रष्टुमभ्यागतो रणम् ।<br>उपागम्याब्रवीद्राम-मगस्त्यो भगवान् ऋषिः ॥ २ ॥</div>
+      <div class="shloka-iast">tato yuddhapariśrāntaṃ samare cintayā sthitam |<br>rāvaṇaṃ cāgrato dṛṣṭvā yuddhāya samupasthitam || 1 ||<br><br>daivataiśca samāgamya draṣṭumabhyāgato raṇam |<br>upāgamyābravīdrāma-magastyo bhagavān ṛṣiḥ || 2 ||</div>
+      <div class="shloka-meaning">Beholding Śrī Rāma standing absorbed in deep thought on the battlefield, exhausted by the fight and facing Rāvaṇa who was duly prepared for war, the glorious sage Agastya — who had come with the gods to witness the battle — now approached and spoke to Rāma as follows.</div>
+    </div>
+
+    <div class="shloka" id="v3">
+      <div class="shloka-num">VERSE 3</div>
+      <div class="shloka-sanskrit">राम राम महाबाहो श्रृणु गुह्यं सनातनम् ।<br>येन सर्वानरीन् वत्स समरे विजयिष्यसि ॥ ३ ॥</div>
+      <div class="shloka-iast">rāma rāma mahābāho śṛṇu guhyaṃ sanātanam |<br>yena sarvānarīn vatsa samare vijayiṣyasi || 3 ||</div>
+      <div class="shloka-meaning">O Rāma! O mighty-armed Rāma! Listen carefully to this eternal secret, by which, O my child, you shall conquer all your enemies on the battlefield.</div>
+    </div>
+
+    <div class="shloka" id="v4">
+      <div class="shloka-num">VERSE 4</div>
+      <div class="shloka-sanskrit">आदित्यहृदयं पुण्यं सर्वशत्रु-विनाशनम् ।<br>जयावहं जपेन्नित्य-मक्षय्यं परमं शिवम् ॥ ४ ॥</div>
+      <div class="shloka-iast">ādityahṛdayaṃ puṇyaṃ sarvaśatru-vināśanam |<br>jayāvahaṃ japennitya-makṣayyaṃ paramaṃ śivam || 4 ||</div>
+      <div class="shloka-meaning">By chanting the Āditya Hṛdayam — this meditation of the Sun in the heart — which is most auspicious and highly beneficial, you shall be victorious in battle. This holy hymn dedicated to the Sun God destroys all enemies, brings victory, and bestows permanent happiness and auspiciousness.</div>
+    </div>
+
+    <div class="shloka" id="v5">
+      <div class="shloka-num">VERSE 5</div>
+      <div class="shloka-sanskrit">सर्वमङ्गल-माङ्गल्यं सर्वपापप्रणाशनम् ।<br>चिन्ताशोक-प्रशमन-मायुर्वर्धन-मुत्तमम् ॥ ५ ॥</div>
+      <div class="shloka-iast">sarvamaṅgala-māṅgalyaṃ sarvapāpapraṇāśanam |<br>cintāśoka-praśamana-māyurvardhana-muttamam || 5 ||</div>
+      <div class="shloka-meaning">This supreme prayer is the best amongst all auspicious verses. It destroys all sins, dispels all doubts, alleviates worry, sorrow, anxiety and anguish, and increases the longevity of life. It is a guarantee of complete prosperity.</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE HYMN -->
+<div class="section" id="hymn">
+  <div class="section-header" onclick="toggle('hy-body','hy-tog')">
+    <h2>The Hymn — Verses 6–21</h2><div class="section-line"></div><span class="section-toggle" id="hy-tog">▾</span>
+  </div>
+  <div id="hy-body">
+    <div class="note">The glories and names of Sūrya Bhagavān — the Sun God</div>
+
+    <div class="shloka" id="v6">
+      <div class="shloka-num">VERSE 6</div>
+      <div class="shloka-sanskrit">रश्मिमन्तं समुद्यन्तं देवासुर-नमस्कृतम् ।<br>पूजयस्व विवस्वन्तं भास्करं भुवनेश्वरम् ॥ ६ ॥</div>
+      <div class="shloka-iast">raśmimantaṃ samudyantaṃ devāsura-namaskṛtam |<br>pūjayasva vivasvantaṃ bhāskaraṃ bhuvaneśvaram || 6 ||</div>
+      <div class="shloka-meaning">Worship the Sun God — the ruler of worlds and lord of the universe — who is crowned with effulgent rays, who rises at the horizon bringing light, and who is revered by both the gods (devas) and demons (asuras) alike.</div>
+    </div>
+
+    <div class="shloka" id="v7">
+      <div class="shloka-num">VERSE 7</div>
+      <div class="shloka-sanskrit">सर्वदेवात्मको ह्येष तेजस्वी रश्मि-भावनः ।<br>एष देवासुरगणान् लोकान् पाति गभस्तिभिः ॥ ७ ॥</div>
+      <div class="shloka-iast">sarvadevātmako hyeṣa tejasvī raśmi-bhāvanaḥ |<br>eṣa devāsuragaṇān lokān pāti gabhastibhiḥ || 7 ||</div>
+      <div class="shloka-meaning">Indeed, He is the very embodiment of all Gods. He is self-luminous and sustains all with his rays. He nourishes and energizes the inhabitants of all the worlds as well as the hosts of gods and demons with his radiant rays.</div>
+    </div>
+
+    <div class="shloka" id="v8">
+      <div class="shloka-num">VERSE 8</div>
+      <div class="shloka-sanskrit">एष ब्रह्मा च विष्णुश्च शिवः स्कन्दः प्रजापतिः ।<br>महेन्द्रो धनदः कालो यमः सोमो ह्यपां पतिः ॥ ८ ॥</div>
+      <div class="shloka-iast">eṣa brahmā ca viṣṇuśca śivaḥ skandaḥ prajāpatiḥ |<br>mahendro dhanadaḥ kālo yamaḥ somo hyapāṃ patiḥ || 8 ||</div>
+      <div class="shloka-meaning">He is Brahmā the creator, Viṣṇu the sustainer, Śiva the destroyer, Skanda the son of Śiva, Prajāpati the progenitor, mighty Indra king of heaven, Kubera lord of wealth, Kāla eternal time, Yama lord of death, Soma the moon, and Varuṇa lord of the sea.</div>
+    </div>
+
+    <div class="shloka" id="v9">
+      <div class="shloka-num">VERSE 9</div>
+      <div class="shloka-sanskrit">पितरो वसवः साध्या ह्यश्विनौ मरुतो मनुः ।<br>वायु-र्वह्निः प्रजाप्राण ऋतु कर्ता प्रभाकरः ॥ ९ ॥</div>
+      <div class="shloka-iast">pitaro vasavaḥ sādhyā hyaśvinau maruto manuḥ |<br>vāyu-rvahniḥ prajāprāṇa ṛtu kartā prabhākaraḥ || 9 ||</div>
+      <div class="shloka-meaning">He is the Pitṛs (ancestors), the eight Vasus, the Sādhyas, the twin Aśvins (physicians of gods), the Maruts, Manu, Vāyu the wind god, Agni the fire god, the life-breath of all beings, the maker of the six seasons, and the giver of light.</div>
+    </div>
+
+    <div class="shloka" id="v10">
+      <div class="shloka-num">VERSE 10</div>
+      <div class="shloka-sanskrit">आदित्यः सविता सूर्यः खगः पूषा गभस्तिमान् ।<br>सुवर्णसदृशो भानु-र्हिरण्यरेता दिवाकरः ॥ १० ॥</div>
+      <div class="shloka-iast">ādityaḥ savitā sūryaḥ khagaḥ pūṣā gabhastimān |<br>suvarṇasadṛśo bhānu-rhiraṇyaretā divākaraḥ || 10 ||</div>
+      <div class="shloka-meaning">He is Āditya (son of Aditi), Savitā (the stimulator), Sūrya (the supreme light), Khaga (who traverses the sky), Pūṣā (the nourisher), Gabhastimān (possessor of brilliant rays), brilliant as gold, Bhānu (the radiant one), Hiraṇyaretā (of golden seed), and Divākara (the maker of daylight).</div>
+    </div>
+
+    <div class="shloka" id="v11">
+      <div class="shloka-num">VERSE 11</div>
+      <div class="shloka-sanskrit">हरिदश्वः सहस्रार्चिः सप्तसप्ति-मरीचिमान् ।<br>तिमिरोन्मथनः शम्भुस्त्वष्टा मार्तण्ड अंशुमान् ॥ ११ ॥</div>
+      <div class="shloka-iast">haridaśvaḥ sahasrārciḥ saptasapti-marīcimān |<br>timironmathanaḥ śambhustvāṣṭā mārtaṇḍa aṃśumān || 11 ||</div>
+      <div class="shloka-meaning">He whose chariot is yoked with seven horses, who shines with a thousand rays, is the destroyer of darkness, the giver of happiness and prosperity, the mitigator of suffering, and the infuser of life. He is the omnipresent one pervading all with immeasurable rays.</div>
+    </div>
+
+    <div class="shloka" id="v12">
+      <div class="shloka-num">VERSE 12</div>
+      <div class="shloka-sanskrit">हिरण्यगर्भः शिशिरस्तपनो भास्करो रविः ।<br>अग्निगर्भोऽदितेः पुत्रः शङ्खः शिशिरनाशनः ॥ १२ ॥</div>
+      <div class="shloka-iast">hiraṇyagarbhaḥ śiśirastapano bhāskaro raviḥ |<br>agnigarbho'diteḥ putraḥ śaṅkhaḥ śiśiranāśanaḥ || 12 ||</div>
+      <div class="shloka-meaning">He is Hiraṇyagarbha (of golden womb), the destroyer of cold, snow and fog, the illuminator Ravi, bearer of fire and conch, son of Aditi, and the remover of ignorance.</div>
+    </div>
+
+    <div class="shloka" id="v13">
+      <div class="shloka-num">VERSE 13</div>
+      <div class="shloka-sanskrit">व्योमनाथस्तमोभेदी ऋग्यजुस्सामपारगः ।<br>घनवृष्टिरपां मित्रो विन्ध्यवीथीप्लवङ्गमः ॥ १३ ॥</div>
+      <div class="shloka-iast">vyomanāthastamobhedī ṛgyajussāmapāragaḥ |<br>ghanavṛṣṭirapāṃ mitro vindhyavīthīplavaṅgamaḥ || 13 ||</div>
+      <div class="shloka-meaning">He is the lord of the firmament, remover of darkness, master of the three Vedas (Ṛg, Yajur, Sāma), friend of the waters causing abundant rain, who swiftly courses south of the Vindhya mountains and sports in the Brahma Nāḍī.</div>
+    </div>
+
+    <div class="shloka" id="v14">
+      <div class="shloka-num">VERSE 14</div>
+      <div class="shloka-sanskrit">आतपी मण्डली मृत्युः पिङ्गलः सर्वतापनः ।<br>कविर्विश्वो महातेजाः रक्तः सर्वभवोद्भवः ॥ १४ ॥</div>
+      <div class="shloka-iast">ātapī maṇḍalī mṛtyuḥ piṅgalaḥ sarvatāpanaḥ |<br>kavirviśvo mahātejāḥ raktaḥ sarvabhavodbhavaḥ || 14 ||</div>
+      <div class="shloka-meaning">Circular in form and colored in yellow and red hues, intensely brilliant and energetic — He is the giver of heat, the cause of all work, of life and death. He is the destroyer of all and the omniscient one sustaining the universe and all action.</div>
+    </div>
+
+    <div class="shloka" id="v15">
+      <div class="shloka-num">VERSE 15</div>
+      <div class="shloka-sanskrit">नक्षत्रग्रहताराणा-मधिपो विश्वभावनः ।<br>तेजसामपि तेजस्वी द्वादशात्मन्नमोऽस्तु ते ॥ १५ ॥</div>
+      <div class="shloka-iast">nakṣatragrahatārāṇā-madhipo viśvabhāvanaḥ |<br>tejasāmapi tejasvī dvādaśātmannamo'stu te || 15 ||</div>
+      <div class="shloka-meaning">He is the lord of constellations, stars and planets, and the origin of everything in the universe. Salutations to Āditya who appears in twelve forms — the twelve months of the year — whose glory is described in his twelve names.</div>
+    </div>
+
+    <div class="shloka" id="v16">
+      <div class="shloka-num">VERSE 16</div>
+      <div class="shloka-sanskrit">नमः पूर्वाय गिरये पश्चिमायाद्रये नमः ।<br>ज्योतिर्गणानां पतये दिनाधिपतये नमः ॥ १६ ॥</div>
+      <div class="shloka-iast">namaḥ pūrvāya giraye paścimāyādraye namaḥ |<br>jyotirgaṇānāṃ pataye dinādhibhūtaye namaḥ || 16 ||</div>
+      <div class="shloka-meaning">Salutations to the Lord of the eastern mountain (sunrise) and the western mountain (sunset). Salutations to the lord of all stellar bodies and to the lord of daylight.</div>
+    </div>
+
+    <div class="shloka" id="v17">
+      <div class="shloka-num">VERSE 17</div>
+      <div class="shloka-sanskrit">जयाय जयभद्राय हर्यश्वाय नमो नमः ।<br>नमो नमः सहस्रांशो आदित्याय नमो नमः ॥ १७ ॥</div>
+      <div class="shloka-iast">jayāya jayabhadrāya haryaśvāya namo namaḥ |<br>namo namaḥ sahasrāṃśo ādityāya namo namaḥ || 17 ||</div>
+      <div class="shloka-meaning">O Lord of a thousand rays, son of Aditi! Salutations to you, the bestower of victory and auspiciousness and prosperity. Salutations to the one with coloured horses carrying his chariot.</div>
+    </div>
+
+    <div class="shloka" id="v18">
+      <div class="shloka-num">VERSE 18</div>
+      <div class="shloka-sanskrit">नम उग्राय वीराय साङ्गाय नमो नमः ।<br>नमः पद्मप्रबोधाय मार्तण्डाय नमो नमः ॥ १८ ॥</div>
+      <div class="shloka-iast">nama ugrāya vīrāya sāraṅgāya namo namaḥ |<br>namaḥ padmaprabodhāya mārtaṇḍāya namo namaḥ || 18 ||</div>
+      <div class="shloka-meaning">Salutations to Mārtaṇḍa — the terrible and fierce one, the mighty hero, the one who travels swiftly. Salutations to the one whose appearance makes the lotus blossom and awakens the lotus in the heart.</div>
+    </div>
+
+    <div class="shloka" id="v19">
+      <div class="shloka-num">VERSE 19</div>
+      <div class="shloka-sanskrit">ब्रह्मेशानाच्युतेशाय सूर्यायादित्यवर्चसे ।<br>भास्वते सर्वभक्षाय रौद्राय वपुषे नमः ॥ १९ ॥</div>
+      <div class="shloka-iast">brahmeśānācyuteśāya sūryāyādityavarcase |<br>bhāsvate sarvabhakṣāya raudrāya vapuṣe namaḥ || 19 ||</div>
+      <div class="shloka-meaning">Salutations to the lord of Brahmā, Śiva and Viṣṇu; to Sūrya the sun god who by his power and effulgence is both the illuminator and devourer of all; and whose form is fierce like Rudra.</div>
+    </div>
+
+    <div class="shloka" id="v20">
+      <div class="shloka-num">VERSE 20</div>
+      <div class="shloka-sanskrit">तमोघ्नाय हिमघ्नाय शत्रुघ्नायामितात्मने ।<br>कृतघ्नघ्नाय देवाय ज्योतिषां पतये नमः ॥ २० ॥</div>
+      <div class="shloka-iast">tamoghnāya himaghnāya śatrughnāyāmitātmane |<br>kṛtaghnaghnāya devāya jyotiṣāṃ pataye namaḥ || 20 ||</div>
+      <div class="shloka-meaning">Salutations to the dispeller of darkness, the destroyer of cold, fog and snow, the exterminator of foes, the one of immeasurable extent. Salutations also to the annihilator of the ungrateful and to the lord of all stellar bodies — the first amongst all the lights of the universe.</div>
+    </div>
+
+    <div class="shloka" id="v21">
+      <div class="shloka-num">VERSE 21</div>
+      <div class="shloka-sanskrit">तप्तचामीकराभाय वह्नये विश्वकर्मणे ।<br>नमस्तमोऽभिनिघ्नाय रुचये लोकसाक्षिणे ॥ २१ ॥</div>
+      <div class="shloka-iast">taptacāmīkarābhāya vahnaye viśvakarmaṇe |<br>namastamo'bhinighnāya rucaye lokasākṣiṇe || 21 ||</div>
+      <div class="shloka-meaning">Salutations to the Lord shining like molten gold, who is the transcendental fire of supreme knowledge, who destroys the darkness of ignorance, and who is the cosmic witness of all the merits and demerits of the denizens of the universe. Salutations to Viśvakarma — the architect of the universe and the cause of all creation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PHALASHRUTI -->
+<div class="section" id="phalam">
+  <div class="section-header" onclick="toggle('ph-body','ph-tog')">
+    <h2>Phalashruti — Verses 22–31</h2><div class="section-line"></div><span class="section-toggle" id="ph-tog">▾</span>
+  </div>
+  <div id="ph-body">
+    <div class="note">The fruits of this hymn — and the victory of Śrī Rāma</div>
+
+    <div class="shloka" id="v22">
+      <div class="shloka-num">VERSE 22</div>
+      <div class="shloka-sanskrit">नाशयत्येष वै भूतं तदेव सृजति प्रभुः ।<br>पायत्येष तपत्येष वर्षत्येष गभस्तिभिः ॥ २२ ॥</div>
+      <div class="shloka-iast">nāśayatyeṣa vai bhūtaṃ tadeva sṛjati prabhuḥ |<br>pāyatyeṣa tapatyeṣa varṣatyeṣa gabhastibhiḥ || 22 ||</div>
+      <div class="shloka-meaning">He alone creates, sustains and destroys all that has come into being. He consumes the waters with his rays, heats them up, and sends them down again as rain.</div>
+    </div>
+
+    <div class="shloka" id="v23">
+      <div class="shloka-num">VERSE 23</div>
+      <div class="shloka-sanskrit">एष सुप्तेषु जागर्ति भूतेषु परिनिष्ठितः ।<br>एष एवाग्निहोत्रं च फलं चैवाग्निहोत्रिणाम् ॥ २३ ॥</div>
+      <div class="shloka-iast">eṣa supteṣu jāgarti bhūteṣu pariniṣṭhitaḥ |<br>eṣa evāgnihotraṃ ca phalaṃ caivāgnihotriṇām || 23 ||</div>
+      <div class="shloka-meaning">The Lord abides in the heart of all beings, keeping awake when they are asleep. Verily, he is the Agnihotra — the sacrificial fire — and also the fruit gained by the worshipper of Agnihotra.</div>
+    </div>
+
+    <div class="shloka" id="v24">
+      <div class="shloka-num">VERSE 24</div>
+      <div class="shloka-sanskrit">वेदाश्च क्रतवश्चैव क्रतूनां फलमेव च ।<br>यानि कृत्यानि लोकेषु सर्व एष रविः प्रभुः ॥ २४ ॥</div>
+      <div class="shloka-iast">vedāśca kratavaścaiva kratūnāṃ phalameva ca |<br>yāni kṛtyāni lokeṣu sarva eṣa raviḥ prabhuḥ || 24 ||</div>
+      <div class="shloka-meaning">The Sun God (Ravi) is the origin and protector of the four Vedas, the sacrifices mentioned in them and the fruits obtained by performing those sacrifices. He is the lord of all action in this universe and decides the universal path.</div>
+    </div>
+
+    <div class="shloka" id="v25">
+      <div class="shloka-num">VERSE 25</div>
+      <div class="shloka-sanskrit">एनमापत्सु कृच्छ्रेषु कान्तारेषु भयेषु च ।<br>कीर्तयन् पुरुषः कश्चिन्नावसीदति राघव ॥ २५ ॥</div>
+      <div class="shloka-iast">enamāpatsu kṛcchreṣu kāntāreṣu bhayeṣu ca |<br>kīrtayan puruṣaḥ kaścinnāvasīdati rāghava || 25 ||</div>
+      <div class="shloka-meaning">O Rāghava — scion of the Raghu dynasty — any person who sings the glories of Sūrya in great difficulties, during affliction, while lost in the wilderness, or when beset with fear, shall not come to grief.</div>
+    </div>
+
+    <div class="shloka" id="v26">
+      <div class="shloka-num">VERSE 26</div>
+      <div class="shloka-sanskrit">पूजयस्वैनमेकाग्रे देवदेवं जगत्पतिम् ।<br>एतत् त्रिगुणितं जप्त्वा युद्धेषु विजयिष्यसि ॥ २६ ॥</div>
+      <div class="shloka-iast">pūjayasvainamekāgre devadevaṃ jagatpatim |<br>etat triguṇitaṃ japtvā yuddheṣu vijayiṣyasi || 26 ||</div>
+      <div class="shloka-meaning">Worship this lord of the universe, the God of all gods, with concentrated mind and devotion. By reciting this hymn (Āditya Hṛdayam) three times, you shall emerge victorious in battle.</div>
+    </div>
+
+    <div class="shloka" id="v27">
+      <div class="shloka-num">VERSE 27</div>
+      <div class="shloka-sanskrit">अस्मिन् क्षणे महाबाहो रावणं त्वं वधिष्यसि ।<br>एवमुक्त्वा तदाऽगस्त्यो जगाम च यथागतम् ॥ २७ ॥</div>
+      <div class="shloka-iast">asmin kṣaṇe mahābāho rāvaṇaṃ tvaṃ vadhiṣyasi |<br>evamuktvā tadā'gastyo jagāma ca yathāgatam || 27 ||</div>
+      <div class="shloka-meaning">O mighty-armed one, you shall triumph over Rāvaṇa this very moment! Having thus blessed Lord Rāma and predicted that He would slay the demon Rāvaṇa, sage Agastya took leave and returned to his original place.</div>
+    </div>
+
+    <div class="shloka" id="v28">
+      <div class="shloka-num">VERSE 28</div>
+      <div class="shloka-sanskrit">एतच्छ्रुत्वा महातेजा नष्टशोकोऽभवत्तदा ।<br>धारयामास सुप्रीतो राघवः प्रयतात्मवान् ॥ २८ ॥</div>
+      <div class="shloka-iast">etacchrutvā mahātejā naṣṭaśoko'bhavattadā |<br>dhārayāmāsa supréto rāghavaḥ prayatātmavān || 28 ||</div>
+      <div class="shloka-meaning">Having heard this, the great warrior Rāghava was filled with delight and became free from grief. His clouds of worry thus dispelled, the lustrous Lord Rāma retained this hymn in his memory with composed mind, ready to chant the Āditya Hṛdayam.</div>
+    </div>
+
+    <div class="shloka" id="v29">
+      <div class="shloka-num">VERSE 29</div>
+      <div class="shloka-sanskrit">आदित्यं प्रेक्ष्य जप्त्वा तु परं हर्षमवाप्तवान् ।<br>त्रिराचम्य शुचिर्भूत्वा धनुरादाय वीर्यवान् ॥ २९ ॥</div>
+      <div class="shloka-iast">ādityaṃ prekṣya japtvā tu paraṃ harṣamavāptavān |<br>triracamya śucirbhūtvā dhanurādāya vīryavān || 29 ||</div>
+      <div class="shloka-meaning">Having performed Ācamanam (sipping water thrice) and being purified, Rāma gazed at the Sun with devotion and recited the hymn Āditya Hṛdayam three times. That great hero Rāghava was thrilled and lifted his bow.</div>
+    </div>
+
+    <div class="shloka" id="v30">
+      <div class="shloka-num">VERSE 30</div>
+      <div class="shloka-sanskrit">रावणं प्रेक्ष्य हृष्टात्मा युद्धाय समुपागमत् ।<br>सर्वयत्नेन महता वधे तस्य धृतोऽभवत् ॥ ३० ॥</div>
+      <div class="shloka-iast">rāvaṇaṃ prekṣya hṛṣṭātmā yuddhāya samupāgamat |<br>sarvayatnena mahatā vadhe tasya dhṛto'bhavat || 30 ||</div>
+      <div class="shloka-meaning">Lord Rāma, thus cheered, seeing Rāvaṇa coming to fight, put forth all his effort with an unwavering determination to defeat him.</div>
+    </div>
+
+    <div class="shloka" id="v31">
+      <div class="shloka-num">VERSE 31</div>
+      <div class="shloka-sanskrit">अथ रवि-रवद-न्निरीक्ष्य रामं<br>मुदितमनाः परमं प्रहृष्यमाणः ।<br>निशिचरपति-संक्षयं विदित्वा<br>सुरगण-मध्यगतो वचस्त्वरेति ॥ ३१ ॥</div>
+      <div class="shloka-iast">atha ravi-ravada-nnirīkṣya rāmaṃ<br>muditamanāḥ paramaṃ prahṛṣyamāṇaḥ |<br>niśicarapati-saṅkṣayaṃ viditvā<br>suragaṇa-madhyagato vacastvareti || 31 ||</div>
+      <div class="shloka-meaning">Then, knowing that the destruction of Rāvaṇa was near, the Sun God Āditya — surrounded by all the gods in heaven — looked at Rāma with a delighted mind and exclaimed: "Hurry up! Be quick!"</div>
+    </div>
+
+    <div style="text-align:center;padding:28px 0 8px;font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:2px;">
+      || iti Āditya Hṛdayam Mantrasya ||<br>
+      <span style="font-size:13px;color:var(--muted);font-style:italic;font-family:'EB Garamond',serif;display:block;margin-top:8px;">
+        Thus ends the Mantra Āditya Hṛdayam in praise of the Sun God,<br>
+        recounted in the Yuddha Kāṇḍa of Vālmīki Rāmāyaṇa
+      </span>
+      <span style="font-size:24px;display:block;margin-top:12px;animation:sunrise 3s infinite;">🌞</span>
+    </div>
+  </div>
+</div>
+
+</main>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function toggle(id,tid){
+  const b=document.getElementById(id),t=document.getElementById(tid);
+  const c=b.style.display==='none';
+  b.style.display=c?'':'none';
+  t.classList.toggle('collapsed',!c);
+}
+function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+let fs=17;
+function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
+function toggleMode(){
+  document.body.classList.toggle('light-mode');
+  document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
+}
+function toggleSearch(){
+  const b=document.getElementById('searchBar');
+  b.classList.toggle('active');
+  document.getElementById('searchBtn').classList.toggle('active',b.classList.contains('active'));
+  if(b.classList.contains('active'))document.getElementById('searchInput').focus();
+  else doSearch('');
+}
+function doSearch(q){
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('.shloka').forEach(el=>{
+    if(!q){el.classList.remove('highlight');el.style.display='';return;}
+    const t=el.textContent.toLowerCase();
+    el.classList.toggle('highlight',t.includes(q));
+    el.style.display=t.includes(q)?'':'none';
+  });
+}
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY,tot=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('progress').style.width=(s/tot*100)+'%';
+  document.getElementById('backTop').classList.toggle('visible',s>300);
+});
+</script>
+</body>
+</html>

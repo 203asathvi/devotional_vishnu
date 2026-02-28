@@ -12,6 +12,10 @@
   --border-v:rgba(201,168,76,0.25);--border-l:rgba(201,100,140,0.3);
   --text:#f0e6c8;--muted:#9a8a70;
   --blue:#7ab3ef;--pink:#e07ab3;
+  --sun:#f0a030;--sun2:#ff6a00;
+  --green:#7ac9a0;--teal:#3bb89a;
+  --card-a:#1a0d00;--border-a:rgba(240,160,48,0.3);
+  --card-lk:#001a10;--border-lk:rgba(60,185,155,0.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
@@ -82,9 +86,9 @@ body::after{
 /* Cards grid */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:28px;
-  width:100%;max-width:800px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:24px;
+  width:100%;max-width:1000px;
 }
 
 .card{
@@ -140,6 +144,8 @@ body::after{
 }
 .card-v .card-title{color:var(--gold);}
 .card-l .card-title{color:var(--pink);}
+.card-a .card-title{color:var(--sun);}
+.card-lk .card-title{color:var(--teal);}
 
 .card-dev{
   font-size:clamp(15px,2.5vw,19px);
@@ -170,6 +176,16 @@ body::after{
   border:1px solid var(--pink);color:var(--pink);
 }
 .card-l .card-btn:hover{background:rgba(201,80,130,0.3);}
+.card-a .card-btn{
+  background:rgba(240,160,48,0.15);
+  border:1px solid var(--sun);color:var(--sun);
+}
+.card-a .card-btn:hover{background:rgba(240,160,48,0.3);}
+.card-lk .card-btn{
+  background:rgba(60,185,155,0.15);
+  border:1px solid var(--teal);color:var(--teal);
+}
+.card-lk .card-btn:hover{background:rgba(60,185,155,0.3);}
 
 .card-tag{
   position:absolute;top:14px;right:14px;
@@ -178,9 +194,26 @@ body::after{
 }
 .card-v .card-tag{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--gold);}
 .card-l .card-tag{background:rgba(201,80,130,0.1);border:1px solid rgba(201,80,130,0.3);color:var(--pink);}
+.card-a .card-tag{background:rgba(240,160,48,0.1);border:1px solid rgba(240,160,48,0.3);color:var(--sun);}
+.card-lk .card-tag{background:rgba(60,185,155,0.1);border:1px solid rgba(60,185,155,0.3);color:var(--teal);}
 
-/* Name count badge */
-.card-names{
+/* Aditya Hridayam card — amber/orange */
+.card-a{
+  background:var(--card-a);
+  border:1px solid var(--border-a);
+  box-shadow:0 4px 40px rgba(240,160,48,0.08);
+}
+.card-a::before{background:radial-gradient(ellipse at 50% 0%,rgba(240,160,48,0.14),transparent 70%);}
+.card-a:hover{box-shadow:0 12px 60px rgba(240,160,48,0.22);}
+
+/* Lakshmi Sahasranamam card — teal/emerald */
+.card-lk{
+  background:var(--card-lk);
+  border:1px solid var(--border-lk);
+  box-shadow:0 4px 40px rgba(60,185,155,0.08);
+}
+.card-lk::before{background:radial-gradient(ellipse at 50% 0%,rgba(60,185,155,0.12),transparent 70%);}
+.card-lk:hover{box-shadow:0 12px 60px rgba(60,185,155,0.2);}
   font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;
   color:var(--muted);margin-bottom:6px;
 }
@@ -200,7 +233,7 @@ body::after{
   <div class="header">
     <span class="header-om">ॐ</span>
     <h1>Sahasranamam</h1>
-    <div class="header-sub">A Thousand Sacred Names — Select your path of devotion</div>
+    <div class="header-sub">Sacred Hymns &amp; A Thousand Names — Select your path of devotion</div>
     <div class="divider">✦</div>
   </div>
 
@@ -232,6 +265,34 @@ body::after{
         as revealed by Hayagriva to Agastya Maharshi.
       </div>
       <div class="card-btn">Begin Recitation →</div>
+    </a>
+
+    <!-- Aditya Hridayam -->
+    <a class="card card-a" href="aditya_hridayam.html">
+      <div class="card-tag">Valmiki Ramayana</div>
+      <div class="card-deity">🌞</div>
+      <div class="card-names">31 Verses</div>
+      <div class="card-title">Āditya Hṛdayam</div>
+      <div class="card-dev">आदित्यहृदयम्</div>
+      <div class="card-desc">
+        From the Yuddha Kāṇḍa of Vālmīki Rāmāyaṇa,<br>
+        as revealed by Agastya Maharṣi to Śrī Rāma.
+      </div>
+      <div class="card-btn">Begin Recitation →</div>
+    </a>
+
+    <!-- Lakshmi Sahasranamam -->
+    <a class="card card-lk" href="lakshmi_sahasranamam.html">
+      <div class="card-tag">Coming Soon</div>
+      <div class="card-deity">🪷</div>
+      <div class="card-names">1000 Names</div>
+      <div class="card-title">Śrī Lakṣmī Sahasranāmam</div>
+      <div class="card-dev">श्री लक्ष्मी सहस्रनाम</div>
+      <div class="card-desc">
+        The thousand names of Goddess Lakṣmī,<br>
+        the divine bestower of wealth and grace.
+      </div>
+      <div class="card-btn">Coming Soon →</div>
     </a>
 
   </div>
