@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Vishnu Sahasranamam</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8c96a;--deep:#1a0a00;--bg:#0d0500;--card:#1c0d02;--border:rgba(201,168,76,0.25);--text:#f0e6c8;--muted:#a89060;--blue:#7ab3d4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(201,168,76,0.12) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(224,92,26,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,5,0,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
+.nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
+.nav-controls{display:flex;gap:6px;align-items:center;}
+.nav-btn{background:rgba(201,168,76,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(201,168,76,0.25);border-color:var(--gold);}
+.progress-bar{position:fixed;top:52px;left:0;z-index:99;height:2px;background:var(--gold);width:0%;box-shadow:0 0 8px var(--gold);}
+.hero{position:relative;z-index:1;text-align:center;padding:44px 16px 24px;border-bottom:1px solid var(--border);}
+.hero-om{font-size:50px;line-height:1;color:var(--gold);margin-bottom:6px;animation:pulse 4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 12px rgba(201,168,76,0.3));}50%{filter:drop-shadow(0 0 28px rgba(201,168,76,0.6));}}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,30px);font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:4px;}
+.hero-dev{font-size:clamp(16px,4vw,24px);color:var(--gold-light);margin-bottom:8px;}
+.hero-sub{font-size:13px;color:var(--muted);font-style:italic;}
+.divider{display:flex;align-items:center;gap:10px;max-width:360px;margin:14px auto 0;color:var(--gold);font-size:16px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.search-bar{position:relative;z-index:1;padding:10px 14px;border-bottom:1px solid var(--border);display:none;}
+.search-bar.active{display:block;}
+.search-bar input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:6px;font-size:16px;font-family:'EB Garamond',serif;outline:none;}
+.search-bar input:focus{border-color:var(--gold);}
+.search-bar input::placeholder{color:var(--muted);}
+.toc{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:14px;}
+.toc-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 13px;border-radius:20px;font-size:12px;cursor:pointer;font-family:'Cinzel',serif;transition:all .2s;}
+.toc-btn:hover{border-color:var(--gold);color:var(--gold);}
+main{position:relative;z-index:1;padding:0 14px 80px;max-width:880px;margin:0 auto;}
+.section{margin-top:24px;}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;user-select:none;}
+.section-header h2{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--gold) 0%,transparent 100%);opacity:.4;}
+.section-toggle{color:var(--gold);font-size:16px;transition:transform .3s;}
+.section-toggle.collapsed{transform:rotate(-90deg);}
+.shloka{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:13px 15px;margin-bottom:9px;transition:border-color .2s,background .2s;}
+.shloka:hover{border-color:rgba(201,168,76,0.4);background:#231006;}
+.shloka.highlight{border-color:var(--gold);background:rgba(201,168,76,0.07);}
+.shloka-num{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:5px;opacity:.65;}
+.shloka-line{line-height:1.65;}
+.shloka-line.indent{padding-left:14px;color:#d4c49a;}
+.speaker{font-family:'Cinzel',serif;font-size:10px;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;margin:14px 0 7px;display:flex;align-items:center;gap:8px;}
+.speaker::after{content:'';flex:1;height:1px;background:rgba(122,179,212,0.25);}
+.note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--gold);margin:9px 0;background:rgba(201,168,76,0.04);border-radius:0 4px 4px 0;}
+.back-top{position:fixed;bottom:18px;right:18px;z-index:200;background:var(--gold);color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(201,168,76,0.4);}
+.back-top.visible{display:flex;}
+body.light-mode{--bg:#fdf6ec;--card:#fff8f0;--text:#2a1a00;--muted:#7a6040;--border:rgba(160,110,40,0.25);}
+mark{background:rgba(201,168,76,0.3);color:inherit;border-radius:2px;}
+@media(max-width:600px){body{font-size:16px;}.shloka{padding:11px 12px;}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progress"></div>
+<nav>
+  <div class="nav-title">ॐ Sri Vishnu Sahasranamam</div>
+  <div class="nav-controls">
+    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
+    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
+  </div>
+</nav>
+<div class="search-bar" id="searchBar">
+  <input type="text" id="searchInput" placeholder="Search shloka text…" oninput="doSearch(this.value)">
+</div>
+<div class="hero">
+  <div class="hero-om">ॐ</div>
+  <h1>Sri Vishnu Sahasranama Stotram</h1>
+  <div class="hero-dev">श्री विष्णुसहस्रनाम स्तोत्रम्</div>
+  <div class="hero-sub">Mahabharata · Anushasana Parva · Chapter 149</div>
+  <div class="divider">✦</div>
+</div>
+<div class="toc">
+  <button class="toc-btn" onclick="gotoSection('dhyanam')">Dhyanam</button>
+  <button class="toc-btn" onclick="gotoSection('poorvangam')">Poorvangam</button>
+  <button class="toc-btn" onclick="gotoSection('stotram')">Stotram (1–107)</button>
+  <button class="toc-btn" onclick="gotoSection('phala')">Phala Srutih</button>
+  <button class="toc-btn" onclick="gotoSection('closing')">Closing</button>
+</div>
+<main>
+<div class="section" id="dhyanam">
+  <div class="section-header" onclick="toggle('dh-body','dh-tog')">
+    <h2>Dhyanam</h2><div class="section-line"></div><span class="section-toggle" id="dh-tog">▾</span>
+  </div>
+  <div id="dh-body">
+    <div class="shloka"><div class="shloka-line">suklambara-dharam vishnum sasi-varnam chaturbhujam |</div><div class="shloka-line indent">prasanna-vadanam dhyayet sarva-vighnopa-santaye || 1 ||</div></div>
+    <div class="shloka"><div class="shloka-line">yasya-dviradam-vaktradyah parishadyah paras satam |</div><div class="shloka-line indent">vighnam nighnanti satatam visvaksenam tamasraye || 2 ||</div></div>
+    <div class="shloka"><div class="shloka-line">vyasam vasistha-naptaram sakteh pautrama-kalmasam |</div><div class="shloka-line indent">pararasatmajam vande sukatatatam taponidhim || 3 ||</div></div>
+    <div class="shloka"><div class="shloka-line">vyasaya vishnu-rupaya vyasa-rupaya vishnave |</div><div class="shloka-line indent">namo vai bramhanidhaye vasisthaya namo namah || 4 ||</div></div>
+    <div class="shloka"><div class="shloka-line">avikaraya suddhaya nityaya paramatmane |</div><div class="shloka-line indent">sadaika-rupa-rupaya vishnave sarvajishnave || 5 ||</div></div>
+    <div class="shloka"><div class="shloka-line">yasya smarana-matrena janma-samsara-bandhanat |</div><div class="shloka-line indent">vimuchyate namastasmai vishnave prabha-vishnave || 6 ||</div></div>
+    <div class="shloka"><div class="shloka-line">Om namo vishnave prabha-vishnave |</div></div>
+    <div class="note">Meditation Verses</div>
+    <div class="shloka"><div class="shloka-line">Ksiro-danvat-pradese suci-mani vilasat saikate mauktikanam</div><div class="shloka-line indent">malaklup-tasanastha sphatika-mani-nibhair mauktikair-manditangah |</div><div class="shloka-line">subhrair-abhrai-radabhrai-rupari viracitair mukta-piyusha varshaih</div><div class="shloka-line indent">anandi nah puniyadari-nalina-gada sankha-pani-r-mukundah || 1 ||</div></div>
+    <div class="shloka"><div class="shloka-line">bhuh padau yasya nabhir-viyadasura-nilas-candra suryau cha netre</div><div class="shloka-line indent">karnav-asas siro-dyau-r-mukhamapi dahano yasya vasteya-mabdhih |</div><div class="shloka-line">antastham yasya visvam sura-nara-khaga-gobhogi-gandharva-daityaih</div><div class="shloka-line indent">citram-ram ramyate tam tribhuvana vapusam vishnum-isam namami || 2 ||</div></div>
+    <div class="shloka"><div class="shloka-line">Om namo bhagavate vasudevaya!</div><div class="shloka-line">santakaram bhujaga-sayanam padmanabham suresam</div><div class="shloka-line indent">visvadaram gagana-sadrsam megha-varnam subhangam |</div><div class="shloka-line">laksmi-kantam kamala-nayanam yogi-hrd dhyana-gamyam</div><div class="shloka-line indent">vande vishnum bhava-bhaya-haram sarva-lokaika-natham || 3 ||</div></div>
+    <div class="shloka"><div class="shloka-line">megha-syamam pita-kauseya-vasam sriv-atsakam kaustudho-dbhasitangam |</div><div class="shloka-line indent">punyopetam pundarikayataksham vishnum vande sarva-lokaika-natham || 4 ||</div></div>
+    <div class="shloka"><div class="shloka-line">namas samasta bhutanam adi-bhutaya bhubhrte |</div><div class="shloka-line indent">aneka-rupa rupaya vishnave prabha-vishnave || 5 ||</div></div>
+    <div class="shloka"><div class="shloka-line">sa-sankha-cakram sa-kirita-kundalam sa-pita-vastram sarasi-ruheksanam |</div><div class="shloka-line indent">sa-hara-vakhas-sthala-sobhi-kaustubham namami vishnum sirasa catur-bhujam || 6 ||</div></div>
+    <div class="shloka"><div class="shloka-line">chayayam pari-jatasya hema-simha-sanopari</div><div class="shloka-line indent">asinamambu-da-syama mayataksha malankrtam || 7 ||</div></div>
+    <div class="shloka"><div class="shloka-line">chandra-nanam catur-bahum srivatsakita-vaksasam</div><div class="shloka-line indent">rukmini satya-bhamabhyam sahitam krshna-masraye || 8 ||</div></div>
+  </div>
+</div>
+
+<div class="section" id="poorvangam">
+  <div class="section-header" onclick="toggle('pa-body','pa-tog')">
+    <h2>Poorvangam</h2><div class="section-line"></div><span class="section-toggle" id="pa-tog">▾</span>
+  </div>
+  <div id="pa-body">
+    <div class="speaker">Sri Vaisampyana Uvacha</div>
+    <div class="shloka"><div class="shloka-line">srutva dharma-nasesena pavanani cha sarvasah |</div><div class="shloka-line indent">yudhishthirah santanavam punareva-abhya-bhasata || 7 ||</div></div>
+    <div class="speaker">Yudhishthira Uvacha</div>
+    <div class="shloka"><div class="shloka-line">kimekam daivatam loke? kim va-apyekam parayanam?</div><div class="shloka-line indent">stuvantah kam? kamarchantah prapnuyur-manavah subham? || 8 ||</div></div>
+    <div class="shloka"><div class="shloka-line">ko dharmas sarva-dharmanam bhavatah paramo matah?</div><div class="shloka-line indent">kim japan-muchyate jantur janma-samsara bandhanat? || 9 ||</div></div>
+    <div class="speaker">Sri Bhishma Uvacha</div>
+    <div class="shloka"><div class="shloka-line">jagat-prabhum deva-devam anantam purushottamam |</div><div class="shloka-line indent">stuvannama sahasrena purushas satatotthitah || 10 ||</div></div>
+    <div class="shloka"><div class="shloka-line">tameva carchayannnityam bhaktya purusha-mavyayam |</div><div class="shloka-line indent">dhyayan stuvannamasyamsca yajamanas tameva cha || 11 ||</div></div>
+    <div class="shloka"><div class="shloka-line">anadi nidhanam vishnum sarvaloka mahes-varam |</div><div class="shloka-line indent">lokad-hyaksham stuvannityam sarva-duhkhatigo bhavet || 12 ||</div></div>
+    <div class="shloka"><div class="shloka-line">brahmanyyam sarva-dharmajnam lokanam kirti-vardhanam |</div><div class="shloka-line indent">lokanatham mahadbhutam sarva-bhuta bhavodbhavam || 13 ||</div></div>
+    <div class="shloka"><div class="shloka-line">esha me sarva-dharmanam dharmo-adhika-tamomatah |</div><div class="shloka-line indent">yadbhaktya pundarikaksham stavair-archennaras sada || 14 ||</div></div>
+    <div class="shloka"><div class="shloka-line">paramam yo mahattejah paramam yo mahattapah |</div><div class="shloka-line indent">paramam yo mahad-bramha paramam yah parayanam || 15 ||</div></div>
+    <div class="shloka"><div class="shloka-line">pavitrannam pavitram yo mangalanam cha mangalam |</div><div class="shloka-line indent">daivatam devatananam cha bhutanam yo-avyayah pita || 16 ||</div></div>
+    <div class="shloka"><div class="shloka-line">yatas sarvani bhutani bhavantyadi yugagame |</div><div class="shloka-line indent">yasmims-ca pralayam yanti punareva yugakshaye || 17 ||</div></div>
+    <div class="shloka"><div class="shloka-line">tasya loka-pradhanasya jagannathasya bhupate |</div><div class="shloka-line indent">vishnor-nama sahasram me srnu papa-bhayapaham || 18 ||</div></div>
+    <div class="shloka"><div class="shloka-line">yani namani gaunani vikhyatani mahatmanah |</div><div class="shloka-line indent">rshibhih parigitani tani vakshyami bhutaye || 19 ||</div></div>
+    <div class="note">Viniyoga / Nyasah</div>
+    <div class="shloka"><div class="shloka-line">rshir-namnam sahasrasya vedavyaso mahamunih |</div><div class="shloka-line indent">chhando-anushthup tatha devo bhagavan devakisutah || 20 ||</div></div>
+    <div class="shloka"><div class="shloka-line">amritam-su-udbhavo bijam saktirdevakinandanah |</div><div class="shloka-line indent">trisama hrdayam tasya santyarthe viniyujyate || 21 ||</div></div>
+    <div class="shloka"><div class="shloka-line">vishnum jishnum mahavishnum prabhavishnum mahesvaram |</div><div class="shloka-line indent">anekarupa daityantam namami purushottamam || 22 ||</div></div>
+    <div class="shloka"><div class="shloka-line">asya sri vishnor divya sahasranama stotra mahamantrasya |</div><div class="shloka-line indent">sri vedavyaso bhagavan rshih | anushthup cchandah |</div><div class="shloka-line indent">srimahavishnu-h parmatma srimannarayano devata |</div><div class="shloka-line indent">amritamsu-udbhavo bhanuriti bijam | devaki-nandanas srashtheti saktih |</div><div class="shloka-line indent">udbhavah kshobhano deva iti paramo-mantrah |</div><div class="shloka-line indent">sankha-bhrn-nandaki chakri-ti kilakam | sarnga-dhanva gadadhara ity-astram |</div><div class="shloka-line indent">rathangapani rakshobhya iti netram | trisama-samagas sameti kavacam |</div><div class="shloka-line indent">anandam parabramheti yonih | rtu-ssudar-sanah kala iti digbandhah |</div><div class="shloka-line indent">srivis-varupa iti dhyanam | sri mahavishnu prityarthe sahasranama jape viniyogah |</div></div>
+  </div>
+</div>
+
+<div class="section" id="stotram">
+  <div class="section-header" onclick="toggle('st-body','st-tog')">
+    <h2>Stotram — 1000 Names</h2><div class="section-line"></div><span class="section-toggle" id="st-tog">▾</span>
+  </div>
+  <div id="st-body">
+    <div class="note" style="text-align:center;border-left:none;border:1px solid var(--border);">ॐ विश्वस्मै नमः — Om Visvam Namah</div>
+    <div id="shlokas-container"></div>
+    <div class="shloka"><div class="shloka-line">vanamali gadi sarngi sankhi cakri cha nandaki |</div><div class="shloka-line indent">sriman narayano vishnur vasudevobhirakshatu || 108 || <em>(chant 3 times)</em></div></div>
+    <div class="shloka"><div class="shloka-line">Sri vasudevobhirakshatu Om nama iti |</div></div>
+  </div>
+</div>
+
+<div class="section" id="phala">
+  <div class="section-header" onclick="toggle('ph-body','ph-tog')">
+    <h2>Phala Srutih — Benefits</h2><div class="section-line"></div><span class="section-toggle" id="ph-tog">▾</span>
+  </div>
+  <div id="ph-body"><div id="phala-container"></div></div>
+</div>
+
+<div class="section" id="closing">
+  <div class="section-header" onclick="toggle('cl-body','cl-tog')">
+    <h2>Closing Prayers</h2><div class="section-line"></div><span class="section-toggle" id="cl-tog">▾</span>
+  </div>
+  <div id="cl-body">
+    <div class="speaker">Arjuna Uvacha</div>
+    <div class="shloka"><div class="shloka-line">padma-patra visalaksha padma-nabha surott-ama |</div><div class="shloka-line indent">bhaktanam anuraktanam trata bhava janardana || 23 ||</div></div>
+    <div class="speaker">Sri Bhagavan Uvacha</div>
+    <div class="shloka"><div class="shloka-line">yo mam nama sahasrena stotum-icchati pandava |</div><div class="shloka-line indent">so-aham-ekena slokena stuta eva na samsayah || 24 ||</div></div>
+    <div class="speaker">Vyasa Uvacha</div>
+    <div class="shloka"><div class="shloka-line">vasanad vasudevasya vasitam bhuvanatrayam |</div><div class="shloka-line indent">sarva-bhuta nivasosi vasudeva namostu te || 25 ||</div></div>
+    <div class="speaker">Parvaty Uvacha</div>
+    <div class="shloka"><div class="shloka-line">keno-payena laghuna vishnor-nama sahasrakam |</div><div class="shloka-line indent">pathyate panditair-nityam srotum icchamy-aham prabho || 26 ||</div></div>
+    <div class="speaker">Isvara Uvacha — chant 3 times</div>
+    <div class="shloka"><div class="shloka-line">srirrama rrama rameti rame rame manorame |</div><div class="shloka-line indent">sahasra-nama tattulyam rama-nama varanane || 27 ||</div></div>
+    <div class="shloka"><div class="shloka-line">Srirrama nama varanana Om nama iti |</div></div>
+    <div class="speaker">Brahmo Uvacha</div>
+    <div class="shloka"><div class="shloka-line">namo-astu-vanantaya sahasra-murtaye sahasra-paadakshi-siro-ru-bahave |</div><div class="shloka-line indent">sahasra-namne purusaya sasvate sahasra-koti yugadharinne namah || 28 ||</div></div>
+    <div class="speaker">Sanjaya Uvacha</div>
+    <div class="shloka"><div class="shloka-line">yatra yoges-varah krshno yatra partho dhanu-r-dharah |</div><div class="shloka-line indent">tatra srir-vijayo bhutir dhruva nitir-matir-mama || 29 ||</div></div>
+    <div class="speaker">Sri Bhagavan Uvacha</div>
+    <div class="shloka"><div class="shloka-line">ananyaas-cintayanto mam ye janah paryu-pasate |</div><div class="shloka-line indent">tesam nitya-bhiyuktanam yoga-kshemam vahamy-aham || 30 ||</div></div>
+    <div class="shloka"><div class="shloka-line">pari-tranaya sadhunam vinasaya cha dushkrtam |</div><div class="shloka-line indent">dharma-samsthapanarthaya sambhavami yuge yuge || 31 ||</div></div>
+    <div class="note">Chant 2 times</div>
+    <div class="shloka"><div class="shloka-line">arta visannas sithilas-ca bhitah ghoreshu cha vyadhishu varta-manah |</div><div class="shloka-line indent">sankirtya narayana sabda-matram vimukta-duhkhas sukhino bhavantu || 32 ||</div></div>
+    <div class="shloka"><div class="shloka-line">kayena vaca manase-ndriyair-va buddhyatmana va prakrtes-svabhavat |</div><div class="shloka-line indent">karomi yad-yat sakalam parasmai narayanayeti samarpayami || 33 ||</div></div>
+    <div class="note">Kshama Prarthana</div>
+    <div class="shloka"><div class="shloka-line">yad-akshara pada-bhrastam matra-hinam tu yadbhavet |</div><div class="shloka-line indent">tat-sarvam kshamyatam deva narayana namostu te |</div><div class="shloka-line">visarga bindu matrni pada-padadaksharani cha |</div><div class="shloka-line indent">nyunani ca-atiriktani kshamasva purushottama ||</div></div>
+    <div style="text-align:center;padding:24px 0 8px;font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:2px;">
+      || Sarvam Sri Krishnarpanam Astu ||<br>
+      <span style="font-size:20px;display:block;margin-top:8px;animation:pulse 3s infinite;">ॐ नमो नारायणाय</span>
+    </div>
+  </div>
+</div>
+</main>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const S=[
+[1,"visvam vishnur vashat-karo bhuta-bhavya-bhavatprabhuh |","bhuta-krd bhuta-bhrd bhavo bhutatma bhuta-bhavanah || 1 ||"],
+[2,"putatma paramatma cha muktanam parama-gatih |","avyayah purushas sakshi ksetragjno-akshara eva cha || 2 ||"],
+[3,"yogo yogavidam neta pradhana-purushesvarah |","narasimha-vapuh sriman kesavah purushottamah || 3 ||"],
+[4,"sarvah sarvah sivah sthanur bhutatdir nidhiravyayah |","sambhavo bhavano bharta prabhavah prabhur-isvarah || 4 ||"],
+[5,"svayambhuh sambhur-adityah pushkaraksho mahasvanah |","anadi-nidhano dhata vidhata dhatur-uttamah || 5 ||"],
+[6,"aprameyo hrshikesah padmanabho-amara-prabhuh |","visvakarmaa manus-tvashtha sthavishthas sthaviro dhruvah || 6 ||"],
+[7,"agrahyah sasvata-h krshno lohitakshah pratardanah |","prabhutas trikakub-dhama pavitram mangalam param || 7 ||"],
+[8,"isaanah pranadah prano jyeshthah sreshthah prajapatih |","hiranya-garbho bhu-garbho madhavo madhu-sudanah || 8 ||"],
+[9,"isvaro vikrami dhanvi medhavi vikramah kramah |","anuttamo duradharsah krta-jnah krti-ratmavan || 9 ||"],
+[10,"suresah saranam sarma visvaretah praja-bhavah |","ahah samvatsaro vyalah pratyayah sarva-darsanah || 10 ||"],
+[11,"ajas sarvesvara-h siddhah siddhih sarvadir-achyutah |","vrshakapi-rameyatma sarva-yoga-vinissrtah || 11 ||"],
+[12,"vasur vasumanas satyas samatma-sammitas samah |","amoghah pundari-kaksho vrsha-karma vrsha-krtih || 12 ||"],
+[13,"rudro bahu-sira babhrur visvayonih suci-sravah |","amrtah sasvatasthanur varakoho mahatapah || 13 ||"],
+[14,"sarvagas sarva-vidbhanur visvakseno janardanah |","vedo vedavida-vyango vedango vedavit-kavih || 14 ||"],
+[15,"lokad-hyaksas surad-hyaksah dharmad-hyakshah krta-krtah |","catur-atma catur-vyuhas catur-damshtras catur-bhujah || 15 ||"],
+[16,"bhrajishnur bhojanam bhokta sahishnur jagad-adijah |","anagho vijayo jeta visvayonih punarvasuh || 16 ||"],
+[17,"upendro vamanah pramsur-amoghah sucir-urjitah |","atindras sangrahas sargo dhrt-atma niyamo yamah || 17 ||"],
+[18,"vedyo vaidyah sada-yogi viraha madhavo madhuh |","atindriyo maha-mayo mahotsaho mahabalah || 18 ||"],
+[19,"maha-buddhir-maha-viryo maha-saktir-maha-dyutih |","anir-desya-vapus sriman-ameyatma maha-dri-dhrk || 19 ||"],
+[20,"mahes-vaso mahi-bharta srinivasas satagatih |","aniruddhas sura-anando govindo govidam patih || 20 ||"],
+[21,"maricir-damano hamsas suparno bhujagottamah |","hiranya-nabhah sutapah padmanabhah prajapatih || 21 ||"],
+[22,"amrtyus sarvadrt simhas sandhata sandhimam-sthirah |","ajo durmarsanas sasta visrutatma sura-rihaa || 22 ||"],
+[23,"gurur-gurutamo dhama satyas satya-parakramah |","nimisho-animisas sragvi vacas-pati-rudara-dhih || 23 ||"],
+[24,"agranir gramanis sriman nyayo neta samiranah |","sahasra-murdha visvatma sahasrakshas sahasra-pat || 24 ||"],
+[25,"avartano nivrtta-tma samvrtas sampramardanah |","ahah samvartako vanhi-ranilo dharani-dharah || 25 ||"],
+[26,"suprasadah prasanna-tma visvadhrg-visva-bhug-vibhuh |","sat-karta satkrtas sadhu-r-janhur-narayano narah || 26 ||"],
+[27,"asankhyeyo-apramey-atma visishtas sistakrc-cuchih |","siddharthas siddha-sankalpas siddhidas siddhi-sadhanah || 27 ||"],
+[28,"vrshahi vrshabo vishnur vrsha-parva vrsh-odarah |","vardhano vardha-manas-ca viviktas sruti-sagarah || 28 ||"],
+[29,"subhujo durdharo vagmi mahendro vasudo vasuh |","naika-rupo brhad-rupas sipi-vishtah prakasanah || 29 ||"],
+[30,"ojas-tejo-dyuti-dharah prakas-atma pratapanah |","rddhah spastaksharo mantras candramsu bhas-karad-yutih || 30 ||"],
+[31,"amramstudbhavo bhanuh sasa-bindus sures-varah |","ausadham jagatas-setus satya-dharma-parakramah || 31 ||"],
+[32,"bhuta-bhavya-bhavannathas pavanah pavano-analah |","kama-ha kama-krt kantah kamah kama-pradah prabhuh || 32 ||"],
+[33,"yugadi-krd yugavarto naika-mayo mahasanah |","adrsyo vyakta-rupas-ca sahasra-jid anantajit || 33 ||"],
+[34,"ishto-avisishtas sishtes-thas sikhandhi nahuso vrsah |","krodha-ha krodhakrt-karta visva-bahur mahidharah || 34 ||"],
+[35,"achyutah prathitah pranah pranado vasavanujah |","apam-nidhi-radhishthanam apramattah pratishthitah || 35 ||"],
+[36,"skandas skanda-dharo dhuryo varado vayu-vahanah |","vasudevo brhad-bhanu-r-adidevah purandarah || 36 ||"],
+[37,"asokas-tarana-staras suras saurir-janes-varah |","anukulas satavartah padmi padma-nibh-ekshanah || 37 ||"],
+[38,"padmanabho-aravind-akshah padma-garbhas sarira-bhrt |","mahardhir-rddho vrddh-atma mahaksho garuda-dhvajah || 38 ||"],
+[39,"atulas sarabho bhimas samayajno havirharih |","sarva-lakshana-lakshayo lakshmi-van samitinjayah || 39 ||"],
+[40,"viksharo rohito margo hetur-damodaras sahah |","mahidharo maha-bhago vega-van amitasanah || 40 ||"],
+[41,"udbhavah kshobbhano devas srigarbhah paramesvarah |","karanam karanam karta vikarta gahano guhah || 41 ||"],
+[42,"vyavasayo vyavasthanas samsthanas sthanado dhruvah |","parardhih parama-spashtas-tushtah pushtah subhekshanah || 42 ||"],
+[43,"ramo viramo virato margo-neyo nayo-anayah |","virah sakti-matam sresthoo dharmo dharma-viduttamah || 43 ||"],
+[44,"vaikunthah purushas pranah pranadas pranavah prthuh |","hiranya-garbhas satrughno vyapto vayu-radhokshajah || 44 ||"],
+[45,"rtus sudarsanah kalah paramesth-i parigrahah |","ugras samvatsaro daksho visramo visva-dakshinah || 45 ||"],
+[46,"vistaras sthavara-sthanuh pramanam bija-mavyayam |","artho-anartho maha-koso maha-bhogo maha-dhanah || 46 ||"],
+[47,"anirvinnas sthavisth-o-abhur dharmayupo maha-makhah |","nakshatranemir-nakshatri kshama-h kshaamas samihhanah || 47 ||"],
+[48,"yajna ijyo mahejyas-ca kratus satram satagatih |","sarva-darsi vimukt-atma sarva-jno jnanam-uttamam || 48 ||"],
+[49,"suvratas sumukhas suksmas sughosha-h sukha-das suhrt |","manoharo jita-krodho vira bahur-vidaranah || 49 ||"],
+[50,"svapanas svavaso vyapi naikatma naika-karma-krt |","vatsaro vatsalo vatsi ratna-garbho dhanes-varah || 50 ||"],
+[51,"dharma-gub-dharma-krd-dharmi sadasat-kshara-maksharam |","avignata sahasram-sur vidhata krt-a-lakshanah || 51 ||"],
+[52,"gabhastinemi-s sattvasthas simho bhuta-mahes-varah |","adidevo maha-devo deveso deva-bhrd-guruh || 52 ||"],
+[53,"uttaro gopati-r-gopta jnana-gamyah puratanah |","sarira bhuta-bhrd bhokta kapindro bhuri-dakshinah || 53 ||"],
+[54,"somopo-amrtapas somah purujit purusattamah |","vinayo jayas satya-sandho dasarhas satvatam patih || 54 ||"],
+[55,"jivo vinayita sakshi mukundo-amita-vikramah |","ambho-nidhir-anant-atma mahodadhi sayo-antakah || 55 ||"],
+[56,"ajo maharhas svabhavyo jitamitrah pramodanah |","anando nandano nandas satya-dharma trivikramah || 56 ||"],
+[57,"maharshih kapil-acaryah krta-jno medinipati-h |","tripadas tridasa-dhyaksho maha-srngah krtanta-krt || 57 ||"],
+[58,"maha-varaho govindas sushenah kanaka-angadi |","guhyo gabhiro gahano guptas chakra-gada-dharah || 58 ||"],
+[59,"vedhas svango-ajitah krshno drdhas sankarshano-achyutah |","varuuno varuuno vrkshas puskaraksho maha-manah || 59 ||"],
+[60,"bhagavan bhagaha-anandi vana-mali halayudhah |","adityo jyotir-adityas sahishnur-gati-sattamah || 60 ||"],
+[61,"sudhanva khanda-parasur-daruuno dravina-pradah |","divas-sprk sarva-drgvyaso vacas-pati-rayonijah || 61 ||"],
+[62,"trisama samagas sama nirvanam bhesajam bhishak |","sanyasa-krc-chamas santo nishtha santih parayanam || 62 ||"],
+[63,"subhangas santidas srashtha kumudah kuvalesayah |","gohito gopati-r-gopta vrshabhaksho vrsha-priyah || 63 ||"],
+[64,"anivart-i nivrtt-atma samkshep-ta ksema-krc-chivah |","srivatsa-vaksha-s srivas-a-s sripatih srimatam-varah || 64 ||"],
+[65,"sridas srisas srinivasas srinidhi-s sri-vibhavanah |","sridharas srikaras sreyah srimatam loka-tray-asrayah || 65 ||"],
+[66,"svakshas svangas satanando nandir-jyotir-ganes-varah |","vijit-atma-avidheya-tma sat-kirtis chinna-samsayah || 66 ||"],
+[67,"udirnah sarvatascakshu-r-anisas sasvatasthi-rah |","bhusayo bhushano bhutir-visokas sokan-asanah || 67 ||"],
+[68,"archishma narcitah kumbho visuddhatma visodhana-h |","aniruddho-aprati-rathah pradyumno-amita-vikramah || 68 ||"],
+[69,"kala-nemi-niha viiras sauris sura-janes-varah |","trilok-atma trilokeshah kesavah kesiha harih || 69 ||"],
+[70,"kama-devah kama-palah kami kantah krtagamah |","anirdesya-vapur-vishnur-viro-ananto dhananjayah || 70 ||"],
+[71,"brahmanyo bramhakrd bramha bramha bramha-vivardhanah |","bramhavid brahmanoo bramhi bramha-jno brahmanah-priyah || 71 ||"],
+[72,"maha-kramo maha-karma maha-teja mahoragah |","maha-kratur-maha-yajva maha-yajno maha-havih || 72 ||"],
+[73,"stavyas stava-priyas stotram stutis stota rana-priyah |","purna-h purayita punyah punya-kirti-ranamayah || 73 ||"],
+[74,"manojavas tirtha-karo vasu-reta vasu-pradah |","vasu-prado vasudevo vasur-vasumana havih || 74 ||"],
+[75,"sadgatis satkrtis satta sad-bhutis sat-parayanah |","suraseno yadu-sresthhas sannivas suyamunah || 75 ||"],
+[76,"bhuatvaso vasudeva-s sarva-sunilayo-analah |","darpaha darpado drpto durdhharo-atha-parajitah || 76 ||"],
+[77,"visva-murtir-maha-murti-r-dipta-murti-ramurtiman |","aneka-murti-ravyaktas sata-murtis satananah || 77 ||"],
+[78,"eko naikas savah kah kim yattat pada-manuttamam |","lokabandhu-r-loka-natho madhavo bhaktavatsalah || 78 ||"],
+[79,"suvarna-varno hemango varangas candana-angadi |","viraha visamas sunyo ghrtasi-rachala-scalah || 79 ||"],
+[80,"amani manado manyo lokasv-ami triloka-dhrk |","sumedha medhajo dhanyas satya-medha dhara-dharah || 80 ||"],
+[81,"tejo-vrsho dyuti-dhara-s sarva-sastra-bhrtam varah |","pragraho nigraho vyagro naika-srngo gada-agrajah || 81 ||"],
+[82,"catur-murtis catur-bahus catur-vyuhas catur-gatih |","catur-atma catur-bhavas catur-vedavid eka-pat || 82 ||"],
+[83,"samavarto-anivrttatma durjayo duratikramah |","durlabho durgamo durgo duravaso dura-rihaa || 83 ||"],
+[84,"subhango loka-sarangas su-tantus tantu-vardhanah |","indra-karma maha-karma krtakarm-a krtagamah || 84 ||"],
+[85,"udbhavas sundaras sundo ratna-nabhah su-locanah |","arko vajasanas srngi jayanta-s sarva-vijjayi || 85 ||"],
+[86,"suvarna-bindu-rakshobhyas sarva-vagisva-resvarah |","maha-hrdo maha-garto maha-bhuto maha-nidhih || 86 ||"],
+[87,"kumudah kundara-h kundah parjanyas pavano-anilah |","amrtaso-amrta-vapus sarva-jnas sarva-to-mukhah || 87 ||"],
+[88,"sulabhas suvratas siddhas satrujic-chhatu-tapanah |","nyagrodho-adumbar-o-asvattha-s canur-andhra-nisuudanah || 88 ||"],
+[89,"sahasrarchis sapta-jihvas saptaidhas sapta-vahanah |","amurti-ranagho-acintyo bhayakrd-bhaya-nasanah || 89 ||"],
+[90,"anu-r-brhat-krsas sthulo guna-bhrt nirguno mahan |","adhrtah svadhrtah svasyah pragvamso vamsa-vardhanah || 90 ||"],
+[91,"bharabhrt kathito yogi yogisas sarva-kamadah |","asramas sramanah kshamas suparno vayu-vahanah || 91 ||"],
+[92,"dhanurdh-aro dhanur-vedo dando damayita damah |","aparajitas sarvasaho niyanta-aniyamo-ayamah || 92 ||"],
+[93,"sattvavan sattvika-s satyas satya-dharma-parayanah |","abhiprayah priyarho-arhah priyakrt priti-vardhanah || 93 ||"],
+[94,"vihayasagatir-jyotis surucir-hutabhug-vibhuh |","ravir-virocanas suryah savita ravi-locanah || 94 ||"],
+[95,"ananto huta-bhug bhokta sukhado naikajo-agrajah |","anirvinnah sada-marsshi loka-dhishthana madbhutah || 95 ||"],
+[96,"sanat sanatana-tamah kapilah kapi-ravyayah |","svastidas svastikrt-svasti svastibhuk svasti-dakshinah || 96 ||"],
+[97,"araudrah kundalii cakri vikramy-urjita-sasanah |","sabdaatigas sabda-sahas sisiras sarvarikara-h || 97 ||"],
+[98,"akrurah pesalo daksho dakshinah kshaminam varah |","vidvattamo vita-bhayah punya-sravan-a-kiirtanah || 98 ||"],
+[99,"uttarano dushkrt-iha punyo dus-svapna-nasanah |","viraha raksanas santo jivanah parya-vasthitah || 99 ||"],
+[100,"ananta-rupo-ananta-srir jita-manyur-bhayapahah |","caturas-ro gabhira-tma vidisos vyadiso disah || 100 ||"],
+[101,"anadir-bhurbhuvo lakshmi-s suviro rucir-angadah |","janano jana-janmadir bhimo bhima-parakramah || 101 ||"],
+[102,"adhara-nilayo-adhata pushpa-hasah praja-garah |","urdhvagas sat-path-acara-s pranada-h pranavah panah || 102 ||"],
+[103,"pramanam prana-nilayah prana-bhrt prana-jivanah |","tattvam tattva-vid ekatma janma-mrt-yu-jara-tigah || 103 ||"],
+[104,"bhurbhuvas-svas-tarus-taras savita prapitamahah |","yajno yajna-patir-yajva yajnango yajna-vahanah || 104 ||"],
+[105,"yajna-bhrd yajna-krd yajni yajna-bhug yajna-sadhanah |","yajna-nta-krd yajna-guhyam anna-mannada eva cha || 105 ||"],
+[106,"atmayonih svayam-jato vaikhanas sama-gayanah |","devaki-nandanas srashtha kshitisah papa-nasanah || 106 ||"],
+[107,"sankha-bhrn-nandaki cakri sarnga-dhanva gada-dharah |","rathanga-pani-rakshobhyas sarva-praharanayudhah || 107 ||"]
+];
+const P=[
+[1,"itidam kiirtaniyasya kesavasya mahatmanah |","namnam sahasram divyanam asesena prakiirtitam || 1 ||"],
+[2,"ya idam srnuyan-nityam yas-capi parikirtayet |","nasubham prapnuyat kincit so-amutreha cha manavah || 2 ||"],
+[3,"vedanta-go brahmaanas syat ksatriyo vijayii bhavet |","vaisyo dhana-samrddhah syac chudras sukha-mavapnuyat || 3 ||"],
+[4,"dharmaarthi prapnuyad dharmam arthaarthi cartham-apnuyat |","kaaman-avapnuyat kami praja-rthi capnuyat prajam || 4 ||"],
+[5,"bhaktiman yas sadotthaya sucis tadgata-manasah |","sahasram vasudevasya namnam etat prakiirtayet || 5 ||"],
+[6,"yasas prapnoti vipulam jnati-pradhanya-meva cha |","achalam sriyam-apnoti sreyah prapnotyananttamam || 6 ||"],
+[7,"na bhayam kvachid-apnoti viryam teja-sca vindati |","bhavaty-arogo dyutiman bala-rupa-gunanvitah || 7 ||"],
+[8,"roga-rto mucyate rogad baddho mucyeta bandhanat |","bhayan-mucyeta bhitas-tu mucye-tapanna apadah || 8 ||"],
+[9,"durgany-atitaraty-asu purusas purushottamam |","stuvan-nama sahasrena nityam bhakti-samanvitah || 9 ||"],
+[10,"vasudeva-srayo martyo vasudeva-parayanah |","sarva-papa-visuddh-atma yati brahma sanatam || 10 ||"],
+[11,"na vasudeva bhaktanam asubham vidyate kvacit |","janma-mrt-yu-jara-vyadhi bhayam naivopajayate || 11 ||"],
+[12,"imam stavam-adhiyanas sraddha-bhakti-samanvitah |","yujyet-atma-sukha-kshanti-sri-dhrti-smrtti-kiirtibhih || 12 ||"],
+[13,"na krodho na cha matsaryam na lobho nasubha-matih |","bhavanti krta-punyanam bhaktanam purushottame || 13 ||"],
+[14,"dyaus sa-candra-arka-naksatra kham diso bhur-maho-dadhih |","vasudevasya viryena vidhrtani mahatmanah || 14 ||"],
+[15,"sa-sura-sura-gandharvas sayakho-raga-raksasam |","jagad-vase vartat-edam krsnasya sa caracharam || 15 ||"],
+[16,"indriyani mano-buddhis sattvam tejo balam dhrtih |","vasude-vatmaka-nyahuh kshetram kshetrajna eva cha || 16 ||"],
+[17,"sarvag-amanam acarah prathamam parikalpate |","acara-prabhavo dharmo dharmasya prabhu-rachyutah || 17 ||"],
+[18,"rsayah pitaro deva maha-bhutani dhatavah |","jangama jangamam-cedam jagann-arayanod-bhavam || 18 ||"],
+[19,"yogo-jnanam tatha sankhyam vidyas silpa-di-karma cha |","vedas sastrni vijnana-metat-sarvam janarrdanat || 19 ||"],
+[20,"eko vishnu-r-mahad-bhutam prthag-bhuta-ny-anekasah |","trillokaan vyapya bhutatma bhunkte visva-bhug-avyayah || 20 ||"],
+[21,"imam stavam bhagavato vishnor-vyasena kiirtitam |","pathedya icchet-purusas sreyah praptum sukhani cha || 21 ||"],
+[22,"visvesvar-majam devam jagatah prabhu-mavyayam |","bhajanti ye pushkaraksham na te yanti parabhavam || 22 ||"]
+];
+
+document.getElementById('shlokas-container').innerHTML=S.map(([n,l1,l2])=>
+`<div class="shloka" id="s${n}"><div class="shloka-num">SHLOKA ${n}</div><div class="shloka-line">${l1}</div><div class="shloka-line indent">${l2}</div></div>`).join('');
+
+document.getElementById('phala-container').innerHTML=P.map(([n,l1,l2])=>
+`<div class="shloka"><div class="shloka-num">VERSE ${n}</div><div class="shloka-line">${l1}</div><div class="shloka-line indent">${l2}</div></div>`).join('');
+
+function toggle(id,tid){
+  const b=document.getElementById(id),t=document.getElementById(tid);
+  const c=b.style.display==='none';
+  b.style.display=c?'':'none';
+  t.classList.toggle('collapsed',!c);
+}
+function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+let fs=17;
+function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
+function toggleMode(){
+  document.body.classList.toggle('light-mode');
+  document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
+}
+function toggleSearch(){
+  const b=document.getElementById('searchBar');
+  b.classList.toggle('active');
+  document.getElementById('searchBtn').classList.toggle('active',b.classList.contains('active'));
+  if(b.classList.contains('active'))document.getElementById('searchInput').focus();
+  else doSearch('');
+}
+function doSearch(q){
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('.shloka').forEach(el=>{
+    if(!q){el.classList.remove('highlight');el.style.display='';return;}
+    const t=el.textContent.toLowerCase();
+    el.classList.toggle('highlight',t.includes(q));
+    el.style.display=t.includes(q)?'':'none';
+  });
+}
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY,tot=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('progress').style.width=(s/tot*100)+'%';
+  document.getElementById('backTop').classList.toggle('visible',s>400);
+});
+</script>
+</body>
+</html>
