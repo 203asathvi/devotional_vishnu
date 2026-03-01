@@ -4,7 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sri Lakshmi Sahasranamam</title>
-<style>.nav-home{background:rgba(60,185,155,0.1);border:1px solid rgba(60,185,155,0.3);color:#3bb89a;padding:5px 11px;border-radius:4px;font-size:13px;text-decoration:none;display:flex;align-items:center;transition:all .2s;font-family:'Cinzel',serif;}.nav-home:hover{background:rgba(60,185,155,0.25);}</style>
+<style>.nav-home{background:rgba(60,185,155,0.1);border:1px solid rgba(60,185,155,0.3);color:#3bb89a;padding:5px 11px;border-radius:4px;font-size:13px;text-decoration:none;display:flex;align-items:center;transition:all .2s;font-family:'Cinzel',serif;}.nav-home:hover{background:rgba(60,185,155,0.25);}
+body.light-mode::before{
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(160,120,20,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(201,168,76,0.08) 0%, transparent 60%) !important;
+}
+body.light-mode::after{ background-image:none !important; }
+body.light-mode nav{ background:rgba(253,246,236,0.97) !important; }
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--gold:#3bb89a;--gold-light:#7ae8c8;--deep:#001a10;--bg:#001208;--card:#001a10;--border:rgba(60,185,155,0.25);--text:#e8f5f0;--muted:#7aaa98;--blue:#80d4b8;}
@@ -392,9 +400,17 @@ function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'s
 let fs=17;
 function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
 function toggleMode(){
-  document.body.classList.toggle('light-mode');
-  document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
+  const isLight=document.body.classList.toggle('light-mode');
+  localStorage.setItem('sacredTheme',isLight?'light':'dark');
+  document.getElementById('modeBtn').textContent=isLight?'🌙':'☀️';
 }
+(function(){
+  if(localStorage.getItem('sacredTheme')==='light'){
+    document.body.classList.add('light-mode');
+    const b=document.getElementById('modeBtn');
+    if(b) b.textContent='🌙';
+  }
+})();
 function toggleSearch(){
   const b=document.getElementById('searchBar');
   b.classList.toggle('active');

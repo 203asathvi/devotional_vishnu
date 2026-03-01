@@ -91,6 +91,14 @@ tr.hl td{background:rgba(232,160,32,0.1) !important;}
 body.light-mode{--bg:#fffaf0;--card:#fff6e0;--text:#2a1a00;--muted:#80601a;--border:rgba(180,120,20,0.25);}
 mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 @media(max-width:640px){body{font-size:16px;}td.meaning{font-size:14px;}td.num{width:50px;font-size:9px;}}
+
+body.light-mode::before{
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(160,120,20,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(201,168,76,0.08) 0%, transparent 60%) !important;
+}
+body.light-mode::after{ background-image:none !important; }
+body.light-mode nav{ background:rgba(253,246,236,0.97) !important; }
 </style>
 </head>
 <body>
@@ -288,9 +296,17 @@ function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'s
 let fs=17;
 function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
 function toggleMode(){
-  document.body.classList.toggle('light-mode');
-  document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
+  const isLight=document.body.classList.toggle('light-mode');
+  localStorage.setItem('sacredTheme',isLight?'light':'dark');
+  document.getElementById('modeBtn').textContent=isLight?'🌙':'☀️';
 }
+(function(){
+  if(localStorage.getItem('sacredTheme')==='light'){
+    document.body.classList.add('light-mode');
+    const b=document.getElementById('modeBtn');
+    if(b) b.textContent='🌙';
+  }
+})();
 function toggleSearch(){
   const b=document.getElementById('searchBar');
   b.classList.toggle('active');

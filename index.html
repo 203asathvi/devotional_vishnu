@@ -227,24 +227,56 @@ body::after{
   color:var(--muted);margin-bottom:6px;
 }
 
-/* Light mode fixes */
+/* ═══════════════════════════════
+   LIGHT MODE — complete override
+   ═══════════════════════════════ */
 body.light-mode{
-  --bg:#f8f4ec;--text:#1a1008;--muted:#6a5a40;
+  background:#f5efe0 !important;
+  --bg:#f5efe0;--text:#1a1008;--muted:#6a5a40;
   --gold:#a07820;--gold-light:#c09030;
+  --card-v:#fffaee;--card-l:#fff0f6;
+  --card-a:#fff5ea;--card-lk:#edfaf5;
+  --border-v:rgba(160,120,32,0.35);--border-l:rgba(176,64,128,0.35);
+  --border-a:rgba(192,96,0,0.35);--border-lk:rgba(26,128,96,0.35);
   --pink:#b04080;--sun:#c06000;--teal:#1a8060;
 }
-body.light-mode .card-v{background:#fffaee;border-color:rgba(160,120,32,0.35);}
-body.light-mode .card-l{background:#fff0f6;border-color:rgba(176,64,128,0.35);}
-body.light-mode .card-a{background:#fff5ea;border-color:rgba(192,96,0,0.35);}
-body.light-mode .card-lk{background:#edfaf5;border-color:rgba(26,128,96,0.35);}
+/* Kill the dark overlays */
+body.light-mode::before{
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(201,168,76,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(201,80,130,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 30% at 50% 0%, rgba(255,200,50,0.08) 0%, transparent 60%) !important;
+}
+body.light-mode::after{ background-image:none !important; }
+
+/* Cards */
+body.light-mode .card-v{background:#fffaee !important;border-color:rgba(160,120,32,0.35);box-shadow:0 4px 24px rgba(160,120,32,0.10);}
+body.light-mode .card-l{background:#fff0f6 !important;border-color:rgba(176,64,128,0.35);box-shadow:0 4px 24px rgba(176,64,128,0.10);}
+body.light-mode .card-a{background:#fff5ea !important;border-color:rgba(192,96,0,0.35);box-shadow:0 4px 24px rgba(192,96,0,0.10);}
+body.light-mode .card-lk{background:#edfaf5 !important;border-color:rgba(26,128,96,0.35);box-shadow:0 4px 24px rgba(26,128,96,0.10);}
+/* Card titles */
+body.light-mode .card-v .card-title{color:#8a6000;}
+body.light-mode .card-l .card-title{color:#a02868;}
+body.light-mode .card-a .card-title{color:#9a4a00;}
+body.light-mode .card-lk .card-title{color:#006644;}
+/* Card dev text */
 body.light-mode .card-v  .card-dev{color:#8a5c00 !important;font-weight:600;}
 body.light-mode .card-l  .card-dev{color:#a02868 !important;font-weight:600;}
 body.light-mode .card-a  .card-dev{color:#9a4a00 !important;font-weight:600;}
 body.light-mode .card-lk .card-dev{color:#006644 !important;font-weight:600;}
+/* Card buttons */
+body.light-mode .card-v .card-btn{background:rgba(160,120,32,0.12);border-color:#a07820;color:#a07820;}
+body.light-mode .card-l .card-btn{background:rgba(176,64,128,0.10);border-color:#b04080;color:#b04080;}
+body.light-mode .card-a .card-btn{background:rgba(192,96,0,0.10);border-color:#c06000;color:#c06000;}
+body.light-mode .card-lk .card-btn{background:rgba(26,128,96,0.10);border-color:#1a8060;color:#1a8060;}
+/* Other text */
 body.light-mode .card-desc{color:#4a3e2a;}
 body.light-mode .header h1{color:#a07820;}
 body.light-mode .header-sub{color:#6a5a40;}
 body.light-mode .footer{color:#6a5a40;}
+body.light-mode .divider{color:#a07820;}
+body.light-mode .divider::before,body.light-mode .divider::after{background:linear-gradient(90deg,transparent,#a07820,transparent);}
+body.light-mode #modeBtn{border-color:#a07820 !important;color:#a07820 !important;}
 
 /* Footer */
 .footer{
@@ -357,10 +389,18 @@ body.light-mode .footer{color:#6a5a40;}
 </div>
 <script>
 function toggleMode(){
-  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.toggle('light-mode');
+  localStorage.setItem('sacredTheme', isLight ? 'light' : 'dark');
   const btn = document.getElementById('modeBtn');
-  btn.textContent = document.body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
+  btn.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
 }
+(function(){
+  if(localStorage.getItem('sacredTheme') === 'light'){
+    document.body.classList.add('light-mode');
+    const b = document.getElementById('modeBtn');
+    if(b) b.textContent = '🌙 Dark Mode';
+  }
+})();
 </script>
 </body>
 </html>
