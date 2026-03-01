@@ -51,17 +51,43 @@ body.light-mode .shloka-line.indent{color:#7a2040;}
 .note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--pink);margin:9px 0;background:rgba(201,100,140,0.04);border-radius:0 4px 4px 0;}
 .back-top{position:fixed;bottom:18px;right:18px;z-index:200;background:linear-gradient(135deg,var(--pink),var(--gold));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(201,100,140,0.4);}
 .back-top.visible{display:flex;}
-body.light-mode{--bg:#fdf0f5;--card:#fff0f6;--text:#2a0010;--muted:#7a4060;--border:rgba(160,40,100,0.25);}
-mark{background:rgba(201,100,140,0.3);color:inherit;border-radius:2px;}
-@media(max-width:600px){body{font-size:16px;}.shloka{padding:11px 12px;}}
-
+body.light-mode{
+  background:#fdf0f5 !important;
+  --bg:#fdf0f5;--card:#fff0f6;--text:#2a0010;--muted:#7a4060;
+  --border:rgba(160,40,100,0.25);--pink:#b0306a;--gold:#a07820;--gold-light:#b89030;
+}
 body.light-mode::before{
   background:
-    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(160,120,20,0.10) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(201,168,76,0.08) 0%, transparent 60%) !important;
+    radial-gradient(ellipse 70% 40% at 50% 0%,rgba(160,40,100,0.07) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 50% at 10% 80%,rgba(201,168,76,0.06) 0%,transparent 60%) !important;
 }
 body.light-mode::after{ background-image:none !important; }
-body.light-mode nav{ background:rgba(253,246,236,0.97) !important; }
+body.light-mode nav{ background:rgba(253,240,245,0.97) !important; }
+/* Shloka cards */
+body.light-mode .shloka{ background:#fff0f6 !important; border-color:rgba(160,40,100,0.2); }
+body.light-mode .shloka:hover{ background:#ffe4f0 !important; border-color:rgba(160,40,100,0.4); }
+body.light-mode .shloka.highlight{ background:rgba(200,80,140,0.08) !important; }
+/* Shloka text — the main readability fix */
+body.light-mode .shloka-line{ color:#2a0010; }
+body.light-mode .shloka-line.indent{ color:#6a1030 !important; }
+body.light-mode .shloka-num{ color:#a0305a; }
+/* Section headers */
+body.light-mode .section-header h2{ color:#a07820; }
+body.light-mode .section-line{ background:linear-gradient(90deg,rgba(160,40,100,0.4) 0%,transparent 100%); }
+/* Note / meaning */
+body.light-mode .note{ color:#5a3050; border-color:#c06080; background:rgba(200,80,140,0.05); }
+/* TOC buttons */
+body.light-mode .toc-btn{ color:#7a4060; border-color:rgba(160,40,100,0.3); }
+body.light-mode .toc-btn:hover{ color:#b0306a; border-color:#b0306a; }
+/* Nav buttons */
+body.light-mode .nav-btn{ background:rgba(160,40,100,0.07); border-color:rgba(160,40,100,0.25); color:#a0305a; }
+body.light-mode .nav-home{ background:rgba(160,40,100,0.07); border-color:rgba(160,40,100,0.25); color:#a0305a; }
+/* Hero */
+body.light-mode .hero h1{ color:#a07820; }
+body.light-mode .hero-sub{ color:#7a4060; }
+body.light-mode .divider{ color:#b0306a; }
+mark{background:rgba(201,100,140,0.3);color:inherit;border-radius:2px;}
+@media(max-width:600px){body{font-size:16px;}.shloka{padding:11px 12px;}}
 </style>
 </head>
 <body>
