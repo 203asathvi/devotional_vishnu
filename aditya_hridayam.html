@@ -58,7 +58,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(10,5,0,0.94);backdrop-filt
 .toc-btn:hover{border-color:var(--gold);color:var(--gold);}
 
 /* MAIN */
-main{position:relative;z-index:1;padding:0 14px 80px;max-width:960px;margin:0 auto;}
+main{position:relative;z-index:1;padding:0 14px 120px;max-width:960px;margin:0 auto;}
 .section{margin-top:24px;}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;user-select:none;}
 .section-header h2{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
@@ -86,19 +86,28 @@ tr.hl td{background:rgba(232,160,32,0.1) !important;}
 .view-shloka  .only-meaning{display:none;}
 .view-meaning .only-shloka{display:none;}
 
-.back-top{position:fixed;bottom:18px;right:18px;z-index:200;background:linear-gradient(135deg,var(--sun),var(--sun2));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,140,0,0.45);}
+.back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:linear-gradient(135deg,var(--sun),var(--sun2));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,140,0,0.45);}
 .back-top.visible{display:flex;}
 body.light-mode{--bg:#fffaf0;--card:#fff6e0;--text:#2a1a00;--muted:#80601a;--border:rgba(180,120,20,0.25);}
 mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 @media(max-width:640px){body{font-size:16px;}td.meaning{font-size:14px;}td.num{width:50px;font-size:9px;}}
 
-body.light-mode::before{
-  background:
-    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(160,120,20,0.10) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(201,168,76,0.08) 0%, transparent 60%) !important;
-}
-body.light-mode::after{ background-image:none !important; }
-body.light-mode nav{ background:rgba(253,246,236,0.97) !important; }
+/* AUTO-SCROLL CONTROLLER */
+.scroll-bar{position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(10,8,18,0.96);backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:12px;transition:transform .3s;}
+.scroll-bar.hidden{transform:translateY(100%);}
+.scroll-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:42px;height:42px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(255,140,0,0.5);flex-shrink:0;transition:transform .15s,box-shadow .15s;}
+.scroll-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(255,200,60,0.6);}
+.scroll-speed-wrap{display:flex;align-items:center;gap:8px;flex:1;max-width:340px;}
+.scroll-speed-label{font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap;}
+.scroll-speed-slider{-webkit-appearance:none;appearance:none;flex:1;height:3px;background:rgba(201,168,76,0.2);border-radius:2px;outline:none;cursor:pointer;}
+.scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;box-shadow:0 2px 8px rgba(255,140,0,0.5);}
+.scroll-speed-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
+.scroll-speed-val{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);min-width:24px;text-align:center;}
+.scroll-toggle-btn{background:rgba(201,168,76,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Cinzel',serif;white-space:nowrap;transition:all .2s;}
+.scroll-toggle-btn:hover{background:rgba(201,168,76,0.25);border-color:var(--gold);}
+.scroll-bar-open-btn{position:fixed;bottom:18px;left:18px;z-index:200;background:linear-gradient(135deg,var(--sun),var(--sun2));color:var(--deep);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-family:'Cinzel',serif;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(255,140,0,0.5);transition:transform .15s,box-shadow .15s;letter-spacing:.5px;}
+.scroll-bar-open-btn:hover{transform:scale(1.05);box-shadow:0 6px 24px rgba(255,200,60,0.6);}
+.scroll-bar-open-btn.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -243,6 +252,18 @@ body.light-mode nav{ background:rgba(253,246,236,0.97) !important; }
 
 </main>
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<!-- AUTO-SCROLL CONTROLLER BAR -->
+<div class="scroll-bar" id="scrollBar">
+  <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause">▶</button>
+  <div class="scroll-speed-wrap">
+    <span class="scroll-speed-label">SPEED</span>
+    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="10" value="3" oninput="updateSpeed(this.value)">
+    <span class="scroll-speed-val" id="speedVal">3</span>
+  </div>
+  <button class="scroll-toggle-btn" onclick="hideScrollBar()">✕ Hide</button>
+</div>
+<!-- OPEN BUTTON -->
+<button class="scroll-bar-open-btn hidden" id="scrollOpenBtn" onclick="showScrollBar()">▶ Auto Scroll</button>
 
 <script>
 const VERSES = [
@@ -296,17 +317,9 @@ function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'s
 let fs=17;
 function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
 function toggleMode(){
-  const isLight=document.body.classList.toggle('light-mode');
-  localStorage.setItem('sacredTheme',isLight?'light':'dark');
-  document.getElementById('modeBtn').textContent=isLight?'🌙':'☀️';
+  document.body.classList.toggle('light-mode');
+  document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
 }
-(function(){
-  if(localStorage.getItem('sacredTheme')==='light'){
-    document.body.classList.add('light-mode');
-    const b=document.getElementById('modeBtn');
-    if(b) b.textContent='🌙';
-  }
-})();
 function toggleSearch(){
   const b=document.getElementById('searchBar');
   b.classList.toggle('active');
@@ -325,9 +338,41 @@ function doSearch(q){
 }
 window.addEventListener('scroll',()=>{
   const s=window.scrollY,tot=document.body.scrollHeight-window.innerHeight;
+  if(scrollActive && s>=tot-4){stopScroll();}
   document.getElementById('progress').style.width=(s/tot*100)+'%';
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
+
+// AUTO-SCROLL
+let scrollActive=false,scrollRAF=null,scrollSpeed=3,lastTime=null;
+function speedToPxPerSec(s){return s*18;}
+function scrollStep(ts){
+  if(!scrollActive)return;
+  if(lastTime===null)lastTime=ts;
+  const dt=Math.min(ts-lastTime,100);
+  lastTime=ts;
+  window.scrollBy(0,(speedToPxPerSec(scrollSpeed)*dt)/1000);
+  scrollRAF=requestAnimationFrame(scrollStep);
+}
+function startScroll(){
+  if(scrollActive)return;
+  scrollActive=true;lastTime=null;
+  document.getElementById('scrollPlayBtn').textContent='⏸';
+  document.getElementById('scrollPlayBtn').title='Pause';
+  scrollRAF=requestAnimationFrame(scrollStep);
+}
+function stopScroll(){
+  scrollActive=false;lastTime=null;
+  if(scrollRAF){cancelAnimationFrame(scrollRAF);scrollRAF=null;}
+  document.getElementById('scrollPlayBtn').textContent='▶';
+  document.getElementById('scrollPlayBtn').title='Play';
+}
+function toggleScroll(){if(scrollActive)stopScroll();else startScroll();}
+function updateSpeed(v){scrollSpeed=parseInt(v);document.getElementById('speedVal').textContent=v;}
+function hideScrollBar(){stopScroll();document.getElementById('scrollBar').classList.add('hidden');document.getElementById('scrollOpenBtn').classList.remove('hidden');}
+function showScrollBar(){document.getElementById('scrollBar').classList.remove('hidden');document.getElementById('scrollOpenBtn').classList.add('hidden');}
+window.addEventListener('wheel',()=>{if(scrollActive)stopScroll();},{passive:true});
+window.addEventListener('touchstart',()=>{if(scrollActive)stopScroll();},{passive:true});
 </script>
 </body>
 </html>
