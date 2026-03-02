@@ -371,8 +371,36 @@ function toggleScroll(){if(scrollActive)stopScroll();else startScroll();}
 function updateSpeed(v){scrollSpeed=parseInt(v);document.getElementById('speedVal').textContent=v;}
 function hideScrollBar(){stopScroll();document.getElementById('scrollBar').classList.add('hidden');document.getElementById('scrollOpenBtn').classList.remove('hidden');}
 function showScrollBar(){document.getElementById('scrollBar').classList.remove('hidden');document.getElementById('scrollOpenBtn').classList.add('hidden');}
-window.addEventListener('wheel',()=>{if(scrollActive)stopScroll();},{passive:true});
-window.addEventListener('touchstart',()=>{if(scrollActive)stopScroll();},{passive:true});
+// Smart touch & wheel handling
+// Wheel on page (not slider) → stop
+window.addEventListener('wheel', (e) => {
+  if (scrollActive && !e.target.closest('.scroll-bar')) {
+    stopScroll();
+  }
+}, {passive: true});
+
+// Touch handling — distinguish swipe (manual scroll) vs tap / controller interaction
+let touchStartY = 0;
+let touchStartX = 0;
+let touchOnBar = false;
+
+window.addEventListener('touchstart', (e) => {
+  touchStartY = e.touches[0].clientY;
+  touchStartX = e.touches[0].clientX;
+  // Check if touch is on the controller bar or open button — never interrupt
+  touchOnBar = !!e.target.closest('.scroll-bar, .scroll-bar-open-btn');
+}, {passive: true});
+
+window.addEventListener('touchmove', (e) => {
+  if (touchOnBar) return; // dragging the speed slider — don't stop
+  if (!scrollActive) return;
+  const dy = Math.abs(e.touches[0].clientY - touchStartY);
+  const dx = Math.abs(e.touches[0].clientX - touchStartX);
+  // Only stop if it's clearly a vertical swipe (>8px vertical, more vertical than horizontal)
+  if (dy > 8 && dy > dx) {
+    stopScroll();
+  }
+}, {passive: true});
 </script>
 </body>
 </html>
