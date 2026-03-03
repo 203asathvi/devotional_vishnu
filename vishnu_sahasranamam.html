@@ -122,12 +122,15 @@ tr.speaker-row td{padding:0;border:none;}
 .scroll-bar.hidden{transform:translateY(100%);}
 .scroll-play-btn{background:linear-gradient(135deg,var(--vis),var(--vis2));border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(122,32,149,0.5);flex-shrink:0;transition:transform .15s,box-shadow .15s;}
 .scroll-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(176,96,224,0.6);}
-.scroll-speed-wrap{display:flex;align-items:center;gap:8px;flex:1;max-width:340px;}
+.scroll-speed-wrap{display:flex;align-items:center;gap:6px;flex:1;max-width:360px;}
 .scroll-speed-label{font-family:'Cinzel',serif;font-size:10px;color:var(--muted);letter-spacing:1px;white-space:nowrap;}
+.scroll-speed-adj{background:rgba(201,168,76,0.12);border:1px solid var(--border);color:var(--gold);width:28px;height:28px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;padding:0;font-family:sans-serif;}
+.scroll-speed-adj:hover{background:rgba(201,168,76,0.3);border-color:var(--gold);}
+.scroll-speed-adj:active{transform:scale(0.92);}
 .scroll-speed-slider{-webkit-appearance:none;appearance:none;flex:1;height:3px;background:rgba(201,168,76,0.2);border-radius:2px;outline:none;cursor:pointer;}
 .scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--vis),var(--vis2));cursor:pointer;box-shadow:0 2px 8px rgba(122,32,149,0.5);}
 .scroll-speed-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--vis),var(--vis2));cursor:pointer;border:none;}
-.scroll-speed-val{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);min-width:24px;text-align:center;}
+.scroll-speed-val{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);min-width:36px;text-align:center;letter-spacing:.5px;}
 .scroll-toggle-btn{background:rgba(201,168,76,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Cinzel',serif;white-space:nowrap;transition:all .2s;}
 .scroll-toggle-btn:hover{background:rgba(201,168,76,0.25);border-color:var(--gold);}
 .scroll-bar-open-btn{position:fixed;bottom:18px;left:18px;z-index:200;background:linear-gradient(135deg,var(--vis),var(--vis2));color:#fff;border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-family:'Cinzel',serif;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(122,32,149,0.45);transition:transform .15s,box-shadow .15s;letter-spacing:.5px;}
@@ -1217,8 +1220,10 @@ mark{background:rgba(201,168,76,0.3);color:inherit;border-radius:2px;}
   <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause">▶</button>
   <div class="scroll-speed-wrap">
     <span class="scroll-speed-label">SPEED</span>
-    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="10" value="3" oninput="updateSpeed(this.value)">
-    <span class="scroll-speed-val" id="speedVal">3</span>
+    <button class="scroll-speed-adj" onclick="adjustSpeed(-1)" title="Slower">−</button>
+    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="33" value="9" step="1" oninput="updateSpeedFromSlider(this.value)">
+    <button class="scroll-speed-adj" onclick="adjustSpeed(1)" title="Faster">+</button>
+    <span class="scroll-speed-val" id="speedVal">3×</span>
   </div>
   <button class="scroll-toggle-btn" onclick="hideScrollBar()">✕ Hide</button>
 </div>
@@ -1292,9 +1297,12 @@ window.addEventListener('scroll',()=>{
 // AUTO-SCROLL
 let scrollActive=false;
 let scrollRAF=null;
-let scrollSpeed=3;
 let lastTime=null;
-// pixels per second at speed level 1-10
+// Speed steps: 1, 1.25, 1.5 ... in units of 0.25. Index 0-32 maps to 1x-9x.
+// Default start at index 8 = 3x (matches slider value="9" which is index 8 = (9-1)*0.25+1 = 3)
+const SPEED_STEPS = Array.from({length:33},(_,i)=>+(1+i*0.25).toFixed(2));
+let speedIdx = 8; // default 3×
+function currentSpeed(){return SPEED_STEPS[speedIdx];}
 function speedToPxPerSec(s){return s*18;}
 
 function scrollStep(ts){
@@ -1302,7 +1310,7 @@ function scrollStep(ts){
   if(lastTime===null)lastTime=ts;
   const dt=Math.min(ts-lastTime,100);
   lastTime=ts;
-  const pps=speedToPxPerSec(scrollSpeed);
+  const pps=speedToPxPerSec(currentSpeed());
   window.scrollBy(0,(pps*dt)/1000);
   scrollRAF=requestAnimationFrame(scrollStep);
 }
@@ -1329,10 +1337,21 @@ function toggleScroll(){
   else startScroll();
 }
 
-function updateSpeed(v){
-  scrollSpeed=parseInt(v);
-  document.getElementById('speedVal').textContent=v;
+function updateSpeedFromSlider(v){
+  speedIdx=parseInt(v)-1; // slider 1-33 → index 0-32
+  syncSpeedUI();
 }
+function adjustSpeed(dir){
+  speedIdx=Math.max(0,Math.min(SPEED_STEPS.length-1,speedIdx+dir));
+  document.getElementById('speedSlider').value=speedIdx+1;
+  syncSpeedUI();
+}
+function syncSpeedUI(){
+  const s=currentSpeed();
+  document.getElementById('speedVal').textContent=s+'×';
+}
+// Keep old name as alias for any other references
+function updateSpeed(v){updateSpeedFromSlider(v);}
 
 function hideScrollBar(){
   stopScroll();
@@ -1346,35 +1365,22 @@ function showScrollBar(){
 }
 
 // Smart touch & wheel handling
-// Wheel on page (not slider) → stop
-window.addEventListener('wheel', (e) => {
-  if (scrollActive && !e.target.closest('.scroll-bar')) {
-    stopScroll();
-  }
-}, {passive: true});
-
-// Touch handling — distinguish swipe (manual scroll) vs tap / controller interaction
-let touchStartY = 0;
-let touchStartX = 0;
-let touchOnBar = false;
-
-window.addEventListener('touchstart', (e) => {
-  touchStartY = e.touches[0].clientY;
-  touchStartX = e.touches[0].clientX;
-  // Check if touch is on the controller bar or open button — never interrupt
-  touchOnBar = !!e.target.closest('.scroll-bar, .scroll-bar-open-btn');
-}, {passive: true});
-
-window.addEventListener('touchmove', (e) => {
-  if (touchOnBar) return; // dragging the speed slider — don't stop
-  if (!scrollActive) return;
-  const dy = Math.abs(e.touches[0].clientY - touchStartY);
-  const dx = Math.abs(e.touches[0].clientX - touchStartX);
-  // Only stop if it's clearly a vertical swipe (>8px vertical, more vertical than horizontal)
-  if (dy > 8 && dy > dx) {
-    stopScroll();
-  }
-}, {passive: true});
+window.addEventListener('wheel',(e)=>{
+  if(scrollActive&&!e.target.closest('.scroll-bar')){stopScroll();}
+},{passive:true});
+let touchStartY=0,touchStartX=0,touchOnBar=false;
+window.addEventListener('touchstart',(e)=>{
+  touchStartY=e.touches[0].clientY;
+  touchStartX=e.touches[0].clientX;
+  touchOnBar=!!e.target.closest('.scroll-bar,.scroll-bar-open-btn');
+},{passive:true});
+window.addEventListener('touchmove',(e)=>{
+  if(touchOnBar)return;
+  if(!scrollActive)return;
+  const dy=Math.abs(e.touches[0].clientY-touchStartY);
+  const dx=Math.abs(e.touches[0].clientX-touchStartX);
+  if(dy>8&&dy>dx){stopScroll();}
+},{passive:true});
 </script>
 </body>
 </html>
