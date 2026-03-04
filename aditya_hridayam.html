@@ -271,6 +271,7 @@ mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 <!-- OPEN BUTTON -->
 <button class="scroll-bar-open-btn hidden" id="scrollOpenBtn" onclick="showScrollBar()">▶ Auto Scroll</button>
 
+<script src="scroll-controller.js"></script>
 <script>
 const VERSES = [
   [4,"adityam hridayam punyam sarva shatru vina-shanam |","jayavaham japen nityam akshayyam paramam shivam || 4 ||","This Aditya Hridayam is holy, a destroyer of all enemies, ever victorious, imperishable, and supremely auspicious. One who chants this daily will attain these blessings."],
@@ -363,6 +364,5 @@ window.addEventListener('touchmove',(e)=>{
   if(dy>8&&dy>dx){stopScroll();}
 },{passive:true});
 </script>
-<script src="scroll-controller.js"></script>
 </body>
 </html>

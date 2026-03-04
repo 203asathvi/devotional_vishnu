@@ -1231,6 +1231,7 @@ mark{background:rgba(201,168,76,0.3);color:inherit;border-radius:2px;}
 <!-- OPEN BUTTON (visible when bar is hidden) -->
 <button class="scroll-bar-open-btn hidden" id="scrollOpenBtn" onclick="showScrollBar()">▶ Auto Scroll</button>
 
+<script src="scroll-controller.js"></script>
 <script>
 function setView(v){
   document.getElementById('main').className='view-'+v;
@@ -1309,6 +1310,5 @@ window.addEventListener('touchmove',(e)=>{
   if(dy>8&&dy>dx){stopScroll();}
 },{passive:true});
 </script>
-<script src="scroll-controller.js"></script>
 </body>
 </html>
