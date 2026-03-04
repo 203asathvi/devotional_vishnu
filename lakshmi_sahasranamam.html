@@ -243,7 +243,7 @@ mark{background:rgba(60,185,155,0.3);color:inherit;border-radius:2px;}
   <div class="scroll-speed-wrap" style="min-width:0;">
     <span class="scroll-speed-label">SPEED</span>
     <button class="scroll-speed-adj" onclick="adjustSpeed(-1)" title="Slower">−</button>
-    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="29" value="9" step="1" oninput="updateSpeedFromSlider(this.value)">
+    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="29" value="7" step="1" oninput="updateSpeedFromSlider(this.value)">
     <button class="scroll-speed-adj" onclick="adjustSpeed(1)" title="Faster">+</button>
     <span class="scroll-speed-val" id="speedVal">3×</span>
   </div>
@@ -453,51 +453,6 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-// AUTO-SCROLL
-let scrollActive=false,scrollRAF=null,lastTime=null;
-//const SPEED_STEPS=Array.from({length:33},(_,i)=>+(1+i*0.25).toFixed(2));
-//let speedIdx=8;
-const SPEED_STEPS=[1.00,1.10,1.20,1.30,1.40,1.50,1.60,1.70,1.80,1.90,2.00,2.10,2.20,2.30,2.40,2.50,2.60,2.70,2.80,2.90,3.00,3.25,3.50,3.75,4.00,4.25,4.50,4.75,5.00];
-let speedIdx=6;
-function currentSpeed(){return SPEED_STEPS[speedIdx];}
-function speedToPxPerSec(s){return s*18;}
-function scrollStep(ts){
-  if(!scrollActive)return;
-  if(lastTime===null)lastTime=ts;
-  const dt=Math.min(ts-lastTime,100);
-  lastTime=ts;
-  window.scrollBy(0,(speedToPxPerSec(currentSpeed())*dt)/1000);
-  scrollRAF=requestAnimationFrame(scrollStep);
-}
-function startScroll(){
-  if(scrollActive)return;
-  scrollActive=true;lastTime=null;
-  document.getElementById('scrollPlayBtn').textContent='⏸';
-  document.getElementById('scrollPlayBtn').title='Pause';
-  scrollRAF=requestAnimationFrame(scrollStep);
-}
-function stopScroll(){
-  scrollActive=false;lastTime=null;
-  if(scrollRAF){cancelAnimationFrame(scrollRAF);scrollRAF=null;}
-  document.getElementById('scrollPlayBtn').textContent='▶';
-  document.getElementById('scrollPlayBtn').title='Play';
-}
-function toggleScroll(){if(scrollActive)stopScroll();else startScroll();}
-function updateSpeedFromSlider(v){speedIdx=parseInt(v)-1;syncSpeedUI();}
-function adjustSpeed(dir){speedIdx=Math.max(0,Math.min(SPEED_STEPS.length-1,speedIdx+dir));document.getElementById('speedSlider').value=speedIdx+1;syncSpeedUI();}
-//function syncSpeedUI(){document.getElementById('speedVal').textContent=currentSpeed()+'×';}
-function syncSpeedUI(){
-  document.getElementById('speedVal').textContent=currentSpeed()+'×';
-  document.getElementById('speedSlider').value=speedIdx+1;
-}
-window.addEventListener('DOMContentLoaded',()=>syncSpeedUI());
-function updateSpeed(v){updateSpeedFromSlider(v);}
-function hideScrollBar(){stopScroll();document.getElementById('scrollBar').classList.add('hidden');document.getElementById('scrollOpenBtn').classList.remove('hidden');}
-function showScrollBar(){document.getElementById('scrollBar').classList.remove('hidden');document.getElementById('scrollOpenBtn').classList.add('hidden');}
-// Smart touch & wheel handling
-window.addEventListener('wheel',(e)=>{
-  if(scrollActive&&!e.target.closest('.scroll-bar')){stopScroll();}
-},{passive:true});
 let touchStartY=0,touchStartX=0,touchOnBar=false;
 window.addEventListener('touchstart',(e)=>{
   touchStartY=e.touches[0].clientY;
@@ -512,5 +467,6 @@ window.addEventListener('touchmove',(e)=>{
   if(dy>8&&dy>dx){stopScroll();}
 },{passive:true});
 </script>
+<script src="scroll-controller.js"></script>
 </body>
 </html>
