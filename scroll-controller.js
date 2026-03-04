@@ -75,7 +75,6 @@ function updateSpeed(v) { updateSpeedFromSlider(v); }
 
 // ── Show / hide scroll bar ────────────────────────────────────────────────────
 function hideScrollBar() {
-  stopScroll();
   document.getElementById('scrollBar').classList.add('hidden');
   document.getElementById('scrollOpenBtn').classList.remove('hidden');
 }
