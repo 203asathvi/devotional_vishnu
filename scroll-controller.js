@@ -37,6 +37,25 @@ function scrollStep(ts) {
   scrollRAF = requestAnimationFrame(scrollStep);
 }
 
+// ── Wake Lock: prevent screen sleep during auto-scroll ────────────────────────
+let wakeLock = null;
+
+async function acquireWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+  } catch (e) { /* permission denied or not supported */ }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; }
+}
+
+// Re-acquire if page becomes visible again (e.g. tab switch)
+document.addEventListener('visibilitychange', () => {
+  if (scrollActive && document.visibilityState === 'visible') acquireWakeLock();
+});
+
 // ── Play / pause ──────────────────────────────────────────────────────────────
 function startScroll() {
   if (scrollActive) return;
@@ -44,6 +63,7 @@ function startScroll() {
   lastTime = null;
   document.getElementById('scrollPlayBtn').textContent = '⏸';
   document.getElementById('scrollPlayBtn').title = 'Pause';
+  acquireWakeLock();
   scrollRAF = requestAnimationFrame(scrollStep);
 }
 
@@ -53,6 +73,7 @@ function stopScroll() {
   if (scrollRAF) { cancelAnimationFrame(scrollRAF); scrollRAF = null; }
   document.getElementById('scrollPlayBtn').textContent = '▶';
   document.getElementById('scrollPlayBtn').title = 'Play';
+  releaseWakeLock();
 }
 
 function toggleScroll() { if (scrollActive) stopScroll(); else startScroll(); }
@@ -86,26 +107,40 @@ function showScrollBar() {
   document.getElementById('scrollOpenBtn').classList.add('hidden');
 }
 
-// ── Touch & wheel: stop scroll on manual interaction ─────────────────────────
-window.addEventListener('wheel', (e) => {
-  if (scrollActive && !e.target.closest('.scroll-bar')) stopScroll();
-}, { passive: true });
+// ── Custom speed input ────────────────────────────────────────────────────────
+function editSpeed(el) {
+  const inp = document.createElement('input');
+  inp.type = 'number';
+  inp.className = 'scroll-speed-input';
+  inp.min = '0.5'; inp.max = '10'; inp.step = '0.05';
+  inp.value = currentSpeed();
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
 
-let touchStartY = 0, touchStartX = 0, touchOnBar = false;
-
-window.addEventListener('touchstart', (e) => {
-  touchStartY = e.touches[0].clientY;
-  touchStartX = e.touches[0].clientX;
-  touchOnBar  = !!e.target.closest('.scroll-bar,.scroll-bar-open-btn');
-}, { passive: true });
-
-window.addEventListener('touchmove', (e) => {
-  if (touchOnBar) return;
-  if (!scrollActive) return;
-  const dy = Math.abs(e.touches[0].clientY - touchStartY);
-  const dx = Math.abs(e.touches[0].clientX - touchStartX);
-  if (dy > 8 && dy > dx) stopScroll();
-}, { passive: true });
+  function commit() {
+    let v = parseFloat(inp.value);
+    if (isNaN(v) || v < 0.5) v = 0.5;
+    if (v > 10) v = 10;
+    // find nearest step or insert custom
+    let closest = 0;
+    SPEED_STEPS.forEach((s, i) => { if (Math.abs(s - v) < Math.abs(SPEED_STEPS[closest] - v)) closest = i; });
+    if (Math.abs(SPEED_STEPS[closest] - v) < 0.01) {
+      speedIdx = closest;
+    } else {
+      // inject custom value temporarily
+      SPEED_STEPS.splice(closest + (v > SPEED_STEPS[closest] ? 1 : 0), 0, Math.round(v * 100) / 100);
+      speedIdx = SPEED_STEPS.indexOf(Math.round(v * 100) / 100);
+    }
+    const span = document.createElement('span');
+    span.className = 'scroll-speed-val'; span.id = 'speedVal';
+    span.title = 'Click to enter custom speed';
+    span.onclick = function(){ editSpeed(this); };
+    inp.replaceWith(span);
+    syncSpeedUI();
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = currentSpeed(); inp.blur(); } });
+}
 
 // ── Init display on load ──────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => syncSpeedUI());

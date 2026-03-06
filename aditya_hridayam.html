@@ -99,7 +99,12 @@ mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 .scroll-play-btn:hover{opacity:.8;}
 .scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
 .scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
-.scroll-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;}
+.scroll-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
+.scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
+body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
+body.light-mode .scroll-speed-val{border-bottom-color:rgba(0,0,0,0.2);}
+body.light-mode .scroll-speed-val:hover{border-bottom-color:rgba(0,0,0,0.5);}
 .scroll-speed-slider{-webkit-appearance:none;appearance:none;width:72px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;accent-color:linear-gradient(135deg,var(--sun),var(--sun2));}
 .scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
 .scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
@@ -267,7 +272,7 @@ body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 <div class="scroll-bar" id="scrollBar">
   <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause">▶</button>
   <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
-  <span class="scroll-speed-val" id="speedVal">1.6×</span>
+  <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
   <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
   <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="30" value="7" step="1" oninput="updateSpeed(this.value)">
   <div class="sb-divider"></div>
