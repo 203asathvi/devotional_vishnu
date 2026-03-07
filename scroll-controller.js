@@ -85,7 +85,9 @@ function updateSpeedFromSlider(v) {
 }
 
 function adjustSpeed(dir) {
-  speedIdx = Math.max(0, Math.min(SPEED_STEPS.length - 1, speedIdx + dir));
+  const newIdx = Math.max(0, Math.min(SPEED_STEPS.length - 1, speedIdx + dir));
+  if (SPEED_STEPS[newIdx] < 1.00) return;  // never go below 1×
+  speedIdx = newIdx;
   syncSpeedUI();
 }
 
@@ -222,4 +224,15 @@ function editSpeed(el) {
 }
 
 // ── Init display on load ──────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => syncSpeedUI());
+window.addEventListener('DOMContentLoaded', () => {
+  syncSpeedUI();
+  // Fix mobile: touchend on scroll button so tap reliably toggles even during RAF loop
+  const btn = document.getElementById('scrollPlayBtn');
+  if (btn) {
+    btn.addEventListener('touchend', e => {
+      e.preventDefault();   // prevents ghost click re-triggering
+      e.stopPropagation();
+      toggleScroll();
+    }, { passive: false });
+  }
+});
