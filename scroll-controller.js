@@ -107,6 +107,86 @@ function showScrollBar() {
   document.getElementById('scrollOpenBtn').classList.add('hidden');
 }
 
+// ── Audio player ─────────────────────────────────────────────────────────────
+const AUDIO_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+let audioSpeedIdx = 2; // default 1×
+
+function aud() { return document.getElementById('pageAudio'); }
+
+function toggleAudio() {
+  const a = aud(); if (!a || a.disabled) return;
+  if (a.paused) {
+    a.play().then(() => {
+      document.getElementById('audioPlayBtn').textContent = '⏸';
+    }).catch(() => {});
+  } else {
+    a.pause();
+    document.getElementById('audioPlayBtn').textContent = '▶';
+  }
+}
+
+function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
+
+function cycleAudioSpeed() {
+  audioSpeedIdx = (audioSpeedIdx + 1) % AUDIO_SPEEDS.length;
+  const s = AUDIO_SPEEDS[audioSpeedIdx];
+  aud().playbackRate = s;
+  document.getElementById('audioSpeedBtn').textContent = s + '×';
+}
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  return m + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+
+function initAudioEvents(a) {
+  a.addEventListener('timeupdate', () => {
+    const seek = document.getElementById('audioSeek');
+    const time = document.getElementById('audioTime');
+    if (seek) seek.value = a.currentTime;
+    if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+  });
+  a.addEventListener('loadedmetadata', () => {
+    const seek = document.getElementById('audioSeek');
+    if (seek) seek.max = a.duration;
+    const time = document.getElementById('audioTime');
+    if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
+  });
+  a.addEventListener('ended', () => {
+    const btn = document.getElementById('audioPlayBtn');
+    if (btn) btn.textContent = '▶';
+  });
+}
+
+async function loadAudioAsBlob(a) {
+  const timeEl  = document.getElementById('audioTime');
+  const playBtn = document.getElementById('audioPlayBtn');
+  const origSrc = a.src;
+  if (!origSrc) return;
+
+  if (timeEl) timeEl.textContent = 'Loading…';
+  if (playBtn) playBtn.disabled = true;
+
+  try {
+    const resp = await fetch(origSrc);
+    if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
+    const blob = await resp.blob();
+    const blobUrl = URL.createObjectURL(new Blob([blob], { type: 'audio/mpeg' }));
+    a.src = blobUrl;
+    initAudioEvents(a);
+    if (timeEl) timeEl.textContent = '0:00 / 0:00';
+    if (playBtn) playBtn.disabled = false;
+  } catch (e) {
+    if (timeEl) timeEl.textContent = 'Error loading';
+    console.error('Audio load error:', e);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const a = aud(); if (!a) return;
+  loadAudioAsBlob(a);
+});
+
 // ── Custom speed input ────────────────────────────────────────────────────────
 function editSpeed(el) {
   const inp = document.createElement('input');
