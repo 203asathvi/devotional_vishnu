@@ -71,7 +71,7 @@ function stopScroll() {
   scrollActive = false;
   lastTime = null;
   if (scrollRAF) { cancelAnimationFrame(scrollRAF); scrollRAF = null; }
-  document.getElementById('scrollPlayBtn').textContent = '▶';
+  document.getElementById('scrollPlayBtn').textContent = '⇓';
   document.getElementById('scrollPlayBtn').title = 'Play';
   releaseWakeLock();
 }
@@ -108,8 +108,6 @@ function showScrollBar() {
 }
 
 // ── Audio player ─────────────────────────────────────────────────────────────
-const AUDIO_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-let audioSpeedIdx = 2; // default 1×
 
 function aud() { return document.getElementById('pageAudio'); }
 
@@ -127,11 +125,36 @@ function toggleAudio() {
 
 function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
 
-function cycleAudioSpeed() {
-  audioSpeedIdx = (audioSpeedIdx + 1) % AUDIO_SPEEDS.length;
-  const s = AUDIO_SPEEDS[audioSpeedIdx];
-  aud().playbackRate = s;
-  document.getElementById('audioSpeedBtn').textContent = s + '×';
+function editAudioSpeed(el) {
+  const inp = document.createElement('input');
+  inp.type = 'number';
+  inp.className = 'scroll-speed-input';
+  inp.min = '0.5'; inp.max = '10'; inp.step = '0.05';
+  inp.value = aud() ? aud().playbackRate : 1;
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+
+  let committed = false;
+  function commit() {
+    if (committed) return; committed = true;
+    let v = parseFloat(inp.value);
+    if (isNaN(v) || v < 0.5) v = 0.5;
+    if (v > 10) v = 10;
+    v = Math.round(v * 100) / 100;
+    if (aud()) aud().playbackRate = v;
+    const span = document.createElement('span');
+    span.className = 'audio-speed-val'; span.id = 'audioSpeedVal';
+    span.title = 'Click to set audio speed';
+    span.onclick = function() { editAudioSpeed(this); };
+    span.textContent = v + '×';
+    inp.replaceWith(span);
+  }
+  // Delay blur listener so mobile keyboard open doesn't immediately dismiss
+  setTimeout(() => inp.addEventListener('blur', commit), 300);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { commit(); }
+    if (e.key === 'Escape') { committed = true; inp.replaceWith(el); }
+  });
 }
 
 function fmtTime(s) {
@@ -139,7 +162,8 @@ function fmtTime(s) {
   return m + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 }
 
-function initAudioEvents(a) {
+window.addEventListener('DOMContentLoaded', () => {
+  const a = aud(); if (!a) return;
   a.addEventListener('timeupdate', () => {
     const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
@@ -156,35 +180,6 @@ function initAudioEvents(a) {
     const btn = document.getElementById('audioPlayBtn');
     if (btn) btn.textContent = '▶';
   });
-}
-
-async function loadAudioAsBlob(a) {
-  const timeEl  = document.getElementById('audioTime');
-  const playBtn = document.getElementById('audioPlayBtn');
-  const origSrc = a.src;
-  if (!origSrc) return;
-
-  if (timeEl) timeEl.textContent = 'Loading…';
-  if (playBtn) playBtn.disabled = true;
-
-  try {
-    const resp = await fetch(origSrc);
-    if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
-    const blob = await resp.blob();
-    const blobUrl = URL.createObjectURL(new Blob([blob], { type: 'audio/mpeg' }));
-    a.src = blobUrl;
-    initAudioEvents(a);
-    if (timeEl) timeEl.textContent = '0:00 / 0:00';
-    if (playBtn) playBtn.disabled = false;
-  } catch (e) {
-    if (timeEl) timeEl.textContent = 'Error loading';
-    console.error('Audio load error:', e);
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  const a = aud(); if (!a) return;
-  loadAudioAsBlob(a);
 });
 
 // ── Custom speed input ────────────────────────────────────────────────────────
@@ -197,17 +192,17 @@ function editSpeed(el) {
   el.replaceWith(inp);
   inp.focus(); inp.select();
 
+  let committed = false;
   function commit() {
+    if (committed) return; committed = true;
     let v = parseFloat(inp.value);
     if (isNaN(v) || v < 0.5) v = 0.5;
     if (v > 10) v = 10;
-    // find nearest step or insert custom
     let closest = 0;
     SPEED_STEPS.forEach((s, i) => { if (Math.abs(s - v) < Math.abs(SPEED_STEPS[closest] - v)) closest = i; });
     if (Math.abs(SPEED_STEPS[closest] - v) < 0.01) {
       speedIdx = closest;
     } else {
-      // inject custom value temporarily
       SPEED_STEPS.splice(closest + (v > SPEED_STEPS[closest] ? 1 : 0), 0, Math.round(v * 100) / 100);
       speedIdx = SPEED_STEPS.indexOf(Math.round(v * 100) / 100);
     }
@@ -218,8 +213,12 @@ function editSpeed(el) {
     inp.replaceWith(span);
     syncSpeedUI();
   }
-  inp.addEventListener('blur', commit);
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); if (e.key === 'Escape') { inp.value = currentSpeed(); inp.blur(); } });
+  // Delay blur listener so mobile keyboard open doesn't immediately dismiss
+  setTimeout(() => inp.addEventListener('blur', commit), 300);
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { commit(); }
+    if (e.key === 'Escape') { committed = true; inp.replaceWith(el); syncSpeedUI(); }
+  });
 }
 
 // ── Init display on load ──────────────────────────────────────────────────────
