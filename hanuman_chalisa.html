@@ -108,27 +108,61 @@ body.light-mode .scroll-toggle-btn:hover{color:rgba(0,0,0,0.75);}
 body.light-mode .scroll-bar-open-btn{color:#3a2000;}
 body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 
-/* ── Pill: single-row audio + scroll layout ──────────────────────────────── */
-.scroll-bar{border-radius:20px;flex-direction:row;align-items:center;gap:8px;padding:10px 14px;min-width:0;max-width:96vw;}
-.pill-section{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;}
-.pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
-body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
-.pill-audio{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.pill-divider{width:1px;height:28px;background:rgba(255,255,255,0.15);flex-shrink:0;}
-.pill-scroll{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.audio-play-btn{background:linear-gradient(135deg,var(--gold),#ff6a00);border:none;color:var(--deep);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+/* ── Two floating pills: Audio (bottom-left) + Scroll (bottom-right) ─────── */
+.pill-base{position:fixed;bottom:20px;z-index:300;display:flex;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .2s;white-space:nowrap;}
+.pill-base.hidden{display:none;}
+/* Audio pill — bottom-left */
+#audioPill{left:14px;}
+/* Scroll pill — bottom-right */
+#scrollPill{right:14px;}
+/* Section label row */
+.pill-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px 4px;gap:8px;}
+.pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
+.pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
+.pill-close:hover{color:rgba(255,255,255,0.8);}
+/* Controls row */
+.pill-audio{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
+.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
+/* Re-open tabs */
+.pill-tab{position:fixed;bottom:20px;z-index:300;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 4px 20px rgba(0,0,0,0.4);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
+.pill-tab:hover{opacity:.8;}
+.pill-tab.hidden{display:none;}
+#audioTab{left:14px;}
+#scrollTab{right:14px;}
+.tab-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);flex-shrink:0;}
+/* Buttons */
+.audio-play-btn{background:linear-gradient(135deg,var(--gold),#ff6a00);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
 .audio-play-btn:hover{opacity:.8;}
-.audio-seek{-webkit-appearance:none;appearance:none;width:80px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+.scroll-play-btn{background:linear-gradient(135deg,var(--gold),#ff6a00);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.scroll-play-btn:hover{opacity:.8;}
+.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
+.scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
+.scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
+.scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
+.scroll-speed-slider{-webkit-appearance:none;appearance:none;width:80px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+.scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;}
+.scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
+/* Audio seek + time */
+.audio-seek{-webkit-appearance:none;appearance:none;width:90px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
 .audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;}
 .audio-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
-.audio-time{color:rgba(255,255,255,0.55);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:68px;text-align:center;}
-.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:36px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
+.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
 .audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
-body.light-mode .pill-divider{background:rgba(0,0,0,0.12);}
+/* Light mode */
+body.light-mode .pill-base,body.light-mode .pill-tab{background:rgba(255,248,230,0.97);border-color:rgba(0,0,0,0.11);box-shadow:0 4px 20px rgba(0,0,0,0.13);}
+body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
+body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
+body.light-mode .pill-close:hover{color:rgba(0,0,0,0.65);}
+body.light-mode .pill-tab{color:rgba(0,0,0,0.45);}
+body.light-mode .scroll-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
+body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
+body.light-mode .scroll-speed-val,.body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
-body.light-mode .audio-speed-val:hover{border-bottom-color:rgba(0,0,0,0.5);}
-@media(max-width:480px){.audio-seek{width:50px;}.scroll-speed-slider{width:60px;}.audio-time{display:none;}}
+body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
+@media(max-width:420px){.audio-seek{width:60px;}.scroll-speed-slider{width:55px;}.audio-time{display:none;}}
 </style>
 </head>
 <body>
@@ -268,37 +302,39 @@ body.light-mode .audio-speed-val:hover{border-bottom-color:rgba(0,0,0,0.5);}
 
 </main>
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<!-- SCROLL + AUDIO CONTROLLER -->
-<div class="scroll-bar" id="scrollBar">
-  <!-- Audio section -->
-  <div class="pill-section">
+<!-- ♪ AUDIO PILL (bottom-left) -->
+<div class="pill-base" id="audioPill">
+  <div class="pill-header">
     <span class="pill-label">♪ Audio</span>
-    <div class="pill-audio">
-      <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
-      <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" oninput="seekAudio(this.value)">
-      <span class="audio-time" id="audioTime">0:00 / 0:00</span>
-      <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set audio speed">1×</span>
-    </div>
+    <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
-  <!-- Divider -->
-  <div class="pill-divider"></div>
-  <!-- Scroll section -->
-  <div class="pill-section">
-    <span class="pill-label">↕ Scroll</span>
-    <div class="pill-scroll">
-      <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause auto-scroll">⇓</button>
-      <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
-      <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
-      <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
-      <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="30" value="7" step="1" oninput="updateSpeed(this.value)">
-    </div>
+  <div class="pill-audio">
+    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
+    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" oninput="seekAudio(this.value)">
+    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+    <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
-  <!-- Hide -->
-  <div class="sb-divider"></div>
-  <button class="scroll-toggle-btn" onclick="hideScrollBar()" title="Hide">✕</button>
 </div>
-<button class="scroll-bar-open-btn hidden" id="scrollOpenBtn" onclick="showScrollBar()">
-  <span class="ob-icon">⇓</span>Auto-scroll
+<button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
+  <span class="tab-dot"></span>Audio
+</button>
+
+<!-- ↕ SCROLL PILL (bottom-right) -->
+<div class="pill-base" id="scrollPill">
+  <div class="pill-header">
+    <span class="pill-label">↕ Scroll</span>
+    <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
+  </div>
+  <div class="pill-scroll-row">
+    <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause auto-scroll">⇓</button>
+    <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
+    <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
+    <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
+    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="30" value="7" step="1" oninput="updateSpeed(this.value)">
+  </div>
+</div>
+<button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">
+  <span class="tab-dot"></span>Scroll
 </button>
 <audio id="pageAudio" preload="none" src="https://audio-proxy.203asathvi.workers.dev/hanuman_chalisa.mp3"></audio>
 

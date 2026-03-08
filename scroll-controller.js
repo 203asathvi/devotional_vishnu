@@ -98,16 +98,26 @@ function syncSpeedUI() {
 
 function updateSpeed(v) { updateSpeedFromSlider(v); }
 
-// ── Show / hide scroll bar ────────────────────────────────────────────────────
-function hideScrollBar() {
-  document.getElementById('scrollBar').classList.add('hidden');
-  document.getElementById('scrollOpenBtn').classList.remove('hidden');
+// ── Show / hide pills ─────────────────────────────────────────────────────────
+function hideAudioPill() {
+  document.getElementById('audioPill').classList.add('hidden');
+  document.getElementById('audioTab').classList.remove('hidden');
 }
-
-function showScrollBar() {
-  document.getElementById('scrollBar').classList.remove('hidden');
-  document.getElementById('scrollOpenBtn').classList.add('hidden');
+function showAudioPill() {
+  document.getElementById('audioPill').classList.remove('hidden');
+  document.getElementById('audioTab').classList.add('hidden');
 }
+function hideScrollPill() {
+  document.getElementById('scrollPill').classList.add('hidden');
+  document.getElementById('scrollTab').classList.remove('hidden');
+}
+function showScrollPill() {
+  document.getElementById('scrollPill').classList.remove('hidden');
+  document.getElementById('scrollTab').classList.add('hidden');
+}
+// Legacy aliases
+function hideScrollBar() { hideScrollPill(); }
+function showScrollBar() { showScrollPill(); }
 
 // ── Audio player ─────────────────────────────────────────────────────────────
 
@@ -226,13 +236,17 @@ function editSpeed(el) {
 // ── Init display on load ──────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   syncSpeedUI();
-  // Fix mobile: touchend on scroll button so tap reliably toggles even during RAF loop
-  const btn = document.getElementById('scrollPlayBtn');
-  if (btn) {
-    btn.addEventListener('touchend', e => {
-      e.preventDefault();   // prevents ghost click re-triggering
-      e.stopPropagation();
-      toggleScroll();
+  // Fix mobile: touchend on both play buttons so taps fire reliably during RAF loop
+  const scrollBtn = document.getElementById('scrollPlayBtn');
+  if (scrollBtn) {
+    scrollBtn.addEventListener('touchend', e => {
+      e.preventDefault(); e.stopPropagation(); toggleScroll();
+    }, { passive: false });
+  }
+  const audioBtn = document.getElementById('audioPlayBtn');
+  if (audioBtn) {
+    audioBtn.addEventListener('touchend', e => {
+      e.preventDefault(); e.stopPropagation(); toggleAudio();
     }, { passive: false });
   }
 });
