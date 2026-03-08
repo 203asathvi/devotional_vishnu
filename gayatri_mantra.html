@@ -288,7 +288,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <span class="tab-dot"></span>Scroll
 </button>
 
-<audio id="pageAudio" preload="none" src="https://audio-proxy.203asathvi.workers.dev/gayatri_mantra.mp3"></audio>
+<audio id="pageAudio" preload="metadata" src="https://audio-proxy.203asathvi.workers.dev/gayatri_mantra.mp3"></audio>
 
 <script src="scroll-controller.js"></script>
 <script>
@@ -310,42 +310,83 @@ const VERSES = [
 ];
 
 let repeatN = 1;
+let repeatDebounce = null;
 
-function buildRows(forMeaning) {
-  const count = forMeaning ? 1 : repeatN;
-  let html = '';
-  for (let r = 0; r < count; r++) {
-    VERSES.forEach(v => {
-      const repBadge = (!forMeaning && count > 1 && v.id === 'gayatri')
-        ? `<span class="rep-label">— repetition ${r + 1} of ${count} —</span>` : '';
-      html += `<tr id="${v.id}-${r}">
-        <td class="num">${v.label}</td>
-        <td class="verse">
-          <span class="devanagari">${v.dev}</span>
-          ${v.l1}${v.l2 ? `<span class="l2">${v.l2}</span>` : ''}
-          ${repBadge}
-        </td>
-        <td class="meaning only-meaning">${v.meaning}</td>
-      </tr>`;
-    });
-    if (!forMeaning && r < count - 1) {
-      html += `<tr><td colspan="3" style="padding:0;border:none;">
-        <div style="height:1px;margin:0 14px;background:linear-gradient(90deg,transparent,rgba(240,160,48,0.18),transparent);"></div>
-      </td></tr>`;
-    }
+// Pre-build static row templates once — avoids re-rendering Devanagari on every keystroke
+function makeRowNode(v, repNum, total, forMeaning) {
+  const tr = document.createElement('tr');
+  tr.id = v.id + '-' + repNum;
+
+  // num cell
+  const tdNum = document.createElement('td');
+  tdNum.className = 'num';
+  tdNum.textContent = v.label;
+
+  // verse cell
+  const tdVerse = document.createElement('td');
+  tdVerse.className = 'verse';
+  const dev = document.createElement('span');
+  dev.className = 'devanagari';
+  dev.textContent = v.dev;
+  tdVerse.appendChild(dev);
+  tdVerse.appendChild(document.createTextNode(v.l1));
+  if (v.l2) {
+    const l2 = document.createElement('span');
+    l2.className = 'l2';
+    l2.textContent = v.l2;
+    tdVerse.appendChild(l2);
   }
-  return html;
+  if (!forMeaning && total > 1 && v.id === 'gayatri') {
+    const badge = document.createElement('span');
+    badge.className = 'rep-label';
+    badge.textContent = '— repetition ' + (repNum + 1) + ' of ' + total + ' —';
+    tdVerse.appendChild(badge);
+  }
+
+  // meaning cell
+  const tdMeaning = document.createElement('td');
+  tdMeaning.className = 'meaning only-meaning';
+  tdMeaning.textContent = v.meaning;
+
+  tr.appendChild(tdNum);
+  tr.appendChild(tdVerse);
+  tr.appendChild(tdMeaning);
+  return tr;
+}
+
+function makeDividerRow() {
+  const tr = document.createElement('tr');
+  const td = document.createElement('td');
+  td.colSpan = 3;
+  td.style.cssText = 'padding:0;border:none;';
+  const div = document.createElement('div');
+  div.style.cssText = 'height:1px;margin:0 14px;background:linear-gradient(90deg,transparent,rgba(240,160,48,0.18),transparent);';
+  td.appendChild(div);
+  tr.appendChild(td);
+  return tr;
 }
 
 function renderMantra() {
   const isMeaning = document.getElementById('main').classList.contains('view-meaning');
-  document.getElementById('mantra-tbody').innerHTML = buildRows(isMeaning);
+  const count = isMeaning ? 1 : repeatN;
+  const frag = document.createDocumentFragment();
+  for (let r = 0; r < count; r++) {
+    VERSES.forEach(v => frag.appendChild(makeRowNode(v, r, count, isMeaning)));
+    if (!isMeaning && r < count - 1) frag.appendChild(makeDividerRow());
+  }
+  const tbody = document.getElementById('mantra-tbody');
+  tbody.innerHTML = '';          // clear
+  tbody.appendChild(frag);      // single DOM write
 }
 
 function applyRepeat() {
-  const raw = parseInt(document.getElementById('repeatCount').value, 10);
-  repeatN = (isNaN(raw) || raw < 1) ? 1 : Math.min(raw, 1008);
-  renderMantra();
+  // Debounce: wait 400ms after user stops typing before re-rendering
+  clearTimeout(repeatDebounce);
+  repeatDebounce = setTimeout(() => {
+    const raw = parseInt(document.getElementById('repeatCount').value, 10);
+    repeatN = (isNaN(raw) || raw < 1) ? 1 : Math.min(raw, 1008);
+    renderMantra();
+  }, 400);
 }
 
 function setView(v) {
@@ -399,12 +440,61 @@ window.addEventListener('scroll', () => {
 
 window.addEventListener('touchstart', () => { if (scrollActive) stopScroll(); }, { passive: true });
 
+// ── Local audio override: handles load-first + visible error feedback ─────────
+function toggleAudio() {
+  const a = document.getElementById('pageAudio');
+  const btn = document.getElementById('audioPlayBtn');
+  if (!a || !btn) return;
+
+  if (!a.paused) {
+    a.pause();
+    btn.textContent = '▶';
+    return;
+  }
+
+  // Show loading state immediately on tap
+  btn.textContent = '…';
+  btn.disabled = true;
+
+  // Force load if not already loaded (needed after preload=metadata on some browsers)
+  if (a.readyState < 2) { a.load(); }
+
+  a.play()
+    .then(() => {
+      btn.textContent = '⏸';
+      btn.disabled = false;
+    })
+    .catch(err => {
+      btn.textContent = '✕';
+      btn.disabled = false;
+      btn.title = 'Audio unavailable — check file is uploaded';
+      setTimeout(() => { btn.textContent = '▶'; btn.title = 'Play / Pause audio'; }, 2500);
+      console.warn('Audio play failed:', err);
+    });
+}
+
 (function () {
   if (localStorage.getItem('sacredTheme') === 'light') {
     document.body.classList.add('light-mode');
     document.getElementById('modeBtn').textContent = '🌙';
   }
   renderMantra();
+
+  // Wire audio error event to show feedback on the button
+  const a = document.getElementById('pageAudio');
+  const btn = document.getElementById('audioPlayBtn');
+  if (a && btn) {
+    a.addEventListener('error', () => {
+      btn.disabled = false;
+      btn.textContent = '✕';
+      btn.title = 'Audio file not found — upload gayatri_mantra.mp3 to GitHub Releases';
+      setTimeout(() => { btn.textContent = '▶'; btn.title = 'Play / Pause audio'; }, 3000);
+    });
+    a.addEventListener('waiting', () => { btn.textContent = '…'; });
+    a.addEventListener('playing', () => { btn.textContent = '⏸'; btn.disabled = false; });
+    a.addEventListener('pause',   () => { btn.textContent = '▶'; });
+    a.addEventListener('ended',   () => { btn.textContent = '▶'; });
+  }
 })();
 </script>
 </body>
