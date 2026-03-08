@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Śrī Gāyatrī Mantra</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sun:#f0a030;--sun2:#ff8c00;--sun3:#ffe066;
+  --bg:#07040a;--card:#140c00;--border:rgba(240,160,48,0.25);
+  --text:#f5ecd8;--muted:#a89060;--deep:#1a0a00;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 80% 50% at 50% -10%,rgba(240,160,48,0.13) 0%,transparent 70%),
+  radial-gradient(ellipse 60% 40% at 80% 100%,rgba(255,140,0,0.07) 0%,transparent 60%);
+  pointer-events:none;z-index:0;}
+body.light-mode::before{background:none !important;}
+nav{position:sticky;top:0;z-index:100;background:rgba(7,4,10,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
+body.light-mode nav{background:rgba(253,246,236,0.97);}
+.nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--sun);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
+.nav-controls{display:flex;gap:6px;align-items:center;}
+.nav-btn{background:rgba(240,160,48,0.1);border:1px solid var(--border);color:var(--sun);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(240,160,48,0.28);border-color:var(--sun);}
+.nav-home{background:rgba(240,160,48,0.1);border:1px solid rgba(240,160,48,0.3);color:var(--sun);padding:5px 11px;border-radius:4px;font-size:13px;text-decoration:none;transition:all .2s;font-family:'Cinzel',serif;}
+.nav-home:hover{background:rgba(240,160,48,0.25);}
+.progress-bar{position:fixed;top:52px;left:0;z-index:99;height:2px;background:linear-gradient(90deg,var(--sun),var(--sun2));width:0%;box-shadow:0 0 8px var(--sun);}
+.hero{position:relative;z-index:1;text-align:center;padding:44px 16px 24px;border-bottom:1px solid var(--border);}
+.hero-icon{font-size:54px;line-height:1;margin-bottom:8px;display:block;animation:pulse 4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 12px rgba(240,160,48,0.3));}50%{filter:drop-shadow(0 0 30px rgba(240,160,48,0.75));}}
+.hero h1{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,30px);font-weight:700;color:var(--sun);letter-spacing:2px;margin-bottom:4px;}
+.hero-dev{font-size:clamp(18px,4.5vw,28px);color:var(--sun3);margin-bottom:6px;letter-spacing:1px;}
+.hero-sub{font-size:13px;color:var(--muted);font-style:italic;}
+.divider{display:flex;align-items:center;gap:10px;max-width:360px;margin:14px auto 0;color:var(--sun);font-size:16px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--sun),transparent);}
+.view-toggle{position:relative;z-index:1;display:flex;justify-content:center;padding:16px 14px 8px;}
+.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
+.vt-btn:first-child{border-radius:6px 0 0 6px;}
+.vt-btn:last-child{border-radius:0 6px 6px 0;border-left:none;}
+.vt-btn.active{background:rgba(240,160,48,0.18);border-color:var(--sun);color:var(--sun);}
+.repeat-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 14px 12px;flex-wrap:wrap;}
+.repeat-bar label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;color:var(--muted);}
+.repeat-input{width:64px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:6px;font-size:15px;font-family:'EB Garamond',serif;text-align:center;outline:none;}
+.repeat-input:focus{border-color:var(--sun);}
+body.light-mode .repeat-input{background:#fff8f0;color:#2a1a00;}
+.repeat-hint{font-size:11px;color:var(--muted);font-style:italic;width:100%;text-align:center;}
+.search-bar{position:relative;z-index:1;padding:6px 14px 10px;display:none;}
+.search-bar.active{display:block;}
+.search-bar input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:6px;font-size:16px;font-family:'EB Garamond',serif;outline:none;}
+.search-bar input:focus{border-color:var(--sun);}
+.search-bar input::placeholder{color:var(--muted);}
+main{position:relative;z-index:1;padding:0 14px 120px;max-width:960px;margin:0 auto;}
+.section{margin-top:24px;}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer;user-select:none;}
+.section-header h2{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--sun);text-transform:uppercase;white-space:nowrap;}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--sun) 0%,transparent 100%);opacity:.4;}
+.section-toggle{color:var(--sun);font-size:16px;transition:transform .3s;}
+.section-toggle.collapsed{transform:rotate(-90deg);}
+.note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--sun);margin:9px 0 12px;background:rgba(240,160,48,0.04);border-radius:0 4px 4px 0;line-height:1.6;}
+.tbl-wrap{overflow-x:auto;margin-bottom:12px;border:1px solid var(--border);border-radius:8px;}
+table{width:100%;border-collapse:collapse;font-size:16px;}
+table th{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--sun);text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;background:rgba(240,160,48,0.07);}
+table td{padding:11px 14px;border-bottom:1px solid rgba(240,160,48,0.1);vertical-align:top;line-height:1.65;}
+table tbody tr:last-child td{border-bottom:none;}
+table tbody tr:hover td{background:rgba(240,160,48,0.05);}
+td.num{font-family:'Cinzel',serif;font-size:10px;color:var(--sun);opacity:.75;width:80px;white-space:nowrap;padding-top:14px;}
+td.verse{font-size:17px;}
+td.verse .devanagari{display:block;font-size:22px;color:var(--sun3);letter-spacing:1px;margin-bottom:6px;line-height:1.5;}
+td.verse .l2{color:#d4c49a;padding-left:12px;display:block;margin-top:2px;}
+td.meaning{font-style:italic;color:var(--muted);font-size:15px;border-left:2px solid rgba(240,160,48,0.25);padding-left:16px;}
+tr.hl td{background:rgba(240,160,48,0.1) !important;}
+.rep-label{font-family:'Cinzel',serif;font-size:9px;color:var(--sun);letter-spacing:1px;opacity:.55;display:block;margin-top:4px;}
+.sig-card{background:rgba(240,160,48,0.05);border:1px solid rgba(240,160,48,0.15);border-radius:10px;padding:18px 20px;margin-bottom:14px;line-height:1.75;}
+.sig-card h3{font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--sun);text-transform:uppercase;margin-bottom:8px;}
+.sig-card p{color:var(--muted);font-size:15px;}
+body.light-mode .sig-card p{color:#6a5030;}
+.view-shloka .only-meaning{display:none;}
+.view-meaning .only-shloka{display:none;}
+.back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:linear-gradient(135deg,var(--sun),var(--sun2));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(240,160,48,0.4);}
+.back-top.visible{display:flex;}
+mark{background:rgba(240,160,48,0.3);color:inherit;border-radius:2px;}
+body.light-mode{--bg:#fdf6ec;--card:#fff8f0;--text:#2a1a00;--muted:#7a5020;--border:rgba(180,110,20,0.25);--deep:#1a0a00;}
+body.light-mode td.verse .l2{color:#5a3a08;}
+body.light-mode td.meaning{color:#5a4010;}
+body.light-mode td.verse .devanagari{color:#b07818;}
+@media(max-width:640px){body{font-size:16px;}td.meaning{font-size:14px;}td.num{width:56px;font-size:9px;}}
+/* ── Pills ── */
+.pill-base{position:fixed;bottom:20px;z-index:300;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .2s;white-space:nowrap;}
+.pill-base.hidden{display:none;}
+#audioPill{left:14px;}
+#scrollPill{right:14px;}
+.pill-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px 4px;gap:8px;}
+.pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
+.pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
+.pill-close:hover{color:rgba(255,255,255,0.8);}
+.pill-audio{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
+.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
+.pill-tab{position:fixed;bottom:20px;z-index:300;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 4px 20px rgba(0,0,0,0.4);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
+.pill-tab:hover{opacity:.8;}
+.pill-tab.hidden{display:none;}
+#audioTab{left:14px;}
+#scrollTab{right:14px;}
+.tab-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));flex-shrink:0;}
+.audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.audio-play-btn:hover{opacity:.8;}
+.scroll-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.scroll-play-btn:hover{opacity:.8;}
+.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
+.scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
+.scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
+.scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
+.scroll-speed-slider{-webkit-appearance:none;appearance:none;width:80px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+.scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
+.scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
+.audio-seek{-webkit-appearance:none;appearance:none;width:90px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
+.audio-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
+.audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
+.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
+body.light-mode .pill-base,body.light-mode .pill-tab{background:rgba(255,248,230,0.97);border-color:rgba(0,0,0,0.11);box-shadow:0 4px 20px rgba(0,0,0,0.13);}
+body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
+body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
+body.light-mode .pill-close:hover{color:rgba(0,0,0,0.65);}
+body.light-mode .pill-tab{color:rgba(0,0,0,0.45);}
+body.light-mode .scroll-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
+body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
+body.light-mode .scroll-speed-val,body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
+body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
+body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
+@media(max-width:420px){.audio-seek{width:60px;}.scroll-speed-slider{width:55px;}.audio-time{display:none;}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progress"></div>
+<nav>
+  <div class="nav-title">☀️ Śrī Gāyatrī Mantra</div>
+  <div class="nav-controls">
+    <a class="nav-home" href="index.html">🏠 Home</a>
+    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
+    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
+  </div>
+</nav>
+<div class="search-bar" id="searchBar">
+  <input type="text" id="searchInput" placeholder="Search mantra text…" oninput="doSearch(this.value)">
+</div>
+
+<div class="hero">
+  <span class="hero-icon">☀️</span>
+  <h1>Śrī Gāyatrī Mantra</h1>
+  <div class="hero-dev">ॐ भूर्भुवः स्वः</div>
+  <div class="hero-sub">Rig Veda 3.62.10 · Most Revered Mantra of the Vedas · 24 syllables in Gāyatrī metre</div>
+  <div class="divider">✦</div>
+</div>
+
+<div class="view-toggle">
+  <button class="vt-btn active" id="btn-shloka" onclick="setView('shloka')">📜 Shloka Only</button>
+  <button class="vt-btn" id="btn-meaning" onclick="setView('meaning')">📖 Shloka + Meaning</button>
+</div>
+
+<!-- Repeat bar — shloka view only; meaning view always shows once -->
+<div class="repeat-bar only-shloka" id="repeatBar">
+  <label for="repeatCount">Repeat mantra</label>
+  <input type="number" id="repeatCount" class="repeat-input" value="1" min="1" max="1008" oninput="applyRepeat()">
+  <span class="repeat-hint">Traditional counts: 10 · 32 · 64 · 108 · 1008</span>
+</div>
+
+<main id="main" class="view-shloka">
+
+<!-- MANTRA -->
+<div class="section" id="sec-mantra">
+  <div class="section-header" onclick="toggle('mantra-body','mantra-tog')">
+    <h2>The Gāyatrī Mantra</h2><div class="section-line"></div><span class="section-toggle" id="mantra-tog">▾</span>
+  </div>
+  <div id="mantra-body">
+    <div class="note">Always preceded by OM and the three Vyāhṛtis (Bhūr · Bhuvaḥ · Svaḥ). Chant at sunrise, midday, and sunset with full devotion.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Mantra</th>
+            <th class="only-meaning">Meaning</th>
+          </tr>
+        </thead>
+        <tbody id="mantra-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- WORD-BY-WORD — meaning view only -->
+<div class="section only-meaning" id="sec-wbw">
+  <div class="section-header" onclick="toggle('wbw-body','wbw-tog')">
+    <h2>Word-by-Word</h2><div class="section-line"></div><span class="section-toggle" id="wbw-tog">▾</span>
+  </div>
+  <div id="wbw-body">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Word</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td class="verse"><strong>OM (ॐ)</strong></td><td class="meaning">The primordial sound; the best and most complete name of the Supreme Lord. All Vedic chanting begins and ends with OM.</td></tr>
+          <tr><td class="verse"><strong>Bhūr (भूः)</strong></td><td class="meaning">The earth — the physical, gross world of matter</td></tr>
+          <tr><td class="verse"><strong>Bhuvaḥ (भुवः)</strong></td><td class="meaning">The intermediate region — the vital and mental world</td></tr>
+          <tr><td class="verse"><strong>Svaḥ / Suvaḥ (स्वः)</strong></td><td class="meaning">The heavenly world — the celestial, causal plane. ("Suvah" in South Indian Krishna Yajur Veda tradition.)</td></tr>
+          <tr><td class="verse"><strong>Tat (तत्)</strong></td><td class="meaning">That — referring to the Supreme Divine Reality</td></tr>
+          <tr><td class="verse"><strong>Savituḥ (सवितुर्)</strong></td><td class="meaning">Of Savitur — the sun as the Divine Creator and Illuminator</td></tr>
+          <tr><td class="verse"><strong>Vareṇyam (वरेण्यम्)</strong></td><td class="meaning">Adorable, most excellent, worthy of being chosen and meditated upon</td></tr>
+          <tr><td class="verse"><strong>Bhargo (भर्गो)</strong></td><td class="meaning">Radiance, effulgence, divine light (same as tejas) — the grammatical object of dhīmahi (what we meditate upon)</td></tr>
+          <tr><td class="verse"><strong>Devasya (देवस्य)</strong></td><td class="meaning">Of the Lord, of the Divine Being</td></tr>
+          <tr><td class="verse"><strong>Dhīmahi (धीमहि)</strong></td><td class="meaning">We meditate upon, we fix our minds on, we contemplate — this is the meditation part</td></tr>
+          <tr><td class="verse"><strong>Dhiyo (धियो)</strong></td><td class="meaning">Our intellects, thoughts, understanding and discriminative faculty</td></tr>
+          <tr><td class="verse"><strong>Yo (यो)</strong></td><td class="meaning">Who — referring to Parameshvara, the Supreme Lord represented by the sun</td></tr>
+          <tr><td class="verse"><strong>Naḥ (नः)</strong></td><td class="meaning">Our (first-person plural)</td></tr>
+          <tr><td class="verse"><strong>Prachodayāt (प्रचोदयात्)</strong></td><td class="meaning">May He stimulate, impel, inspire and illuminate — optative mood (a prayer). This is the prayer part of the mantra.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNIFICANCE — meaning view only -->
+<div class="section only-meaning" id="sec-sig">
+  <div class="section-header" onclick="toggle('sig-body','sig-tog')">
+    <h2>Significance</h2><div class="section-line"></div><span class="section-toggle" id="sig-tog">▾</span>
+  </div>
+  <div id="sig-body">
+    <div class="sig-card">
+      <h3>The Mantra of All Mantras</h3>
+      <p>The Gāyatrī Mantra (Rig Veda 3.62.10) is the most revered mantra in the Vedas — both a meditation and a prayer addressed to God as represented by the sun. Lord Krishna himself declares in the Bhagavad-Gita (10.35): <em>"Among the Vedic metres I am the Gāyatrī."</em> The sun — self-effulgent, the source of all light and life — is the most fitting symbol of the Supreme Lord.</p>
+    </div>
+    <div class="sig-card">
+      <h3>Structure of the Mantra</h3>
+      <p>All Vedic chanting begins and ends with <strong>OM</strong>. After OM, the three <em>Vyāhṛtis</em> (sacred utterances) are chanted: <strong>Bhūr · Bhuvaḥ · Svaḥ</strong> — the three worlds: earth, intermediate region, and heaven. In the Krishna Yajur Veda (South India), "Suvah" is used instead of "Svah." Only then follows the Gāyatrī proper — 24 syllables in the Gāyatrī metre, the finest of all Vedic metres.</p>
+    </div>
+    <div class="sig-card">
+      <h3>The Three Goddesses</h3>
+      <p>So sacred is this mantra it is personified as a goddess. In the <em>Sandhyāvandana</em> ritual it is invoked three times daily as three goddesses: <strong>Gāyatrī</strong> at sunrise, <strong>Sāvitrī</strong> at midday, and <strong>Sarasvatī</strong> at sunset.</p>
+    </div>
+    <div class="sig-card">
+      <h3>When &amp; How Often to Recite</h3>
+      <p>Recite at the three Sandhyā times — before/during sunrise, at noon, and at sunset. Traditional counts: <strong>1008 · 108 · 64 · 32</strong>, or at least <strong>10 times</strong>. The correct manner of recitation should be learnt from a qualified Guru. Regular chanting ethically and spiritually illumines the intellect, helping us make right choices in life.</p>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ♪ AUDIO PILL (bottom-left) -->
+<div class="pill-base" id="audioPill">
+  <div class="pill-header">
+    <span class="pill-label">♪ Audio</span>
+    <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
+  </div>
+  <div class="pill-audio">
+    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
+    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" oninput="seekAudio(this.value)">
+    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+    <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
+  </div>
+</div>
+<button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
+  <span class="tab-dot"></span>Audio
+</button>
+
+<!-- ↕ SCROLL PILL (bottom-right) -->
+<div class="pill-base" id="scrollPill">
+  <div class="pill-header">
+    <span class="pill-label">↕ Scroll</span>
+    <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
+  </div>
+  <div class="pill-scroll-row">
+    <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause auto-scroll">⇓</button>
+    <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
+    <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
+    <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
+    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="30" value="7" step="1" oninput="updateSpeed(this.value)">
+  </div>
+</div>
+<button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">
+  <span class="tab-dot"></span>Scroll
+</button>
+
+<audio id="pageAudio" preload="none" src="https://audio-proxy.203asathvi.workers.dev/gayatri_mantra.mp3"></audio>
+
+<script src="scroll-controller.js"></script>
+<script>
+// ─── Mantra data ──────────────────────────────────────────────────────────────
+const VERSES = [
+  {
+    id:'vyahrti', label:'VYĀHṚTI',
+    dev:'ॐ भूर्भुवः स्वः',
+    l1:'Om | Bhūr Bhuvaḥ Svaḥ |', l2:'',
+    meaning:'OM — the primordial name of the Supreme Lord. Bhūr — the earth (physical world). Bhuvaḥ — the intermediate vital region. Svaḥ (Suvaḥ) — the heavenly world. These three sacred Vyāhṛtis are auspicious and purifying, representing the three planes of existence.'
+  },
+  {
+    id:'gayatri', label:'GĀYATRĪ',
+    dev:'तत् सवितुर्वरेण्यम् | भर्गो देवस्य धीमहि | धियो यो नः प्रचोदयात् ॥',
+    l1:'Tat savitur vareṇyam |',
+    l2:'Bhargo devasya dhīmahi | dhiyo yo naḥ prachodayāt ||',
+    meaning:'We meditate upon (dhīmahi) that (tat) adorable, most excellent (vareṇyam) radiance / divine light (bhargo) of the Lord (devasya) Sun (savituḥ). May He (yo) — Parameshvara, the Supreme Lord represented by the sun — stimulate, impel and illuminate (prachodayāt) our (naḥ) intellects (dhiyo).'
+  }
+];
+
+let repeatN = 1;
+
+function buildRows(forMeaning) {
+  const count = forMeaning ? 1 : repeatN;
+  let html = '';
+  for (let r = 0; r < count; r++) {
+    VERSES.forEach(v => {
+      const repBadge = (!forMeaning && count > 1 && v.id === 'gayatri')
+        ? `<span class="rep-label">— repetition ${r + 1} of ${count} —</span>` : '';
+      html += `<tr id="${v.id}-${r}">
+        <td class="num">${v.label}</td>
+        <td class="verse">
+          <span class="devanagari">${v.dev}</span>
+          ${v.l1}${v.l2 ? `<span class="l2">${v.l2}</span>` : ''}
+          ${repBadge}
+        </td>
+        <td class="meaning only-meaning">${v.meaning}</td>
+      </tr>`;
+    });
+    if (!forMeaning && r < count - 1) {
+      html += `<tr><td colspan="3" style="padding:0;border:none;">
+        <div style="height:1px;margin:0 14px;background:linear-gradient(90deg,transparent,rgba(240,160,48,0.18),transparent);"></div>
+      </td></tr>`;
+    }
+  }
+  return html;
+}
+
+function renderMantra() {
+  const isMeaning = document.getElementById('main').classList.contains('view-meaning');
+  document.getElementById('mantra-tbody').innerHTML = buildRows(isMeaning);
+}
+
+function applyRepeat() {
+  const raw = parseInt(document.getElementById('repeatCount').value, 10);
+  repeatN = (isNaN(raw) || raw < 1) ? 1 : Math.min(raw, 1008);
+  renderMantra();
+}
+
+function setView(v) {
+  document.getElementById('main').className = 'view-' + v;
+  document.getElementById('btn-shloka').classList.toggle('active', v === 'shloka');
+  document.getElementById('btn-meaning').classList.toggle('active', v === 'meaning');
+  document.getElementById('repeatBar').style.display = (v === 'meaning') ? 'none' : '';
+  renderMantra();
+}
+
+function toggle(bodyId, togId) {
+  const b = document.getElementById(bodyId), t = document.getElementById(togId);
+  const vis = b.style.display !== 'none';
+  b.style.display = vis ? 'none' : '';
+  t.classList.toggle('collapsed', vis);
+}
+
+let fs = 17;
+function changeFontSize(d) { fs = Math.max(12, Math.min(26, fs + d)); document.body.style.fontSize = fs + 'px'; }
+
+function toggleMode() {
+  const isLight = document.body.classList.toggle('light-mode');
+  localStorage.setItem('sacredTheme', isLight ? 'light' : 'dark');
+  document.getElementById('modeBtn').textContent = isLight ? '🌙' : '☀️';
+}
+
+function toggleSearch() {
+  const b = document.getElementById('searchBar');
+  b.classList.toggle('active');
+  document.getElementById('searchBtn').classList.toggle('active', b.classList.contains('active'));
+  if (b.classList.contains('active')) document.getElementById('searchInput').focus();
+  else doSearch('');
+}
+
+function doSearch(q) {
+  q = q.trim().toLowerCase();
+  document.querySelectorAll('#mantra-tbody tr').forEach(tr => {
+    if (!q) { tr.classList.remove('hl'); tr.style.display = ''; return; }
+    const t = tr.textContent.toLowerCase();
+    tr.classList.toggle('hl', t.includes(q));
+    tr.style.display = t.includes(q) ? '' : 'none';
+  });
+}
+
+window.addEventListener('scroll', () => {
+  const s = window.scrollY, tot = document.body.scrollHeight - window.innerHeight;
+  if (scrollActive && s >= tot - 4) stopScroll();
+  document.getElementById('progress').style.width = (s / tot * 100) + '%';
+  document.getElementById('backTop').classList.toggle('visible', s > 400);
+});
+
+window.addEventListener('touchstart', () => { if (scrollActive) stopScroll(); }, { passive: true });
+
+(function () {
+  if (localStorage.getItem('sacredTheme') === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('modeBtn').textContent = '🌙';
+  }
+  renderMantra();
+})();
+</script>
+</body>
+</html>

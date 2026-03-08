@@ -16,6 +16,7 @@
   --green:#7ac9a0;--teal:#3bb89a;
   --card-a:#1a0d00;--border-a:rgba(240,160,48,0.3);
   --card-lk:#001a10;--border-lk:rgba(60,185,155,0.3);
+  --card-gy:#100800;--border-gy:rgba(240,160,48,0.35);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
@@ -223,6 +224,19 @@ body::after{
 }
 .card-lk::before{background:radial-gradient(ellipse at 50% 0%,rgba(60,185,155,0.12),transparent 70%);}
 .card-lk:hover{box-shadow:0 12px 60px rgba(60,185,155,0.2);}
+
+/* Gayatri card — amber/golden sun */
+.card-gy{
+  background:var(--card-gy);
+  border:1px solid var(--border-gy);
+  box-shadow:0 4px 40px rgba(240,160,48,0.10);
+}
+.card-gy::before{background:radial-gradient(ellipse at 50% 0%,rgba(255,200,60,0.15),transparent 70%);}
+.card-gy:hover{box-shadow:0 12px 60px rgba(240,160,48,0.28);}
+.card-gy .card-title{color:#ffe066;}
+.card-gy .card-btn{background:rgba(240,160,48,0.12);border:1px solid #f0a030;color:#f0a030;}
+.card-gy .card-btn:hover{background:rgba(240,160,48,0.28);}
+.card-gy .card-tag{background:rgba(240,160,48,0.08);border:1px solid rgba(240,160,48,0.35);color:#f0a030;}
   font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;
   color:var(--muted);margin-bottom:6px;
 }
@@ -269,6 +283,11 @@ body.light-mode .card-v .card-btn{background:rgba(160,120,32,0.12);border-color:
 body.light-mode .card-l .card-btn{background:rgba(176,64,128,0.10);border-color:#b04080;color:#b04080;}
 body.light-mode .card-a .card-btn{background:rgba(192,96,0,0.10);border-color:#c06000;color:#c06000;}
 body.light-mode .card-lk .card-btn{background:rgba(26,128,96,0.10);border-color:#1a8060;color:#1a8060;}
+body.light-mode .card-gy{background:#fffaee !important;border-color:rgba(160,120,20,0.4);box-shadow:0 4px 24px rgba(180,130,0,0.12);}
+body.light-mode .card-gy .card-title{color:#a07820;}
+body.light-mode .card-gy .card-dev{color:#b08828 !important;font-weight:600;}
+body.light-mode .card-gy .card-btn{background:rgba(160,120,20,0.10);border-color:#a07820;color:#a07820;}
+body.light-mode .card-gy .card-tag{background:rgba(160,120,20,0.08);border-color:rgba(160,120,20,0.35);color:#a07820;}
 /* Other text */
 body.light-mode .card-desc{color:#4a3e2a;}
 body.light-mode .header h1{color:#a07820;}
@@ -378,6 +397,23 @@ body.light-mode #modeBtn{border-color:#a07820 !important;color:#a07820 !importan
 </div>
       <div class="card-spacer"></div>
             <div class="card-btn">Begin Recitation →</div>
+    </a>
+
+    <!-- Gayatri Mantra -->
+    <a class="card card-gy" href="gayatri_mantra.html">
+      <div class="card-tag">Rig Veda 3.62.10</div>
+      <div class="card-deity" style="font-size:64px;margin-bottom:14px;">☀️</div>
+      <div class="card-body">
+        <div class="card-names">Sacred Mantra · 24 syllables</div>
+        <div class="card-title">Śrī Gāyatrī Mantra</div>
+        <div class="card-dev" style="color:var(--gold-light);">ॐ भूर्भुवः स्वः</div>
+        <div class="card-desc">
+          The most revered mantra in the Vedas, from Rig Veda 3.62.10,<br>
+          a meditation and prayer to the Divine represented by the sun.
+        </div>
+      </div>
+      <div class="card-spacer"></div>
+      <div class="card-btn">Begin Recitation →</div>
     </a>
 
   </div>
