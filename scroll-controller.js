@@ -17,13 +17,14 @@ const SPEED_STEPS = [
   3.25,3.50,3.75,4.00,4.25,4.50,4.75,5.00
 ];
 
-let speedIdx   = 6;          // 1.6× default
+let speedIdx    = 6;          // 1.6× default (index into SPEED_STEPS)
+let customSpeed = null;       // non-null when user typed a value not in SPEED_STEPS
 let scrollActive = false;
 let scrollRAF    = null;
 let lastTime     = null;
 
-function currentSpeed()          { return SPEED_STEPS[speedIdx]; }
-function speedToPxPerSec(s)      { return s * 18; }
+function currentSpeed() { return customSpeed !== null ? customSpeed : SPEED_STEPS[speedIdx]; }
+function speedToPxPerSec(s) { return s * 18; }
 
 // ── Scroll loop ───────────────────────────────────────────────────────────────
 function scrollStep(ts) {
@@ -85,14 +86,30 @@ function updateSpeedFromSlider(v) {
 }
 
 function adjustSpeed(dir) {
-  const newIdx = Math.max(0, Math.min(SPEED_STEPS.length - 1, speedIdx + dir));
-  if (SPEED_STEPS[newIdx] < 1.00) return;  // never go below 1×
-  speedIdx = newIdx;
+  // If on a custom speed, snap to nearest step in that direction first
+  if (customSpeed !== null) {
+    let nearest = 0;
+    SPEED_STEPS.forEach((s, i) => {
+      if (Math.abs(s - customSpeed) < Math.abs(SPEED_STEPS[nearest] - customSpeed)) nearest = i;
+    });
+    // step past the nearest in the requested direction
+    const candidate = nearest + dir;
+    const newIdx = Math.max(0, Math.min(SPEED_STEPS.length - 1, candidate));
+    if (SPEED_STEPS[newIdx] < 1.00) return;
+    customSpeed = null;
+    speedIdx = newIdx;
+  } else {
+    const newIdx = Math.max(0, Math.min(SPEED_STEPS.length - 1, speedIdx + dir));
+    if (SPEED_STEPS[newIdx] < 1.00) return;
+    speedIdx = newIdx;
+  }
   syncSpeedUI();
 }
 
 function syncSpeedUI() {
-  document.getElementById('speedVal').textContent = currentSpeed() + '×';
+  const s = currentSpeed();
+  document.getElementById('speedVal').textContent = s + '×';
+  // Slider shows nearest step position (custom values sit between notches)
   document.getElementById('speedSlider').value = speedIdx + 1;
 }
 
@@ -208,15 +225,18 @@ function editSpeed(el) {
   function commit() {
     if (committed) return; committed = true;
     let v = parseFloat(inp.value);
-    if (isNaN(v) || v < 0.5) v = 0.5;
+    if (isNaN(v) || v < 1.00) v = 1.00;
     if (v > 10) v = 10;
+    v = Math.round(v * 100) / 100;
+    // Find nearest step in the ORIGINAL unmodified array
     let closest = 0;
     SPEED_STEPS.forEach((s, i) => { if (Math.abs(s - v) < Math.abs(SPEED_STEPS[closest] - v)) closest = i; });
-    if (Math.abs(SPEED_STEPS[closest] - v) < 0.01) {
+    if (Math.abs(SPEED_STEPS[closest] - v) < 0.005) {
+      customSpeed = null;   // exact match — use the step
       speedIdx = closest;
     } else {
-      SPEED_STEPS.splice(closest + (v > SPEED_STEPS[closest] ? 1 : 0), 0, Math.round(v * 100) / 100);
-      speedIdx = SPEED_STEPS.indexOf(Math.round(v * 100) / 100);
+      customSpeed = v;      // store as custom, never mutate SPEED_STEPS
+      speedIdx = closest;   // slider thumb sits at nearest step
     }
     const span = document.createElement('span');
     span.className = 'scroll-speed-val'; span.id = 'speedVal';
