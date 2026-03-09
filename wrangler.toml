@@ -1,0 +1,27 @@
+# wrangler.toml — Cloudflare Pages configuration
+# Place this file in the root of your repository.
+
+name = "devotional-vishnu"        # ← your Cloudflare Pages project name
+compatibility_date = "2024-01-01"
+
+# Static site — no build step needed, files are served directly
+[env.production]
+# No build command needed for plain HTML/JS/CSS
+
+# Optional: custom headers for all pages
+[[headers]]
+for = "/*"
+[headers.values]
+  X-Frame-Options = "SAMEORIGIN"
+  X-Content-Type-Options = "nosniff"
+  Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+for = "/support-panel.js"
+[headers.values]
+  Cache-Control = "public, max-age=86400, must-revalidate"
+
+[[headers]]
+for = "/scroll-controller.js"
+[headers.values]
+  Cache-Control = "public, max-age=86400, must-revalidate"
