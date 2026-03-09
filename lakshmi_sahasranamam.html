@@ -290,11 +290,11 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
   </div>
   <div class="pill-scroll-row">
-    <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause auto-scroll">⇓</button>
-    <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
+    <button class="scroll-play-btn" id="scrollPlayBtn" title="Play / Pause auto-scroll">⇓</button>
+    <button class="scroll-speed-btn" id="speedDown" title="Slower">−</button>
     <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
-    <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
-    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="209" value="7" step="1" oninput="updateSpeed(this.value)">
+    <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
+    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="209" value="66" step="1" oninput="updateSpeed(this.value)">
   </div>
 </div>
 <button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">

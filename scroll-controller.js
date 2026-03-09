@@ -271,13 +271,31 @@ function editSpeed(el) {
 // ── Init display on load ──────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   syncSpeedUI();
-  // Fix mobile: touchend on both play buttons so taps fire reliably during RAF loop
+
+  // ── Scroll play button ────────────────────────────────────────────────────
+  // Use ONLY JS listeners (no onclick in HTML) to prevent double-fire on mobile
   const scrollBtn = document.getElementById('scrollPlayBtn');
   if (scrollBtn) {
+    scrollBtn.addEventListener('click', toggleScroll);
     scrollBtn.addEventListener('touchend', e => {
       e.preventDefault(); e.stopPropagation(); toggleScroll();
     }, { passive: false });
   }
+
+  // ── Speed buttons ─────────────────────────────────────────────────────────
+  // onclick removed from HTML; handled here to prevent double-fire on mobile
+  function wireSpeedBtn(id, dir) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('click', function() { adjustSpeed(dir); });
+    btn.addEventListener('touchend', function(e) {
+      e.preventDefault(); e.stopPropagation(); adjustSpeed(dir);
+    }, { passive: false });
+  }
+  wireSpeedBtn('speedDown', -1);
+  wireSpeedBtn('speedUp',    1);
+
+  // ── Audio play button ─────────────────────────────────────────────────────
   const audioBtn = document.getElementById('audioPlayBtn');
   if (audioBtn) {
     audioBtn.addEventListener('touchend', e => {
