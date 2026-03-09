@@ -75,6 +75,13 @@ body{background:#0a0812;color:#f0e6cc;font-family:'Segoe UI',system-ui,sans-seri
     <div class="admin-controls">
       <select class="filter-select" id="pageFilter">
         <option value="">All pages</option>
+        <option value="index">Index</option>
+        <option value="vishnu_sahasranamam">Vishnu Sahasranamam</option>
+        <option value="lakshmi_sahasranamam">Lakshmi Sahasranamam</option>
+        <option value="lalitha_sahasranamam">Lalitha Sahasranamam</option>
+        <option value="hanuman_chalisa">Hanuman Chalisa</option>
+        <option value="aditya_hridayam">Aditya Hridayam</option>
+        <option value="gayatri_mantra">Gayatri Mantra</option>
       </select>
       <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
       <button class="logout-btn" id="logoutBtn">Logout</button>
@@ -177,17 +184,19 @@ function renderAll(comments) {
   q('statPages').textContent = Object.keys(pages).length;
   q('statToday').textContent  = todayCount;
 
-  // Populate page filter
+  // Add any pages from DB not already in the hardcoded dropdown
   var sel = q('pageFilter');
   var current = sel.value;
-  sel.innerHTML = '<option value="">All pages</option>';
+  var existing = Array.from(sel.options).map(function(o){ return o.value; });
   Object.keys(pages).sort().forEach(function (p) {
-    var opt = document.createElement('option');
-    opt.value = p;
-    opt.textContent = p.replace(/_/g, ' ');
-    if (p === current) opt.selected = true;
-    sel.appendChild(opt);
+    if (existing.indexOf(p) === -1) {
+      var opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p.replace(/_/g, ' ');
+      sel.appendChild(opt);
+    }
   });
+  sel.value = current;
 
   renderComments(current ? comments.filter(function (c) { return c.page === current; }) : comments);
 }
