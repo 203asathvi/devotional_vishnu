@@ -117,38 +117,7 @@ tr.speaker-row td{padding:0;border:none;}
 .back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:linear-gradient(135deg,var(--vis),var(--vis2));color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(122,32,149,0.5);}
 .back-top.visible{display:flex;}
 
-/* AUTO-SCROLL CONTROLLER */
-.scroll-bar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(15,10,25,0.92);border:1px solid rgba(255,255,255,0.12);border-radius:999px;backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .25s;white-space:nowrap;}
-.scroll-bar.hidden{display:none;}
-.scroll-play-btn{background:linear-gradient(135deg,var(--vis),var(--vis2));border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
-.scroll-play-btn:hover{opacity:.8;}
-.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:32px;height:32px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
-.scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
-.scroll-speed-val{color:#e8d8ff;font-size:14px;font-family:'Cinzel',serif;min-width:42px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
-.scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
-.scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
-body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
-body.light-mode .scroll-speed-val{border-bottom-color:rgba(0,0,0,0.2);}
-body.light-mode .scroll-speed-val:hover{border-bottom-color:rgba(0,0,0,0.5);}
-.scroll-speed-slider{-webkit-appearance:none;appearance:none;width:100px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
-.scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--vis),var(--vis2));cursor:pointer;}
-.scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--vis),var(--vis2));cursor:pointer;border:none;}
-.sb-divider{width:1px;height:28px;background:rgba(255,255,255,0.15);margin:0 2px;flex-shrink:0;}
-.scroll-toggle-btn{background:none;border:none;color:rgba(255,255,255,0.4);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;transition:color .15s;flex-shrink:0;}
-.scroll-toggle-btn:hover{color:rgba(255,255,255,0.9);}
-@media(max-width:400px){.scroll-speed-slider{display:none;}.scroll-speed-val{min-width:28px;font-size:11px;}}
-.scroll-bar-open-btn{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:6px;padding:10px 18px 10px 14px;background:rgba(15,10,25,0.92);border:1px solid rgba(255,255,255,0.12);border-radius:999px;backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(0,0,0,0.5);color:#e0d8f0;font-size:14px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:opacity .2s;}
-.scroll-bar-open-btn:hover{opacity:.8;}
-.scroll-bar-open-btn.hidden{display:none;}
-.ob-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--vis),var(--vis2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0;}
-body.light-mode .scroll-bar,body.light-mode .scroll-bar-open-btn{background:rgba(255,248,230,0.97);border-color:rgba(0,0,0,0.12);box-shadow:0 4px 24px rgba(0,0,0,0.15);}
-body.light-mode .scroll-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
-body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
-body.light-mode .scroll-speed-val{color:#3a2000;}
-body.light-mode .scroll-toggle-btn{color:rgba(0,0,0,0.35);}
-body.light-mode .scroll-toggle-btn:hover{color:rgba(0,0,0,0.75);}
-body.light-mode .scroll-bar-open-btn{color:#3a2000;}
-body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
+
 body.light-mode{--bg:#fdf6ec;--card:#fff6e0;--text:#2a1a00;--muted:#80601a;--border:rgba(180,120,20,0.25);}
 body.light-mode td.verse .l2{color:#5a3a08;}
 body.light-mode td.meaning{color:#5a4010;}
@@ -212,7 +181,8 @@ body.light-mode .scroll-speed-val,.body.light-mode .audio-speed-val{color:#3a200
 body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
-@media(max-width:420px){.audio-seek{width:60px;}.scroll-speed-slider{width:55px;}.audio-time{display:none;}}
+@media(max-width:480px){.audio-seek{width:60px;}.scroll-speed-slider{width:50px;}.audio-time{display:none;}}
+@media(max-width:400px){.audio-seek{width:44px;}.scroll-speed-slider{display:none;}.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
 </style>
 </head>
 <body>
@@ -1315,10 +1285,8 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <span class="tab-dot"></span>Scroll
 </button>
 
-<button class="scroll-bar-open-btn hidden" id="scrollOpenBtn" onclick="showScrollBar()">
-  <span class="ob-icon">⇓</span>Auto-scroll
-</button>
-<audio id="pageAudio" preload="none" src="https://audio-proxy.203asathvi.workers.dev/vishnu_sahasranamam.mp3"></audio>
+
+<audio id="pageAudio" preload="metadata" src="https://audio-proxy.203asathvi.workers.dev/vishnu_sahasranamam.mp3"></audio>
 
 <script src="scroll-controller.js"></script>
 <script>
@@ -1385,19 +1353,38 @@ window.addEventListener('scroll',()=>{
   if(scrollActive && s>=tot-4){stopScroll();}
 });
 
-let touchStartY=0,touchStartX=0,touchOnBar=false;
-window.addEventListener('touchstart',(e)=>{
-  touchStartY=e.touches[0].clientY;
-  touchStartX=e.touches[0].clientX;
-  touchOnBar=!!e.target.closest('.scroll-bar,.scroll-bar-open-btn');
-},{passive:true});
-window.addEventListener('touchmove',(e)=>{
-  if(touchOnBar)return;
-  if(!scrollActive)return;
-  const dy=Math.abs(e.touches[0].clientY-touchStartY);
-  const dx=Math.abs(e.touches[0].clientX-touchStartX);
-  if(dy>8&&dy>dx){stopScroll();}
-},{passive:true});
+window.addEventListener('touchstart',()=>{if(scrollActive)stopScroll();},{passive:true});
+
+// Audio error feedback
+(function(){
+  const a = document.getElementById('pageAudio');
+  const btn = document.getElementById('audioPlayBtn');
+  if (!a || !btn) return;
+  a.addEventListener('error', () => {
+    btn.disabled = false; btn.textContent = 'x';
+    btn.title = 'Audio unavailable';
+    setTimeout(() => { btn.textContent = '▶'; btn.title = 'Play / Pause audio'; }, 3000);
+  });
+  a.addEventListener('waiting', () => { btn.textContent = '…'; });
+  a.addEventListener('playing', () => { btn.textContent = '⏸'; btn.disabled = false; });
+  a.addEventListener('pause',   () => { btn.textContent = '▶'; });
+  a.addEventListener('ended',   () => { btn.textContent = '▶'; });
+})();
+
+function toggleAudio() {
+  const a = document.getElementById('pageAudio');
+  const btn = document.getElementById('audioPlayBtn');
+  if (!a || !btn) return;
+  if (!a.paused) { a.pause(); btn.textContent = '▶'; return; }
+  btn.textContent = '…'; btn.disabled = true;
+  if (a.readyState < 2) { a.load(); }
+  a.play().then(() => { btn.textContent = '⏸'; btn.disabled = false; })
+    .catch(err => {
+      btn.textContent = 'x'; btn.disabled = false;
+      btn.title = 'Audio unavailable - check file is uploaded';
+      setTimeout(() => { btn.textContent = '▶'; btn.title = 'Play / Pause audio'; }, 2500);
+    });
+}
 </script>
 </body>
 </html>
