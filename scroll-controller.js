@@ -2,11 +2,9 @@
 // Used by: aditya_hridayam, hanuman_chalisa, lakshmi_sahasranamam,
 //          lalitha_sahasranamam, vishnu_sahasranamam
 //
-// Speed steps: 1.0–1.6 in 0.10 increments (7 values)
-//              1.65 (1 value)
-//              1.7–3.0 in 0.10 increments (14 values)
+// Speed steps: 1.0–3.0 in 0.10 increments, with extra 1.65 step (22 values)
 //              3.25–5.0 in 0.25 increments (8 values)  →  30 total
-// Default: index 6 = 1.6×
+// Default: index 7 = 1.65×
 // Slider : min="1" max="30" (1-based)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -17,7 +15,7 @@ const SPEED_STEPS = [
   3.25,3.50,3.75,4.00,4.25,4.50,4.75,5.00
 ];
 
-let speedIdx    = 6;          // 1.6× default (index into SPEED_STEPS)
+let speedIdx    = 7;          // 1.65× default (index into SPEED_STEPS)
 let customSpeed = null;       // non-null when user typed a value not in SPEED_STEPS
 let scrollActive = false;
 let scrollRAF    = null;
