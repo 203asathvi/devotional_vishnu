@@ -23,9 +23,8 @@
   var style = document.createElement('style');
   style.textContent =
     '#spFab{position:fixed;left:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;}' +
-    /* Override per-page back-top: pull it into the FAB column */
-    '.back-top{position:static !important;bottom:auto !important;right:auto !important;width:40px !important;height:40px !important;border-radius:50% !important;font-size:18px !important;cursor:pointer !important;display:none;align-items:center;justify-content:center;flex-shrink:0;}' +
-    '.back-top.visible{display:flex !important;}' +
+    /* Back-to-top: fixed on RIGHT, bottom synced to FAB via JS */
+    '.back-top{position:fixed !important;right:16px !important;z-index:500 !important;}' +
     '#spFabBtn{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s;outline:none;flex-shrink:0;}' +
     '#spFabBtn:hover{transform:scale(1.08);}' +
     '#spFabBtn.open{transform:rotate(45deg);}' +
@@ -119,28 +118,19 @@
     '</div>'
   );
 
-  /* ── BACK-TO-TOP: relocate into FAB column ── */
-  // Move the existing .back-top button from wherever it is in the DOM
-  // into #spFab so it stacks above Donate/Comment in the left column.
-  function relocateBackTop() {
-    var bt = document.querySelector('.back-top');
-    var fab = document.getElementById('spFab');
-    if (bt && fab && bt.parentNode !== fab) {
-      fab.insertBefore(bt, fab.firstChild);
-    }
-  }
-  requestAnimationFrame(relocateBackTop);
-
   /* ── POSITIONING (RAF-based, above audioPill) ── */
   function placeFab() {
-    var fab  = document.getElementById('spFab');
+    var fab = document.getElementById('spFab');
+    var bt  = document.querySelector('.back-top');
     var pill = document.getElementById('audioPill');
     if (!fab) return;
+    var bottom = 20;
     if (pill && !pill.classList.contains('hidden') && pill.offsetHeight > 0) {
-      fab.style.bottom = (20 + pill.offsetHeight + 16) + 'px';
-    } else {
-      fab.style.bottom = '20px';
+      bottom = 20 + pill.offsetHeight + 16;
     }
+    fab.style.bottom = bottom + 'px';
+    // Mirror back-top to same bottom on the right
+    if (bt) bt.style.bottom = bottom + 'px';
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
   window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
