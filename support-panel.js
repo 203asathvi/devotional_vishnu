@@ -22,7 +22,7 @@
   /* ── CSS ── */
   var style = document.createElement('style');
   style.textContent =
-    '#spFab{position:fixed;left:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;}' +
+    '#spFab{position:fixed;left:max(16px,calc(50vw - 480px + 16px));z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;}' +
     /* Back-to-top position is set entirely via inline style in placeFab() */
     '#spFabBtn{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s;outline:none;flex-shrink:0;}' +
     '#spFabBtn:hover{transform:scale(1.08);}' +
@@ -132,7 +132,9 @@
     if (bt) {
       bt.style.position = 'fixed';
       bt.style.bottom   = bottom + 'px';
-      bt.style.right    = '16px';
+      // Mirror: right edge of 960px content column
+      var rightPos = Math.max(16, (window.innerWidth - 960) / 2 + 16);
+      bt.style.right    = rightPos + 'px';
       bt.style.left     = 'auto';
       bt.style.zIndex   = '500';
     }
