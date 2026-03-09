@@ -23,8 +23,7 @@
   var style = document.createElement('style');
   style.textContent =
     '#spFab{position:fixed;left:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;}' +
-    /* Back-to-top: fixed on RIGHT, bottom synced to FAB via JS */
-    '.back-top{position:fixed !important;right:16px !important;z-index:500 !important;}' +
+    /* Back-to-top position is set entirely via inline style in placeFab() */
     '#spFabBtn{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s;outline:none;flex-shrink:0;}' +
     '#spFabBtn:hover{transform:scale(1.08);}' +
     '#spFabBtn.open{transform:rotate(45deg);}' +
@@ -121,16 +120,22 @@
   /* ── POSITIONING (RAF-based, above audioPill) ── */
   function placeFab() {
     var fab = document.getElementById('spFab');
-    var bt  = document.querySelector('.back-top');
+    var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
     var pill = document.getElementById('audioPill');
     if (!fab) return;
     var bottom = 20;
     if (pill && !pill.classList.contains('hidden') && pill.offsetHeight > 0) {
       bottom = 20 + pill.offsetHeight + 16;
     }
+    // Inline styles beat any stylesheet rule — no need for !important
     fab.style.bottom = bottom + 'px';
-    // Mirror back-top to same bottom on the right
-    if (bt) bt.style.bottom = bottom + 'px';
+    if (bt) {
+      bt.style.position = 'fixed';
+      bt.style.bottom   = bottom + 'px';
+      bt.style.right    = '16px';
+      bt.style.left     = 'auto';
+      bt.style.zIndex   = '500';
+    }
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
   window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
