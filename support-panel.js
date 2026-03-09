@@ -24,6 +24,7 @@
   const CSS = `
 /* ── SUPPORT FAB ── */
 .sp-fab{position:fixed;bottom:80px;right:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.sp-fab.above-bar{bottom:136px;}
 .sp-fab-main{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:1px solid var(--gold,#c9a84c);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 18px rgba(122,32,149,0.5);transition:transform .22s;display:flex;align-items:center;justify-content:center;outline:none;}
 .sp-fab-main:hover{transform:scale(1.1);}
 .sp-fab-main.sp-open{transform:rotate(45deg);}
@@ -264,6 +265,23 @@
   }
 
   $('spCmtSubmit').addEventListener('click', submitComment);
+
+  /* ── AUTO-POSITION FAB above scroll controller bar if present ── */
+  function positionFab() {
+    // scroll-controller.js injects a fixed bar at the bottom of the page.
+    // Query common selectors it might use; adjust bottom offset accordingly.
+    const bar = document.querySelector(
+      '.scroll-controller, #scrollController, .scroll-bar, #scrollBar, ' +
+      '[class*="scroll-ctrl"], [id*="scroll-ctrl"], .auto-scroll-bar, #autoScrollBar'
+    );
+    if (bar) {
+      const h = bar.offsetHeight || 52;
+      $('spFab').style.bottom = (h + 24) + 'px';
+    }
+  }
+  // Delay so scroll-controller.js has time to inject its bar first
+  setTimeout(positionFab, 150);
+  window.addEventListener('resize', positionFab);
 
   /* ── SECURITY ────────────────────────────────────────────────── */
   // Disable right-click
