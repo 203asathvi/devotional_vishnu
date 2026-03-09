@@ -1,12 +1,12 @@
 /**
- * support-panel.js  v5
- * Shared donate + comment + security panel for all devotional pages.
+ * support-panel.js  v6
+ * Shared donate + comment panel. Comments stored in Cloudflare D1 via Worker API.
  *
  * Add before </body> on every page:
- *   <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID"></script>
- *
- * FAB sits on the LEFT, above the audio pill.
- * Uses requestAnimationFrame so pill height is measured after browser paints.
+ *   <script src="support-panel.js"
+ *           data-paypal-id="YOUR_PAYPAL_ID"
+ *           data-api="https://devotional-comments.203asathvi.workers.dev">
+ *   </script>
  *
  * © 2025 – All rights reserved. Personal devotional use only.
  */
@@ -14,8 +14,10 @@
   'use strict';
 
   var scriptEl  = document.currentScript;
-  var PAYPAL_ID = (scriptEl && scriptEl.dataset && scriptEl.dataset.paypalId) || 'YOUR_PAYPAL_ID';
-  var PAGE_KEY  = 'sp_v5_' + location.pathname.replace(/[^a-zA-Z0-9]/g, '_');
+  var PAYPAL_ID = (scriptEl && scriptEl.dataset.paypalId) || 'YOUR_PAYPAL_ID';
+  var API_BASE  = (scriptEl && scriptEl.dataset.api)      || '';
+  // Page key derived from filename e.g. "vishnu_sahasranamam"
+  var PAGE_KEY  = location.pathname.replace(/^.*\//, '').replace(/\.html$/, '') || 'index';
 
   /* ── CSS ── */
   var style = document.createElement('style');
@@ -55,13 +57,16 @@
     '.sp-cmt-form textarea{min-height:90px;}' +
     '.sp-submit{background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:1px solid var(--gold,#c9a84c);color:#fff;padding:10px;border-radius:6px;font-family:Cinzel,serif;font-size:13px;letter-spacing:1px;cursor:pointer;width:100%;transition:opacity .2s;}' +
     '.sp-submit:hover{opacity:.88;}' +
+    '.sp-submit:disabled{opacity:.5;cursor:not-allowed;}' +
     '.sp-cmts{margin-top:18px;display:flex;flex-direction:column;gap:10px;}' +
     '.sp-cmt{background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:11px 13px;}' +
     '.sp-cmt-who{font-family:Cinzel,serif;font-size:11px;color:var(--gold,#c9a84c);margin-bottom:4px;}' +
     '.sp-cmt-body{font-size:14px;color:var(--text,#f0e6cc);line-height:1.55;}' +
     '.sp-cmt-when{font-size:11px;color:var(--muted,#9d8050);margin-top:4px;}' +
     '.sp-empty{font-style:italic;color:var(--muted,#9d8050);font-size:14px;text-align:center;padding:16px 0;}' +
-    '.sp-ok{text-align:center;padding:20px 0;font-size:15px;color:var(--gold-light,#f5d78a);}';
+    '.sp-loading{font-style:italic;color:var(--muted,#9d8050);font-size:13px;text-align:center;padding:12px 0;}' +
+    '.sp-ok{text-align:center;padding:20px 0;font-size:15px;color:var(--gold-light,#f5d78a);}' +
+    '.sp-err{text-align:center;padding:8px;font-size:13px;color:#e06060;margin-top:6px;}';
   document.head.appendChild(style);
 
   /* ── HTML ── */
@@ -102,6 +107,7 @@
               '<input type="text" id="spName" placeholder="Your name (optional)" maxlength="60">' +
               '<textarea id="spText" placeholder="Share your experience or a prayer&hellip;" maxlength="600"></textarea>' +
               '<button class="sp-submit" id="spSubmit">&#x1F64F; Submit</button>' +
+              '<div id="spErr"></div>' +
             '</div>' +
           '</div>' +
           '<div class="sp-cmts" id="spCmts"></div>' +
@@ -110,48 +116,23 @@
     '</div>'
   );
 
-  /* ── POSITIONING ─────────────────────────────────────────────
-     Problem: offsetHeight = 0 when read synchronously before paint.
-     Solution: requestAnimationFrame defers until after browser layout.
-     Also watches for class changes on audioPill (show/hide) via
-     MutationObserver so FAB repositions if pill is toggled.
-  ──────────────────────────────────────────────────────────── */
+  /* ── POSITIONING (RAF-based, above audioPill) ── */
   function placeFab() {
     var fab  = document.getElementById('spFab');
     var pill = document.getElementById('audioPill');
     if (!fab) return;
-
     if (pill && !pill.classList.contains('hidden') && pill.offsetHeight > 0) {
-      // pill is visible — sit 16px above its top edge
-      // pill top = window.innerHeight - pill.getBoundingClientRect().bottom + ... 
-      // Simpler: bottom:20px + height + 16px gap
-      var bottom = 20 + pill.offsetHeight + 16;
-      fab.style.bottom = bottom + 'px';
+      fab.style.bottom = (20 + pill.offsetHeight + 16) + 'px';
     } else {
-      // No pill or pill hidden (index page, or user closed pill)
       fab.style.bottom = '20px';
     }
   }
-
-  // Use RAF to guarantee measurement happens after first browser paint
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () {
-      // Two RAFs: first schedules before paint, second runs after
-      placeFab();
-    });
-  });
-
-  // Reposition on resize
-  window.addEventListener('resize', function () {
-    requestAnimationFrame(placeFab);
-  });
-
-  // Watch audioPill for show/hide class changes
+  requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
+  window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
   var pill = document.getElementById('audioPill');
   if (pill && window.MutationObserver) {
-    new MutationObserver(function () {
-      requestAnimationFrame(placeFab);
-    }).observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
+    new MutationObserver(function () { requestAnimationFrame(placeFab); })
+      .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
   }
 
   /* ── FAB ── */
@@ -174,12 +155,9 @@
     showTab(t);
   }
   function closePanel() { q('spPanel').classList.remove('open'); }
-
   q('spCloseBtn').addEventListener('click', closePanel);
   q('spBackdrop').addEventListener('click', closePanel);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closePanel();
-  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePanel(); });
 
   /* ── TABS ── */
   document.querySelectorAll('.sp-tab').forEach(function (b) {
@@ -191,7 +169,7 @@
     });
     q('spDonate').classList.toggle('on',  t === 'donate');
     q('spComment').classList.toggle('on', t === 'comment');
-    if (t === 'comment') renderComments();
+    if (t === 'comment') loadComments();
   }
 
   /* ── DONATE ── */
@@ -218,22 +196,35 @@
   function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
-  function renderComments() {
+
+  function loadComments() {
     var el = q('spCmts');
-    var list = [];
-    try { list = JSON.parse(localStorage.getItem(PAGE_KEY) || '[]'); } catch (e) {}
-    if (!list.length) {
-      el.innerHTML = '<div class="sp-empty">No comments yet. Be the first!</div>';
+    if (!API_BASE) {
+      el.innerHTML = '<div class="sp-empty">Comments unavailable — API not configured.</div>';
       return;
     }
-    el.innerHTML = list.slice().reverse().map(function (c) {
-      return '<div class="sp-cmt">' +
-        '<div class="sp-cmt-who">' + esc(c.name || 'Anonymous Devotee') + '</div>' +
-        '<div class="sp-cmt-body">' + esc(c.text) + '</div>' +
-        '<div class="sp-cmt-when">' + esc(c.date) + '</div>' +
-        '</div>';
-    }).join('');
+    el.innerHTML = '<div class="sp-loading">Loading comments&hellip;</div>';
+    fetch(API_BASE + '/api/comments?page=' + encodeURIComponent(PAGE_KEY))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var list = data.comments || [];
+        if (!list.length) {
+          el.innerHTML = '<div class="sp-empty">No comments yet. Be the first!</div>';
+          return;
+        }
+        el.innerHTML = list.map(function (c) {
+          return '<div class="sp-cmt">' +
+            '<div class="sp-cmt-who">' + esc(c.name || 'Anonymous Devotee') + '</div>' +
+            '<div class="sp-cmt-body">' + esc(c.text) + '</div>' +
+            '<div class="sp-cmt-when">' + esc(c.date) + '</div>' +
+            '</div>';
+        }).join('');
+      })
+      .catch(function () {
+        el.innerHTML = '<div class="sp-empty">Could not load comments.</div>';
+      });
   }
+
   function rebuildForm() {
     var wrap = q('spFormWrap');
     if (!wrap) return;
@@ -242,22 +233,46 @@
         '<input type="text" id="spName" placeholder="Your name (optional)" maxlength="60">' +
         '<textarea id="spText" placeholder="Share your experience or a prayer\u2026" maxlength="600"></textarea>' +
         '<button class="sp-submit" id="spSubmit">&#x1F64F; Submit</button>' +
+        '<div id="spErr"></div>' +
       '</div>';
     q('spSubmit').addEventListener('click', doSubmit);
   }
+
   function doSubmit() {
     var name = q('spName').value.trim();
     var text = q('spText').value.trim();
-    if (!text) { alert('Please write something first.'); return; }
-    var list = [];
-    try { list = JSON.parse(localStorage.getItem(PAGE_KEY) || '[]'); } catch (e) {}
-    list.push({ name: name, text: text,
-      date: new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) });
-    localStorage.setItem(PAGE_KEY, JSON.stringify(list));
-    q('spFormWrap').innerHTML = '<div class="sp-ok">&#x1F64F; Thank you! Your message has been saved.</div>';
-    setTimeout(rebuildForm, 2500);
-    renderComments();
+    var err  = q('spErr');
+    if (!text) { if(err) err.innerHTML = '<div class="sp-err">Please write something first.</div>'; return; }
+    if (!API_BASE) { if(err) err.innerHTML = '<div class="sp-err">API not configured.</div>'; return; }
+
+    var btn = q('spSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Sending\u2026';
+
+    fetch(API_BASE + '/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page: PAGE_KEY, name: name, text: text })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          q('spFormWrap').innerHTML = '<div class="sp-ok">&#x1F64F; Thank you! Your comment has been saved.</div>';
+          setTimeout(rebuildForm, 2500);
+          loadComments();
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = '&#x1F64F; Submit';
+          if (err) err.innerHTML = '<div class="sp-err">' + esc(data.error || 'Something went wrong.') + '</div>';
+        }
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btn.innerHTML = '&#x1F64F; Submit';
+        if (err) err.innerHTML = '<div class="sp-err">Network error. Please try again.</div>';
+      });
   }
+
   q('spSubmit').addEventListener('click', doSubmit);
 
   /* ── SECURITY ── */
@@ -266,10 +281,7 @@
     if ((e.ctrlKey || e.metaKey) && 'sua'.indexOf(e.key.toLowerCase()) > -1) e.preventDefault();
     if (e.key === 'F12') e.preventDefault();
   });
-  console.log('%c\u00A9 2025 Devotional Pages \u2014 All rights reserved.',
-    'color:#c9a84c;font-size:13px;font-weight:bold;');
-  document.addEventListener('copy', function () {
-    console.warn('\u00A9 2025 \u2014 Personal devotional use only.');
-  });
+  console.log('%c\u00A9 2025 Devotional Pages \u2014 All rights reserved.', 'color:#c9a84c;font-size:13px;font-weight:bold;');
+  document.addEventListener('copy', function () { console.warn('\u00A9 2025 \u2014 Personal devotional use only.'); });
 
 })();

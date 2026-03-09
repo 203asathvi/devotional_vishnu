@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Devotional Comments</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0812;color:#f0e6cc;font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;min-height:100vh;}
+
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-box{background:#130f1e;border:1px solid rgba(201,168,76,0.3);border-radius:14px;padding:36px;width:100%;max-width:360px;text-align:center;}
+.login-box h1{font-family:Cinzel,Georgia,serif;color:#c9a84c;font-size:18px;letter-spacing:2px;margin-bottom:8px;}
+.login-box p{color:#9d8050;font-size:13px;margin-bottom:24px;}
+.login-box input{width:100%;background:#0a0812;border:1px solid rgba(201,168,76,0.3);color:#f0e6cc;padding:11px 14px;border-radius:8px;font-size:15px;outline:none;margin-bottom:14px;}
+.login-box input:focus{border-color:#c9a84c;}
+.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#7a2095,#b060e0);border:1px solid #c9a84c;color:#fff;border-radius:8px;font-size:14px;font-family:Cinzel,serif;letter-spacing:1px;cursor:pointer;transition:opacity .2s;}
+.login-btn:hover{opacity:.88;}
+.login-err{color:#e06060;font-size:13px;margin-top:10px;min-height:18px;}
+
+/* ADMIN UI */
+#adminScreen{display:none;padding:24px 16px 60px;max-width:900px;margin:0 auto;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.admin-header h1{font-family:Cinzel,Georgia,serif;color:#c9a84c;font-size:18px;letter-spacing:2px;}
+.admin-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.filter-select{background:#130f1e;border:1px solid rgba(201,168,76,0.3);color:#c9a84c;padding:7px 12px;border-radius:6px;font-size:13px;outline:none;cursor:pointer;}
+.refresh-btn,.logout-btn{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;padding:7px 14px;border-radius:6px;font-size:13px;cursor:pointer;font-family:Cinzel,serif;transition:all .2s;}
+.refresh-btn:hover{background:rgba(201,168,76,0.2);}
+.logout-btn{border-color:rgba(224,96,96,0.4);color:#e09090;}
+.logout-btn:hover{background:rgba(224,96,96,0.12);}
+
+/* STATS */
+.stats{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.stat{background:#130f1e;border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:14px 20px;flex:1;min-width:120px;text-align:center;}
+.stat-num{font-family:Cinzel,serif;font-size:24px;color:#c9a84c;}
+.stat-label{font-size:11px;color:#9d8050;margin-top:4px;letter-spacing:.8px;text-transform:uppercase;}
+
+/* COMMENTS TABLE */
+.section-title{font-family:Cinzel,serif;font-size:11px;letter-spacing:2px;color:#9d8050;text-transform:uppercase;margin-bottom:12px;}
+.cmt-card{background:#130f1e;border:1px solid rgba(201,168,76,0.15);border-radius:10px;padding:16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+.cmt-body{flex:1;min-width:0;}
+.cmt-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
+.cmt-page{font-family:Cinzel,serif;font-size:10px;letter-spacing:1px;background:rgba(122,32,149,0.25);border:1px solid rgba(176,96,224,0.3);color:#b060e0;padding:2px 8px;border-radius:10px;}
+.cmt-author{font-family:Cinzel,serif;font-size:11px;color:#c9a84c;}
+.cmt-date{font-size:11px;color:#9d8050;}
+.cmt-text{font-size:14px;color:#f0e6cc;line-height:1.55;word-break:break-word;}
+.del-btn{background:rgba(224,96,96,0.1);border:1px solid rgba(224,96,96,0.3);color:#e09090;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.del-btn:hover{background:rgba(224,96,96,0.25);border-color:#e06060;color:#fff;}
+.del-btn:disabled{opacity:.4;cursor:not-allowed;}
+.no-comments{font-style:italic;color:#9d8050;text-align:center;padding:32px 0;}
+.loading{font-style:italic;color:#9d8050;text-align:center;padding:24px 0;}
+.api-warn{background:rgba(224,160,0,0.1);border:1px solid rgba(224,160,0,0.3);color:#e0b040;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>🙏 Admin</h1>
+    <p>Devotional Pages — Comment Moderation</p>
+    <input type="password" id="pwdInput" placeholder="Admin password" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn">Enter</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen">
+  <div class="admin-header">
+    <h1>💬 Comments</h1>
+    <div class="admin-controls">
+      <select class="filter-select" id="pageFilter">
+        <option value="">All pages</option>
+      </select>
+      <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <div id="apiWarn" class="api-warn" style="display:none">
+    ⚠️ API URL not configured. Edit this file and set <code>API_BASE</code> at the top of the script.
+  </div>
+
+  <div class="stats" id="statsRow">
+    <div class="stat"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="statPages">—</div><div class="stat-label">Pages</div></div>
+    <div class="stat"><div class="stat-num" id="statToday">—</div><div class="stat-label">Today</div></div>
+  </div>
+
+  <div class="section-title" id="listLabel">All Comments</div>
+  <div id="commentsList"><div class="loading">Loading…</div></div>
+</div>
+
+<script>
+// ── CHANGE THIS to match data-api on your HTML pages ──
+var API_BASE = 'https://devotional-comments.203asathvi.workers.dev';
+
+var adminPwd  = '';
+var allData   = [];
+
+/* ── LOGIN ── */
+function q(id) { return document.getElementById(id); }
+
+function tryLogin() {
+  var pwd = q('pwdInput').value.trim();
+  if (!pwd) return;
+  q('loginErr').textContent = 'Checking…';
+
+  fetch(API_BASE + '/api/admin/comments', {
+    headers: { 'X-Admin-Password': pwd }
+  })
+  .then(function (r) {
+    if (r.status === 401) throw new Error('Wrong password');
+    return r.json();
+  })
+  .then(function (data) {
+    adminPwd = pwd;
+    allData  = data.comments || [];
+    q('loginScreen').style.display = 'none';
+    q('adminScreen').style.display = 'block';
+    if (!API_BASE || API_BASE.indexOf('YOUR_SUBDOMAIN') > -1) {
+      q('apiWarn').style.display = 'block';
+    }
+    renderAll(allData);
+  })
+  .catch(function (e) {
+    q('loginErr').textContent = e.message === 'Wrong password' ? '❌ Wrong password' : '❌ Could not reach API';
+  });
+}
+
+q('loginBtn').addEventListener('click', tryLogin);
+q('pwdInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryLogin(); });
+
+q('logoutBtn').addEventListener('click', function () {
+  adminPwd = '';
+  allData  = [];
+  q('pwdInput').value = '';
+  q('loginErr').textContent = '';
+  q('adminScreen').style.display = 'none';
+  q('loginScreen').style.display = 'flex';
+});
+
+q('refreshBtn').addEventListener('click', function () {
+  fetch(API_BASE + '/api/admin/comments', {
+    headers: { 'X-Admin-Password': adminPwd }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    allData = data.comments || [];
+    renderAll(allData);
+  });
+});
+
+/* ── FILTER ── */
+q('pageFilter').addEventListener('change', function () {
+  var page = q('pageFilter').value;
+  var filtered = page ? allData.filter(function (c) { return c.page === page; }) : allData;
+  renderComments(filtered);
+  q('listLabel').textContent = page ? ('Comments — ' + page.replace(/_/g,' ')) : 'All Comments';
+});
+
+/* ── RENDER ── */
+function renderAll(comments) {
+  // Stats
+  q('statTotal').textContent = comments.length;
+  var pages = {};
+  var today = new Date().toDateString();
+  var todayCount = 0;
+  comments.forEach(function (c) {
+    pages[c.page] = true;
+    if (new Date(c.created_at).toDateString() === today) todayCount++;
+  });
+  q('statPages').textContent = Object.keys(pages).length;
+  q('statToday').textContent  = todayCount;
+
+  // Populate page filter
+  var sel = q('pageFilter');
+  var current = sel.value;
+  sel.innerHTML = '<option value="">All pages</option>';
+  Object.keys(pages).sort().forEach(function (p) {
+    var opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p.replace(/_/g, ' ');
+    if (p === current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  renderComments(current ? comments.filter(function (c) { return c.page === current; }) : comments);
+}
+
+function renderComments(list) {
+  var el = q('commentsList');
+  if (!list.length) {
+    el.innerHTML = '<div class="no-comments">No comments found.</div>';
+    return;
+  }
+  el.innerHTML = list.map(function (c) {
+    return '<div class="cmt-card" id="cmt-' + c.id + '">' +
+      '<div class="cmt-body">' +
+        '<div class="cmt-meta">' +
+          '<span class="cmt-page">' + esc(c.page.replace(/_/g,' ')) + '</span>' +
+          '<span class="cmt-author">' + esc(c.name || 'Anonymous') + '</span>' +
+          '<span class="cmt-date">' + esc(c.date) + '</span>' +
+        '</div>' +
+        '<div class="cmt-text">' + esc(c.text) + '</div>' +
+      '</div>' +
+      '<button class="del-btn" title="Delete" onclick="deleteComment(' + c.id + ', this)">&#x1F5D1;</button>' +
+    '</div>';
+  }).join('');
+}
+
+function deleteComment(id, btn) {
+  if (!confirm('Delete this comment?')) return;
+  btn.disabled = true;
+  fetch(API_BASE + '/api/comments/' + id, {
+    method: 'DELETE',
+    headers: { 'X-Admin-Password': adminPwd }
+  })
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (data.ok) {
+      var card = document.getElementById('cmt-' + id);
+      if (card) card.remove();
+      allData = allData.filter(function (c) { return c.id !== id; });
+      // Update stats
+      q('statTotal').textContent = parseInt(q('statTotal').textContent) - 1;
+    } else {
+      btn.disabled = false;
+      alert('Delete failed: ' + (data.error || 'Unknown error'));
+    }
+  })
+  .catch(function () {
+    btn.disabled = false;
+    alert('Network error. Please try again.');
+  });
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
