@@ -419,5 +419,53 @@ function toggleAudio() {
 </script>
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
+
+<div id="dbg" style="position:fixed;top:60px;left:10px;right:10px;z-index:9999;background:rgba(0,0,0,0.85);color:#0f0;font-family:monospace;font-size:11px;padding:8px;border-radius:8px;max-height:200px;overflow-y:auto;display:none;"></div>
+<button onclick="document.getElementById('dbg').style.display=document.getElementById('dbg').style.display==='none'?'block':'none'" style="position:fixed;top:60px;right:10px;z-index:10000;background:#333;color:#fff;border:none;padding:4px 8px;font-size:11px;border-radius:4px;cursor:pointer;">Debug</button>
+<script>
+(function(){
+  var log = function(msg) {
+    var d = document.getElementById('dbg');
+    d.innerHTML += '<div>' + new Date().toISOString().substr(11,8) + ' ' + msg + '</div>';
+    d.scrollTop = d.scrollHeight;
+  };
+  window._dbgLog = log;
+  
+  // Check on load
+  window.addEventListener('DOMContentLoaded', function() {
+    log('DOMContentLoaded fired');
+    log('audioSkip defined: ' + (typeof audioSkip));
+    log('audioStop defined: ' + (typeof audioStop));
+    log('toggleAudio defined: ' + (typeof toggleAudio));
+    var rew = document.getElementById('audioRewBtn');
+    var fwd = document.getElementById('audioFwdBtn');
+    log('audioRewBtn found: ' + !!rew);
+    log('audioFwdBtn found: ' + !!fwd);
+    var audio = document.getElementById('pageAudio');
+    log('pageAudio found: ' + !!audio);
+    if (audio) log('audio.src: ' + audio.src);
+    
+    // Patch the buttons to also log on click
+    if (rew) rew.addEventListener('click', function() {
+      log('REW clicked — calling audioSkip(-30)');
+      log('audioSkip type: ' + typeof audioSkip);
+      try { audioSkip(-30); log('audioSkip(-30) OK'); }
+      catch(e) { log('ERROR: ' + e.message); }
+    });
+    if (fwd) fwd.addEventListener('click', function() {
+      log('FWD clicked — calling audioSkip(30)');
+      log('audioSkip type: ' + typeof audioSkip);
+      try { audioSkip(30); log('audioSkip(30) OK'); }
+      catch(e) { log('ERROR: ' + e.message); }
+    });
+  });
+  
+  // Check after everything loads
+  window.addEventListener('load', function() {
+    log('window.load fired');
+    log('audioSkip at load: ' + (typeof audioSkip));
+  });
+})();
+</script>
 </body>
 </html>
