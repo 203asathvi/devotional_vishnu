@@ -39,11 +39,6 @@ nav{position:sticky;top:0;z-index:100;background:rgba(10,5,0,0.94);backdrop-filt
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 
 /* VIEW TOGGLE */
-.view-toggle{position:relative;z-index:1;display:flex;justify-content:center;padding:16px 14px 8px;}
-.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
-.vt-btn:first-child{border-radius:6px 0 0 6px;}
-.vt-btn:last-child{border-radius:0 6px 6px 0;border-left:none;}
-.vt-btn.active{background:rgba(232,160,32,0.18);border-color:var(--gold);color:var(--gold);}
 
 /* SEARCH */
 .search-bar{position:relative;z-index:1;padding:6px 14px 10px;display:none;}
@@ -70,27 +65,23 @@ main{position:relative;z-index:1;padding:0 14px 120px;max-width:960px;margin:0 a
 .note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--gold);margin:9px 0 12px;background:rgba(232,160,32,0.04);border-radius:0 4px 4px 0;}
 
 /* TABLES */
-.tbl-wrap{overflow-x:auto;margin-bottom:12px;border:1px solid var(--border);border-radius:8px;}
-table{width:100%;border-collapse:collapse;font-size:16px;}
-table th{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;background:rgba(232,160,32,0.07);}
-table td{padding:11px 14px;border-bottom:1px solid rgba(232,160,32,0.1);vertical-align:top;line-height:1.65;}
-table tbody tr:last-child td{border-bottom:none;}
-table tbody tr:hover td{background:rgba(232,160,32,0.05);}
-td.num{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);opacity:.75;width:68px;white-space:nowrap;padding-top:14px;}
-td.verse .l2{color:#d4be90;padding-left:12px;display:block;margin-top:2px;}
-body.light-mode td.verse .l2{color:#5a3a08;}
-td.meaning{font-style:italic;color:var(--muted);font-size:15px;border-left:2px solid rgba(232,160,32,0.25);padding-left:16px;}
-tr.hl td{background:rgba(232,160,32,0.1) !important;}
-
+.tbl-wrap{margin-bottom:12px;}
+.shloka{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:13px 15px;margin-bottom:9px;transition:border-color .2s,background .2s;}
+.shloka:hover{border-color:rgba(232,160,32,0.4);}
+.shloka.highlight{border-color:var(--gold);background:rgba(232,160,32,0.07);}
+.shloka-num{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:5px;opacity:.75;}
+.shloka-line{line-height:1.7;}
+.shloka-line.indent{padding-left:14px;color:#d4be90;}
+body.light-mode .shloka-line.indent{color:#7a3a00;}
+.shloka-meaning{font-style:italic;color:var(--muted);font-size:15px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(232,160,32,0.15);line-height:1.6;}
+body.light-mode 
 /* View switching via CSS */
-.view-shloka  .only-meaning{display:none;}
-.view-meaning .only-shloka{display:none;}
 
 .back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:linear-gradient(135deg,var(--sun),var(--sun2));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,140,0,0.45);}
 .back-top.visible{display:flex;}
 body.light-mode{--bg:#fffaf0;--card:#fff6e0;--text:#2a1a00;--muted:#80601a;--border:rgba(180,120,20,0.25);}
 mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
-@media(max-width:640px){body{font-size:16px;}td.meaning{font-size:14px;}td.num{width:50px;font-size:9px;}}@media(max-width:400px){table td{padding:9px 8px;}td.num{width:36px;font-size:8px;padding-top:12px;letter-spacing:0;}td.verse{font-size:15px;}main{padding:0 6px 120px;}}
+@media(max-width:640px){body{font-size:16px;}}
 
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
@@ -140,8 +131,13 @@ body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
 @media(max-width:480px){.audio-seek{width:60px;}.scroll-speed-slider{width:50px;}.audio-time{display:none;}}
 @media(max-width:400px){.audio-seek{width:44px;}.scroll-speed-slider{display:none;}.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
-
-@media(max-width:380px){.nav-title{font-size:11px;letter-spacing:0;max-width:45%;}.nav-btn,.nav-home{padding:5px 7px;font-size:12px;}nav{padding:0 8px;}}
+.view-toggle{position:relative;z-index:1;display:flex;justify-content:center;padding:16px 14px 8px;}
+.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
+.vt-btn:first-child{border-radius:6px 0 0 6px;}
+.vt-btn:last-child{border-radius:0 6px 6px 0;border-left:none;}
+.vt-btn.active{background:rgba(232,160,32,0.18);border-color:var(--gold);color:var(--gold);}
+.view-shloka .only-meaning{display:none;}
+.view-meaning .only-shloka{display:none;}
 </style>
 </head>
 <body>
@@ -168,17 +164,16 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="divider">✦</div>
 </div>
 
-<div class="view-toggle">
-  <button class="vt-btn active" id="btn-shloka" onclick="setView('shloka')">📜 Shloka Only</button>
-  <button class="vt-btn" id="btn-meaning" onclick="setView('meaning')">📖 Shloka + Meaning</button>
-</div>
-
 <div class="toc">
   <button class="toc-btn" onclick="gotoSection('intro')">Introduction</button>
   <button class="toc-btn" onclick="gotoSection('stotram')">Stotram (1–31)</button>
   <button class="toc-btn" onclick="gotoSection('phala')">Phala Srutih</button>
 </div>
 
+<div class="view-toggle">
+  <button class="vt-btn active" id="btn-shloka" onclick="setView('shloka')">📜 Shloka Only</button>
+  <button class="vt-btn" id="btn-meaning" onclick="setView('meaning')">📖 Shloka + Meaning</button>
+</div>
 <main id="main" class="view-shloka">
 
 <!-- INTRODUCTION -->
@@ -190,32 +185,24 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <div class="speaker">Vālmīki Uvacha — Setting</div>
     <div class="note">Before the great battle with Ravana, Rama stood exhausted on the battlefield. The divine sage Agastya descended from heaven, accompanied by the gods, and approached Rama to reveal this supreme secret.</div>
     <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Shloka</th>
-            <th class="only-meaning">Meaning</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="num">VERSE 1</td>
-            <td class="verse">tato yuddhapari-shrantam samare cintaya sthitam |<span class="l2">ravanam cagrato drishtva yuddha-ya samupasthitam || 1 ||</span></td>
-            <td class="meaning only-meaning">Then seeing Rama tired in battle and standing lost in thought, and Ravana in front ready for the fight, Agastya, who had come with the gods to witness the battle, approached Rama and spoke these words.</td>
-          </tr>
-          <tr>
-            <td class="num">VERSE 2</td>
-            <td class="verse">daivataishca samagamya drashtumabhyagato ranam |<span class="l2">upagamya abravid ramam agastyo bhagavan rishih || 2 ||</span></td>
-            <td class="meaning only-meaning">The divine sage Agastya, who had come with the gods to witness the battle, approached Rama and spoke to him thus.</td>
-          </tr>
-          <tr>
-            <td class="num">VERSE 3</td>
-            <td class="verse">rama rama mahabaho shrinu guhyam sanatanam |<span class="l2">yena sarvan arin vatsa samere vijayishyase || 3 ||</span></td>
-            <td class="meaning only-meaning">O Rama, O Rama, O mighty-armed one, listen to this eternal secret, by which, O dear one, you shall conquer all your enemies in battle.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="shloka" id="v1">
+        <div class="shloka-num">VERSE 1</div>
+        <div class="shloka-line">tato yuddhapari-shrantam samare cintaya sthitam |</div>
+        <div class="shloka-line indent">ravanam cagrato drishtva yuddha-ya samupasthitam || 1 ||</div>
+        <div class="shloka-meaning only-meaning">Then seeing Rama tired in battle and standing lost in thought, and Ravana in front ready for the fight, Agastya, who had come with the gods to witness the battle, approached Rama and spoke these words.</div>
+      </div>
+      <div class="shloka" id="v2">
+        <div class="shloka-num">VERSE 2</div>
+        <div class="shloka-line">daivataishca samagamya drashtumabhyagato ranam |</div>
+        <div class="shloka-line indent">upagamya abravid ramam agastyo bhagavan rishih || 2 ||</div>
+        <div class="shloka-meaning only-meaning">The divine sage Agastya, who had come with the gods to witness the battle, approached Rama and spoke to him thus.</div>
+      </div>
+      <div class="shloka" id="v3">
+        <div class="shloka-num">VERSE 3</div>
+        <div class="shloka-line">rama rama mahabaho shrinu guhyam sanatanam |</div>
+        <div class="shloka-line indent">yena sarvan arin vatsa samere vijayishyase || 3 ||</div>
+        <div class="shloka-meaning only-meaning">O Rama, O Rama, O mighty-armed one, listen to this eternal secret, by which, O dear one, you shall conquer all your enemies in battle.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -227,18 +214,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div id="stotram-body">
     <div class="note" style="text-align:center;border-left:none;border:1px solid var(--border);">आदित्यं हृदयं पुण्यं — Adityam hridayam punyam</div>
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Shloka</th>
-            <th class="only-meaning">Meaning</th>
-          </tr>
-        </thead>
-        <tbody id="stotram-tbody"></tbody>
-      </table>
-    </div>
+    <div class="tbl-wrap" id="stotram-cards"></div>
   </div>
 </div>
 
@@ -250,32 +226,24 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div id="phala-body">
     <div class="speaker">Agastya Uvacha — Instruction to Rama</div>
     <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Shloka</th>
-            <th class="only-meaning">Meaning</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="num">VERSE 29</td>
-            <td class="verse">etat tri-gunitam japtvaa yudhyasva vigata-jvarah |<span class="l2">asmin ksane mahavaho ravana-m tvam vadishyasi || 29 ||</span></td>
-            <td class="meaning only-meaning">Having chanted this thrice, O mighty-armed one, fight free from fever. In this very moment you shall slay Ravana.</td>
-          </tr>
-          <tr>
-            <td class="num">VERSE 30</td>
-            <td class="verse">evam uktva tato agastyah jagama sa yathagatam |<span class="l2">ramasca dharitva mahatma divya-stram vicintayan || 30 ||</span></td>
-            <td class="meaning only-meaning">Having spoken thus, Agastya went back as he had come. Rama, the great soul, after holding himself together and pondering the divine weapon, felt joyful.</td>
-          </tr>
-          <tr>
-            <td class="num">VERSE 31</td>
-            <td class="verse">aditta hridayam punyam sarva papa pranas-hanam |<span class="l2">chinta shoka prashomanam ayurvardhana-muttamam || 31 ||</span></td>
-            <td class="meaning only-meaning">This Aditya Hridayam is supremely holy, it destroys all sins, dispels all worry and grief, and is the best means for prolonging life.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="shloka" id="v29">
+        <div class="shloka-num">VERSE 29</div>
+        <div class="shloka-line">etat tri-gunitam japtvaa yudhyasva vigata-jvarah |</div>
+        <div class="shloka-line indent">asmin ksane mahavaho ravana-m tvam vadishyasi || 29 ||</div>
+        <div class="shloka-meaning only-meaning">Having chanted this thrice, O mighty-armed one, fight free from fever. In this very moment you shall slay Ravana.</div>
+      </div>
+      <div class="shloka" id="v30">
+        <div class="shloka-num">VERSE 30</div>
+        <div class="shloka-line">evam uktva tato agastyah jagama sa yathagatam |</div>
+        <div class="shloka-line indent">ramasca dharitva mahatma divya-stram vicintayan || 30 ||</div>
+        <div class="shloka-meaning only-meaning">Having spoken thus, Agastya went back as he had come. Rama, the great soul, after holding himself together and pondering the divine weapon, felt joyful.</div>
+      </div>
+      <div class="shloka" id="v31">
+        <div class="shloka-num">VERSE 31</div>
+        <div class="shloka-line">aditta hridayam punyam sarva papa pranas-hanam |</div>
+        <div class="shloka-line indent">chinta shoka prashomanam ayurvardhana-muttamam || 31 ||</div>
+        <div class="shloka-meaning only-meaning">This Aditya Hridayam is supremely holy, it destroys all sins, dispels all worry and grief, and is the best means for prolonging life.</div>
+      </div>
     </div>
     <div style="text-align:center;padding:24px 0 8px;font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:2px;">
       || Iti Aditya Hridayam Sampurnam ||<br>
@@ -352,13 +320,15 @@ const VERSES = [
   [28,"yacca kincibjagat sarva-m drishyate shruyate-pi va |","antar bahis ca tatsarvam vyapya naraya-nah sthitah || 28 ||","Whatever is seen or heard of in the entire universe, inwardly and outwardly — Narayana pervades all that and dwells therein."],
 ];
 
-document.getElementById('stotram-tbody').innerHTML = VERSES.map(([n,l1,l2,m]) =>
-  `<tr id="v${n}">
-    <td class="num">VERSE ${n}</td>
-    <td class="verse">${l1}<span class="l2">${l2}</span></td>
-    <td class="meaning only-meaning">${m}</td>
-  </tr>`
+document.getElementById('stotram-cards').innerHTML = VERSES.map(([n,l1,l2,m]) =>
+  `<div class="shloka" id="v${n}">
+    <div class="shloka-num">VERSE ${n}</div>
+    <div class="shloka-line">${l1}</div>
+    <div class="shloka-line indent">${l2}</div>
+    <div class="shloka-meaning only-meaning">${m}</div>
+  </div>`
 ).join('');
+
 
 function setView(v){
   document.getElementById('main').className = 'view-'+v;
@@ -387,11 +357,11 @@ function toggleSearch(){
 }
 function doSearch(q){
   q=q.trim().toLowerCase();
-  document.querySelectorAll('tbody tr').forEach(tr=>{
-    if(!q){tr.classList.remove('hl');tr.style.display='';return;}
-    const t=tr.textContent.toLowerCase();
-    tr.classList.toggle('hl',t.includes(q));
-    tr.style.display=t.includes(q)?'':'none';
+  document.querySelectorAll('.shloka').forEach(card=>{
+    if(!q){card.classList.remove('highlight');card.style.display='';return;}
+    const t=card.textContent.toLowerCase();
+    card.classList.toggle('highlight',t.includes(q));
+    card.style.display=t.includes(q)?'':'none';
   });
 }
 window.addEventListener('scroll',()=>{
