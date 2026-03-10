@@ -112,7 +112,7 @@ body.light-mode td.verse .devanagari{color:#b07818;}
 .scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
 .scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
 .scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
-.scroll-speed-slider{-webkit-appearance:none;appearance:none;width:80px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+
 .scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
 .scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
 .audio-seek{-webkit-appearance:none;appearance:none;width:90px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
@@ -131,8 +131,8 @@ body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
 body.light-mode .scroll-speed-val,body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
-@media(max-width:480px){.audio-seek{width:60px;}.scroll-speed-slider{width:50px;}.audio-time{display:none;}}
-@media(max-width:400px){.audio-seek{width:44px;}.scroll-speed-slider{display:none;}.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
+@media(max-width:480px){.audio-time{display:none;}}
+@media(max-width:400px){.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
 </style>
 </head>
 <body>
@@ -261,11 +261,10 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
   <div class="pill-audio">
-    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
-    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" oninput="seekAudio(this.value)">
-    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button> <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
+  <div class="audio-seek-row"><div class="audio-seek-bar" id="audioSeekBar"><div class="audio-seek-track"></div><div class="audio-seek-fill" id="audioSeekFill"></div><div class="audio-seek-thumb" id="audioSeekThumb"></div></div><div class="audio-seek-times"><span class="audio-time-cur" id="audioTimeCur">0:00</span><span class="audio-time-dur" id="audioTimeDur">0:00</span></div></div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
   <span class="tab-dot"></span>Audio
@@ -282,8 +281,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="scroll-speed-btn" id="speedDown" title="Slower">−</button>
     <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
     <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
-    <input type="range" class="scroll-speed-slider" id="speedSlider" min="1" max="209" value="66" step="1" oninput="updateSpeed(this.value)">
-  </div>
+    </div>
 </div>
 <button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">
   <span class="tab-dot"></span>Scroll
@@ -292,6 +290,49 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <audio id="pageAudio" preload="metadata" src="https://audio-proxy.203asathvi.workers.dev/gayatri_mantra.mp3"></audio>
 
 <script src="scroll-controller.js"></script>
+<script>
+(function(){
+  var GRAD='linear-gradient(135deg,var(--sun),var(--sun2))';
+  function init(){
+    var a=document.getElementById('pageAudio');
+    var bar=document.getElementById('audioSeekBar');
+    var fill=document.getElementById('audioSeekFill');
+    var thumb=document.getElementById('audioSeekThumb');
+    var tcur=document.getElementById('audioTimeCur');
+    var tdur=document.getElementById('audioTimeDur');
+    if(!a||!bar)return;
+    fill.style.background=GRAD; thumb.style.background=GRAD;
+    function fmt(s){s=isNaN(s)||!isFinite(s)?0:s;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+    function setPct(pct){pct=Math.max(0,Math.min(1,pct));fill.style.width=(pct*100)+'%';thumb.style.left=(pct*100)+'%';}
+    function getX(e){var r=bar.getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));}
+    var dragging=false;
+    a.addEventListener('timeupdate',function(){
+      if(dragging||!a.duration||isNaN(a.duration))return;
+      setPct(a.currentTime/a.duration);
+      if(tcur)tcur.textContent=fmt(a.currentTime);
+      if(tdur)tdur.textContent=fmt(a.duration);
+    });
+    a.addEventListener('loadedmetadata',function(){if(tdur)tdur.textContent=fmt(a.duration);});
+    bar.addEventListener('pointerdown',function(e){
+      e.preventDefault();e.stopPropagation();
+      dragging=true;bar.setPointerCapture(e.pointerId);
+      var p=getX(e);setPct(p);if(tcur)tcur.textContent=fmt(p*(a.duration||0));
+    });
+    bar.addEventListener('pointermove',function(e){
+      if(!dragging)return;e.preventDefault();e.stopPropagation();
+      var p=getX(e);setPct(p);if(tcur)tcur.textContent=fmt(p*(a.duration||0));
+    });
+    bar.addEventListener('pointerup',function(e){
+      if(!dragging)return;e.stopPropagation();dragging=false;
+      var p=getX(e);setPct(p);a.currentTime=p*(a.duration||0);
+    });
+    bar.addEventListener('pointercancel',function(){dragging=false;});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+
 <script>
 // ─── Mantra data ──────────────────────────────────────────────────────────────
 const VERSES = [
@@ -439,7 +480,7 @@ window.addEventListener('scroll', () => {
   document.getElementById('backTop').classList.toggle('visible', s > 400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPlayBtn')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill')) stopScroll(); }, { passive: true });
 
 // ── Local audio override: handles load-first + visible error feedback ─────────
 function toggleAudio() {

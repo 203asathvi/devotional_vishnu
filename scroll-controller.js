@@ -125,7 +125,7 @@ function syncSpeedUI() {
   const s = currentSpeed();
   document.getElementById('speedVal').textContent = s + '×';
   // Slider shows nearest step position (custom values sit between notches)
-  document.getElementById('speedSlider').value = speedIdx + 1;
+  const sl = document.getElementById('speedSlider'); if (sl) sl.value = speedIdx + 1;
 }
 
 function updateSpeed(v) { updateSpeedFromSlider(v); }
@@ -209,14 +209,10 @@ function fmtTime(s) {
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
   a.addEventListener('timeupdate', () => {
-    const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
-    if (seek) seek.value = a.currentTime;
     if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
   a.addEventListener('loadedmetadata', () => {
-    const seek = document.getElementById('audioSeek');
-    if (seek) seek.max = a.duration;
     const time = document.getElementById('audioTime');
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
