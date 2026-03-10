@@ -122,7 +122,6 @@
     var fab = document.getElementById('spFab');
     var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
     var audioPill   = document.getElementById('audioPill');
-    var scrollPill  = document.getElementById('scrollPill');
     if (!fab) return;
     // FAB (left side) sits above audioPill
     var fabBottom = 20;
@@ -130,17 +129,7 @@
       fabBottom = 20 + audioPill.offsetHeight + 16;
     }
     fab.style.bottom = fabBottom + 'px';
-    // Back-to-top (right side) — fixed position above scroll pill
-    if (bt) {
-      var scrollPillH = (scrollPill && !scrollPill.classList.contains('hidden') && scrollPill.offsetHeight > 0)
-                        ? scrollPill.offsetHeight : 0;
-      var btBottom = scrollPillH > 0 ? (20 + scrollPillH + 12) : 80;
-      bt.style.position = 'fixed';
-      bt.style.bottom   = btBottom + 'px';
-      bt.style.right    = '20px';
-      bt.style.left     = 'auto';
-      bt.style.zIndex   = '400';
-    }
+    // Back-to-top: let each page's CSS control position/display — do not override with inline styles
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
   window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
@@ -149,11 +138,7 @@
     new MutationObserver(function () { requestAnimationFrame(placeFab); })
       .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
   }
-  var sPill = document.getElementById('scrollPill');
-  if (sPill && window.MutationObserver) {
-    new MutationObserver(function () { requestAnimationFrame(placeFab); })
-      .observe(sPill, { attributes: true, attributeFilter: ['class', 'style'] });
-  }
+
 
   /* ── FAB ── */
   var isOpen = false;
