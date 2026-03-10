@@ -369,6 +369,58 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <script src="audio-controller.js"></script>
 <script src="scroll-controller.js"></script>
 <script>
+// ── Auto-hide pills after inactivity ─────────────────────────────────────────
+// ↓ Edit this value to change the idle timeout. Set to 0 to disable auto-hide.
+var PILL_AUTO_HIDE_MS = 10000;  // milliseconds  (10000 = 10 seconds)
+// ─────────────────────────────────────────────────────────────────────────────
+(function() {
+  if (!PILL_AUTO_HIDE_MS) return;
+  var _timer  = null;
+  var _hiddenAudio  = false;
+  var _hiddenScroll = false;
+
+  function maybeHide() {
+    // Never hide scroll pill while scroll is running
+    var scrollRunning = (typeof scrollActive !== 'undefined' && scrollActive);
+    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll && !scrollRunning) { _hiddenScroll = true; hideScrollPill(); }
+  }
+
+  function restoreAll() {
+    if (_hiddenAudio)  { _hiddenAudio  = false; showAudioPill();  }
+    if (_hiddenScroll) { _hiddenScroll = false; showScrollPill(); }
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearTimeout(_timer);
+    _timer = setTimeout(maybeHide, PILL_AUTO_HIDE_MS);
+  }
+
+  window.addEventListener('DOMContentLoaded', function() { resetTimer(); });
+
+  // Any interaction: restore + reset timer
+  ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(function(ev) {
+    document.addEventListener(ev, function() {
+      if (_hiddenAudio || _hiddenScroll) { restoreAll(); } else { resetTimer(); }
+    }, { passive: true });
+  });
+
+  // While audio playing or scroll active: suppress hide + restore if needed
+  setInterval(function() {
+    var a = document.getElementById('pageAudio');
+    var isPlaying  = a && !a.paused && !a.ended;
+    var scrollRunning = (typeof scrollActive !== 'undefined' && scrollActive);
+    if (isPlaying || scrollRunning) {
+      clearTimeout(_timer);
+      if (_hiddenAudio)  { _hiddenAudio  = false; showAudioPill();  }
+      if (_hiddenScroll && !scrollRunning) { /* keep hidden if scroll not running */ }
+      if (_hiddenScroll &&  scrollRunning) { _hiddenScroll = false; showScrollPill(); }
+    }
+  }, 1000);
+})();
+</script>
+<script>
 const CHAUPAIS = [
   [1,"Jai Hanuman gyan gun sagar |","Jai Kapis tihun lok ujagar ||","Victory to thee, O Hanuman! Ocean of Wisdom. All hail to you O Kapisa! You illuminate all the three worlds with your glory."],
   [2,"Ram doot atulit bal dhama |","Anjani-putra Pavan sut nama ||","You are the divine messenger of Shri Ram. The repository of immeasurable strength, known as Son of Pavan (Wind), born of Anjani."],
@@ -461,7 +513,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill') && !e.target.closest('#scrollTab') && !e.target.closest('#audioTab')) stopScroll(); }, { passive: true });
 </script>
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
@@ -528,53 +580,5 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
 </script>
 
 
-<script>
-// ── Auto-hide pills after inactivity ─────────────────────────────────────────
-// ↓ Change this value to adjust the idle timeout (milliseconds)
-var PILL_AUTO_HIDE_MS = 10000;   // 10 seconds — set to 0 to disable
-
-(function() {
-  if (!PILL_AUTO_HIDE_MS) return;
-  var _timer = null;
-  var _hidden = false;
-
-  function hideBoth() {
-    if (_hidden) return;
-    _hidden = true;
-    hideAudioPill();
-    hideScrollPill();
-  }
-
-  function showBoth() {
-    _hidden = false;
-    showAudioPill();
-    showScrollPill();
-    resetTimer();
-  }
-
-  function resetTimer() {
-    clearTimeout(_timer);
-    _timer = setTimeout(hideBoth, PILL_AUTO_HIDE_MS);
-  }
-
-  window.addEventListener('DOMContentLoaded', function() { resetTimer(); });
-
-  ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(function(ev) {
-    document.addEventListener(ev, function() {
-      if (_hidden) { showBoth(); } else { resetTimer(); }
-    }, { passive: true });
-  });
-
-  // Keep visible while audio is playing or auto-scroll is active
-  setInterval(function() {
-    var a = document.getElementById('pageAudio');
-    var isPlaying = a && !a.paused && !a.ended;
-    if (isPlaying || (typeof scrollActive !== 'undefined' && scrollActive)) {
-      clearTimeout(_timer);
-      if (_hidden) { _hidden = false; showAudioPill(); showScrollPill(); }
-    }
-  }, 2000);
-})();
-</script>
 </body>
 </html>
