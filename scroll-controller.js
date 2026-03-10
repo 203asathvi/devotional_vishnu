@@ -325,25 +325,5 @@ window.addEventListener('DOMContentLoaded', () => {
   wireSpeedBtn('speedDown', -1);
   wireSpeedBtn('speedUp',    1);
 
-  // ── Audio play button ─────────────────────────────────────────────────────
-  // Wire all audio control buttons with touchend + click pattern
-  function wireAudioBtn(id, fn) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    let touched = false;
-    btn.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation();
-      touched = true;
-      fn();
-      setTimeout(() => { touched = false; }, 400);
-    }, { passive: false });
-    btn.addEventListener('click', e => {
-      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
-      fn();
-    });
-  }
-  wireAudioBtn('audioPlayBtn', toggleAudio);
-  wireAudioBtn('audioRewBtn',  () => audioSkip(-30));
-  wireAudioBtn('audioFwdBtn',  () => audioSkip(30));
-  wireAudioBtn('audioStopBtn', audioStop);
+
 });
