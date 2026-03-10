@@ -67,7 +67,10 @@
     '.sp-empty{font-style:italic;color:var(--muted,#9d8050);font-size:14px;text-align:center;padding:16px 0;}' +
     '.sp-loading{font-style:italic;color:var(--muted,#9d8050);font-size:13px;text-align:center;padding:12px 0;}' +
     '.sp-ok{text-align:center;padding:20px 0;font-size:15px;color:var(--gold-light,#f5d78a);}' +
-    '.sp-err{text-align:center;padding:8px;font-size:13px;color:#e06060;margin-top:6px;}';
+    '.sp-err{text-align:center;padding:8px;font-size:13px;color:#e06060;margin-top:6px;}' +
+    '#backTop{position:fixed;right:16px;bottom:20px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s,opacity .22s;outline:none;opacity:0;pointer-events:none;z-index:500;}' +
+    '#backTop.visible{opacity:1;pointer-events:all;}' +
+    '#backTop:hover{transform:scale(1.08);}';
   document.head.appendChild(style);
 
   /* ── HTML ── */
@@ -117,19 +120,33 @@
     '</div>'
   );
 
+  /* ── BACK-TO-TOP BUTTON (right side) ── */
+  if (!document.getElementById('backTop')) {
+    var btBtn = document.createElement('button');
+    btBtn.id = 'backTop';
+    btBtn.setAttribute('aria-label', 'Back to top');
+    btBtn.innerHTML = '&#x2191;';
+    document.body.appendChild(btBtn);
+    btBtn.addEventListener('click', function () { window.scrollTo({top:0,behavior:'smooth'}); });
+    window.addEventListener('scroll', function () {
+      btBtn.classList.toggle('visible', window.scrollY > 300);
+    }, {passive:true});
+  }
+
   /* ── POSITIONING (RAF-based, above audioPill) ── */
   function placeFab() {
     var fab = document.getElementById('spFab');
     var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
     var audioPill   = document.getElementById('audioPill');
     if (!fab) return;
-    // FAB (left side) sits above audioPill
+    // FAB (left side) and back-to-top (right side) both sit above audioPill
     var fabBottom = 20;
     if (audioPill && !audioPill.classList.contains('hidden') && audioPill.offsetHeight > 0) {
       fabBottom = 20 + audioPill.offsetHeight + 16;
     }
     fab.style.bottom = fabBottom + 'px';
-    // Back-to-top: let each page's CSS control position/display — do not override with inline styles
+    // Back-to-top: mirror position on right side
+    if (bt) { bt.style.bottom = fabBottom + 'px'; }
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
   window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
