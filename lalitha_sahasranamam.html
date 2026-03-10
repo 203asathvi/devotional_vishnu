@@ -221,7 +221,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div class="pill-audio">
     <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
-    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" oninput="seekAudio(this.value)">
+    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" >
     <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
@@ -474,7 +474,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill')) stopScroll(); }, { passive: true });
 
 // ── Audio error feedback ──────────────────────────────────────────────────────
 (function(){
