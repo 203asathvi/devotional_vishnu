@@ -211,35 +211,41 @@ window.addEventListener('DOMContentLoaded', () => {
   const seek = document.getElementById('audioSeek');
   const time = document.getElementById('audioTime');
 
-  // ── Seek slider wiring (independent of audio element) ──────────────────
+  // Wire seek slider — must happen regardless of whether audio loaded
   if (seek) {
-    seek._dragging = false;
-    seek.addEventListener('mousedown',  () => { seek._dragging = true; });
-    seek.addEventListener('touchstart', () => { seek._dragging = true; }, {passive: true});
+    seek.addEventListener('mousedown',  () => { seek._drag = true; });
+    seek.addEventListener('touchstart', () => { seek._drag = true; }, { passive: true });
     seek.addEventListener('input', () => {
-      if (time && a) time.textContent = fmtTime(parseFloat(seek.value)) + ' / ' + fmtTime(a.duration || 0);
+      // show position while dragging
+      if (time && a) time.textContent = fmtTime(+seek.value) + ' / ' + fmtTime(a.duration || 0);
     });
-    const commitSeek = () => {
-      seek._dragging = false;
-      if (a) a.currentTime = parseFloat(seek.value);
-    };
-    seek.addEventListener('change',  commitSeek);
-    seek.addEventListener('mouseup', commitSeek);
-    seek.addEventListener('touchend', commitSeek, {passive: true});
+    seek.addEventListener('change', () => {
+      seek._drag = false;
+      if (a) a.currentTime = +seek.value;
+    });
+    seek.addEventListener('mouseup', () => {
+      seek._drag = false;
+      if (a) a.currentTime = +seek.value;
+    });
+    seek.addEventListener('touchend', () => {
+      seek._drag = false;
+      if (a) a.currentTime = +seek.value;
+    }, { passive: true });
   }
 
-  // ── Audio element events ────────────────────────────────────────────────
   if (!a) return;
 
-  a.addEventListener('timeupdate', () => {
-    if (seek && !seek._dragging) seek.value = a.currentTime;
-    if (time && !(seek && seek._dragging))
-      time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
-  });
   a.addEventListener('loadedmetadata', () => {
-    if (seek) { seek.max = a.duration; seek.value = 0; }
+    if (seek) { seek.max = String(a.duration); seek.value = '0'; }
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
+
+  a.addEventListener('timeupdate', () => {
+    if (seek && !seek._drag) seek.value = String(a.currentTime);
+    if (time && !(seek && seek._drag))
+      time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+  });
+
   a.addEventListener('ended', () => {
     const btn = document.getElementById('audioPlayBtn');
     if (btn) btn.textContent = '▶';
