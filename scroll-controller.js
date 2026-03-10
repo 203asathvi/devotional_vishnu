@@ -208,11 +208,36 @@ function fmtTime(s) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
+
+  // ── Seek slider: pause timeupdate while user is dragging ──────────────────
+  let seekDragging = false;
+  const seekEl = document.getElementById('audioSeek');
+  if (seekEl) {
+    // mousedown / touchstart = start dragging, stop overwriting slider
+    seekEl.addEventListener('mousedown',  () => { seekDragging = true; });
+    seekEl.addEventListener('touchstart', () => { seekDragging = true; }, { passive: true });
+    // input fires continuously while dragging — update time display but don't seek yet
+    seekEl.addEventListener('input', () => {
+      const time = document.getElementById('audioTime');
+      if (time) time.textContent = fmtTime(parseFloat(seekEl.value)) + ' / ' + fmtTime(a.duration || 0);
+    });
+    // change fires on release (mouse) — commit the seek
+    seekEl.addEventListener('change', () => {
+      seekDragging = false;
+      if (a) a.currentTime = parseFloat(seekEl.value);
+    });
+    // touchend = finger lifted — commit the seek
+    seekEl.addEventListener('touchend', () => {
+      seekDragging = false;
+      if (a) a.currentTime = parseFloat(seekEl.value);
+    }, { passive: true });
+  }
+
   a.addEventListener('timeupdate', () => {
     const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
-    if (seek) seek.value = a.currentTime;
-    if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+    if (!seekDragging && seek) seek.value = a.currentTime;
+    if (!seekDragging && time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
   a.addEventListener('loadedmetadata', () => {
     const seek = document.getElementById('audioSeek');
@@ -273,38 +298,24 @@ window.addEventListener('DOMContentLoaded', () => {
   syncSpeedUI();
 
   // ── Scroll play button ────────────────────────────────────────────────────
-  // touchend fires toggleScroll; a flag blocks the ghost click that follows on mobile
+  // Use ONLY JS listeners (no onclick in HTML) to prevent double-fire on mobile
   const scrollBtn = document.getElementById('scrollPlayBtn');
   if (scrollBtn) {
-    let scrollBtnTouched = false;
+    scrollBtn.addEventListener('click', toggleScroll);
     scrollBtn.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation();
-      scrollBtnTouched = true;
-      toggleScroll();
-      setTimeout(() => { scrollBtnTouched = false; }, 400);
+      e.preventDefault(); e.stopPropagation(); toggleScroll();
     }, { passive: false });
-    scrollBtn.addEventListener('click', e => {
-      if (scrollBtnTouched) { e.preventDefault(); e.stopPropagation(); return; }
-      toggleScroll();
-    });
   }
 
   // ── Speed buttons ─────────────────────────────────────────────────────────
-  // Same touch-flag pattern prevents double-fire on mobile
+  // onclick removed from HTML; handled here to prevent double-fire on mobile
   function wireSpeedBtn(id, dir) {
     var btn = document.getElementById(id);
     if (!btn) return;
-    let touched = false;
+    btn.addEventListener('click', function() { adjustSpeed(dir); });
     btn.addEventListener('touchend', function(e) {
-      e.preventDefault(); e.stopPropagation();
-      touched = true;
-      adjustSpeed(dir);
-      setTimeout(() => { touched = false; }, 400);
+      e.preventDefault(); e.stopPropagation(); adjustSpeed(dir);
     }, { passive: false });
-    btn.addEventListener('click', function(e) {
-      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
-      adjustSpeed(dir);
-    });
   }
   wireSpeedBtn('speedDown', -1);
   wireSpeedBtn('speedUp',    1);
