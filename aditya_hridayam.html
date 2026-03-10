@@ -99,10 +99,13 @@ mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 .audio-play-btn:hover{opacity:.8;}
 .audio-ctrl-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
 .audio-ctrl-btn:hover{background:rgba(255,255,255,0.18);}
+.audio-skip-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:36px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.audio-skip-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
 .audio-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
 .audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
 body.light-mode .audio-ctrl-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
 body.light-mode .audio-ctrl-btn:hover{background:rgba(0,0,0,0.12);}
+body.light-mode .audio-skip-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 @media(max-width:400px){.audio-ctrl-btn{width:26px;height:26px;font-size:14px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
@@ -275,10 +278,11 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
   <div class="pill-audio-row">
-    <button class="audio-ctrl-btn" id="audioRewBtn"  title="Back 30s">«</button>
+    <button class="audio-ctrl-btn" id="audioRewBtn"  title="Rewind">«</button>
+    <span class="audio-skip-val" id="audioSkipVal" onclick="editAudioSkip(this)" title="Click to set skip duration">30s</span>
     <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
-    <button class="audio-ctrl-btn" id="audioFwdBtn"  title="Forward 30s">»</button>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set audio speed">1×</span>
+    <button class="audio-ctrl-btn" id="audioFwdBtn"  title="Forward">»</button>
   </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
@@ -301,7 +305,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">
   <span class="tab-dot"></span>Scroll
 </button>
-<audio id="pageAudio" preload="metadata" src="https://audio-proxy.203asathvi.workers.dev/aditya_hridayam.mp3"></audio>
+<audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/aditya_hridayam.mp3"></audio>
 <script src="audio-controller.js"></script>
 <script src="scroll-controller.js"></script>
 <script>
@@ -460,14 +464,14 @@ function toggleAudio() {
     if (rew) rew.addEventListener('click', function() {
       var a = document.getElementById('pageAudio');
       log('REW click — readyState=' + (a?a.readyState:'?') + ' duration=' + (a?a.duration:'?') + ' currentTime=' + (a?a.currentTime:'?'));
-      try { audioSkip(-30); log('audioSkip(-30) returned OK, new currentTime=' + (a?a.currentTime:'?')); }
-      catch(e) { log('ERROR in audioSkip: ' + e.message); }
+      try { audioSkip(-30); log('audioSkip(-30) OK, currentTime=' + (a?a.currentTime:'?')); }
+      catch(e) { log('ERROR: ' + e.message); }
     });
     if (fwd) fwd.addEventListener('click', function() {
       var a = document.getElementById('pageAudio');
       log('FWD click — readyState=' + (a?a.readyState:'?') + ' duration=' + (a?a.duration:'?') + ' currentTime=' + (a?a.currentTime:'?'));
-      try { audioSkip(30); log('audioSkip(30) returned OK, new currentTime=' + (a?a.currentTime:'?')); }
-      catch(e) { log('ERROR in audioSkip: ' + e.message); }
+      try { audioSkip(30); log('audioSkip(30) OK, currentTime=' + (a?a.currentTime:'?')); }
+      catch(e) { log('ERROR: ' + e.message); }
     });
     if (play) play.addEventListener('click', function() {
       var a = document.getElementById('pageAudio');
@@ -476,7 +480,7 @@ function toggleAudio() {
   });
   window.addEventListener('load', function() {
     var a = document.getElementById('pageAudio');
-    log('window.load — audioSkip:' + (typeof audioSkip) + ' readyState:' + (a?a.readyState:'?') + ' duration:' + (a?a.duration:'?'));
+    log('window.load — readyState:' + (a?a.readyState:'?') + ' duration:' + (a?a.duration:'?'));
   });
 })();
 </script>
