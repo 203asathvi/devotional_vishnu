@@ -207,35 +207,39 @@ function fmtTime(s) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const a = aud(); if (!a) return;
-  a.addEventListener('timeupdate', () => {
-    const seek = document.getElementById('audioSeek');
-    const time = document.getElementById('audioTime');
-    if (seek && !seek._dragging) seek.value = a.currentTime;
-    if (time && !(seek && seek._dragging)) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
-  });
-  a.addEventListener('loadedmetadata', () => {
-    const seek = document.getElementById('audioSeek');
-    if (seek) { seek.max = a.duration; seek.value = 0; }
-    const time = document.getElementById('audioTime');
-    if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
-  });
-  // Seek drag wiring
-  (() => {
-    const seek = document.getElementById('audioSeek');
-    if (!seek) return;
-    const time = document.getElementById('audioTime');
+  const a    = aud();
+  const seek = document.getElementById('audioSeek');
+  const time = document.getElementById('audioTime');
+
+  // ── Seek slider wiring (independent of audio element) ──────────────────
+  if (seek) {
     seek._dragging = false;
     seek.addEventListener('mousedown',  () => { seek._dragging = true; });
-    seek.addEventListener('touchstart', () => { seek._dragging = true; }, {passive:true});
+    seek.addEventListener('touchstart', () => { seek._dragging = true; }, {passive: true});
     seek.addEventListener('input', () => {
-      if (time) time.textContent = fmtTime(parseFloat(seek.value)) + ' / ' + fmtTime(a.duration || 0);
+      if (time && a) time.textContent = fmtTime(parseFloat(seek.value)) + ' / ' + fmtTime(a.duration || 0);
     });
-    const commit = () => { seek._dragging = false; a.currentTime = parseFloat(seek.value); };
-    seek.addEventListener('change',   commit);
-    seek.addEventListener('mouseup',  commit);
-    seek.addEventListener('touchend', commit, {passive:true});
-  })();
+    const commitSeek = () => {
+      seek._dragging = false;
+      if (a) a.currentTime = parseFloat(seek.value);
+    };
+    seek.addEventListener('change',  commitSeek);
+    seek.addEventListener('mouseup', commitSeek);
+    seek.addEventListener('touchend', commitSeek, {passive: true});
+  }
+
+  // ── Audio element events ────────────────────────────────────────────────
+  if (!a) return;
+
+  a.addEventListener('timeupdate', () => {
+    if (seek && !seek._dragging) seek.value = a.currentTime;
+    if (time && !(seek && seek._dragging))
+      time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+  });
+  a.addEventListener('loadedmetadata', () => {
+    if (seek) { seek.max = a.duration; seek.value = 0; }
+    if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
+  });
   a.addEventListener('ended', () => {
     const btn = document.getElementById('audioPlayBtn');
     if (btn) btn.textContent = '▶';
