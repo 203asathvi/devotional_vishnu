@@ -133,28 +133,36 @@
     }, {passive:true});
   }
 
-  /* ── POSITIONING (RAF-based, above audioPill) ── */
+  /* ── POSITIONING (RAF-based, above pills/tabs) ── */
+  function pillClearance(id, tabId) {
+    // Returns the height to clear: full pill if visible, tab button if visible, else 0
+    var pill = document.getElementById(id);
+    var tab  = document.getElementById(tabId);
+    if (pill && !pill.classList.contains('hidden') && pill.offsetHeight > 0)
+      return pill.offsetHeight + 16;
+    if (tab && !tab.classList.contains('hidden') && tab.offsetHeight > 0)
+      return tab.offsetHeight + 12;
+    return 0;
+  }
   function placeFab() {
     var fab = document.getElementById('spFab');
     var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
-    var audioPill   = document.getElementById('audioPill');
     if (!fab) return;
-    // FAB (left side) and back-to-top (right side) both sit above audioPill
-    var fabBottom = 20;
-    if (audioPill && !audioPill.classList.contains('hidden') && audioPill.offsetHeight > 0) {
-      fabBottom = 20 + audioPill.offsetHeight + 16;
-    }
-    fab.style.bottom = fabBottom + 'px';
-    // Back-to-top: mirror position on right side
-    if (bt) { bt.style.bottom = fabBottom + 'px'; }
+    // Left side (spFab): clear audioPill or audioTab
+    fab.style.bottom = (20 + pillClearance('audioPill', 'audioTab')) + 'px';
+    // Right side (backTop): clear scrollPill or scrollTab
+    if (bt) bt.style.bottom = (20 + pillClearance('scrollPill', 'scrollTab')) + 'px';
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
   window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
-  var pill = document.getElementById('audioPill');
-  if (pill && window.MutationObserver) {
-    new MutationObserver(function () { requestAnimationFrame(placeFab); })
-      .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
-  }
+  // Observe both pills for class changes
+  ['audioPill', 'scrollPill'].forEach(function(id) {
+    var pill = document.getElementById(id);
+    if (pill && window.MutationObserver) {
+      new MutationObserver(function () { requestAnimationFrame(placeFab); })
+        .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
+    }
+  });
 
 
   /* ── FAB ── */
