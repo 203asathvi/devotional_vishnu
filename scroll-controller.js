@@ -209,35 +209,46 @@ function fmtTime(s) {
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
 
-  // ── Seek slider: pause timeupdate while user is dragging ──────────────────
+  // ── Seek slider: guard against timeupdate overwriting while user drags ────
   let seekDragging = false;
   const seekEl = document.getElementById('audioSeek');
   if (seekEl) {
-    // mousedown / touchstart = start dragging, stop overwriting slider
-    seekEl.addEventListener('mousedown',  () => { seekDragging = true; });
-    seekEl.addEventListener('touchstart', () => { seekDragging = true; }, { passive: true });
-    // input fires continuously while dragging — update time display but don't seek yet
-    seekEl.addEventListener('input', () => {
+    // Remove any inline oninput that fights with dragging
+    seekEl.oninput = null;
+
+    seekEl.addEventListener('mousedown', () => { seekDragging = true; });
+    seekEl.addEventListener('mouseup',   () => { seekDragging = false; a.currentTime = parseFloat(seekEl.value); });
+
+    seekEl.addEventListener('touchstart', e => {
+      seekDragging = true;
+      e.stopPropagation();          // don't let page touchstart fire
+    }, { passive: true });
+
+    seekEl.addEventListener('touchmove', e => {
+      e.stopPropagation();
+      // Manually map finger X → slider value (browser doesn't do this natively on mobile)
+      const rect = seekEl.getBoundingClientRect();
+      const pct  = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
+      const val  = parseFloat(seekEl.min || 0) + pct * (parseFloat(seekEl.max || 0) - parseFloat(seekEl.min || 0));
+      seekEl.value = val;
       const time = document.getElementById('audioTime');
-      if (time) time.textContent = fmtTime(parseFloat(seekEl.value)) + ' / ' + fmtTime(a.duration || 0);
-    });
-    // change fires on release (mouse) — commit the seek
-    seekEl.addEventListener('change', () => {
+      if (time) time.textContent = fmtTime(val) + ' / ' + fmtTime(a.duration || 0);
+    }, { passive: true });
+
+    seekEl.addEventListener('touchend', e => {
+      e.stopPropagation();
       seekDragging = false;
-      if (a) a.currentTime = parseFloat(seekEl.value);
-    });
-    // touchend = finger lifted — commit the seek
-    seekEl.addEventListener('touchend', () => {
-      seekDragging = false;
-      if (a) a.currentTime = parseFloat(seekEl.value);
+      a.currentTime = parseFloat(seekEl.value);
     }, { passive: true });
   }
 
   a.addEventListener('timeupdate', () => {
     const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
-    if (!seekDragging && seek) seek.value = a.currentTime;
-    if (!seekDragging && time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+    if (!seekDragging) {
+      if (seek) seek.value = a.currentTime;
+      if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+    }
   });
   a.addEventListener('loadedmetadata', () => {
     const seek = document.getElementById('audioSeek');

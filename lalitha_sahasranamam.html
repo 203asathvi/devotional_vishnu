@@ -221,7 +221,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div class="pill-audio">
     <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
-    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" >
+    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1">
     <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
@@ -249,69 +249,6 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 </button>
 <audio id="pageAudio" preload="metadata" src="https://audio-proxy.203asathvi.workers.dev/lalitha_sahasranamam.mp3"></audio>
 <script src="scroll-controller.js"></script>
-<script>
-// ── Audio seek drag fix ───────────────────────────────────────────────────────
-(function() {
-  function initSeek() {
-    var a   = document.getElementById('pageAudio');
-    var sl  = document.getElementById('audioSeek');
-    var tm  = document.getElementById('audioTime');
-    if (!a || !sl) return;
-
-    var dragging = false;
-
-    function fmtT(s) {
-      s = s || 0;
-      var m = Math.floor(s / 60);
-      return m + ':' + String(Math.floor(s % 60)).padStart(2,'0');
-    }
-
-    // Block timeupdate from overwriting slider while dragging
-    a.addEventListener('timeupdate', function() {
-      if (dragging) return;
-      sl.value = a.currentTime;
-      if (tm) tm.textContent = fmtT(a.currentTime) + ' / ' + fmtT(a.duration || 0);
-    });
-
-    // Mouse drag
-    sl.addEventListener('mousedown', function() { dragging = true; });
-    sl.addEventListener('mouseup',   function() { dragging = false; a.currentTime = parseFloat(sl.value); });
-
-    // Touch drag — critical: stopPropagation so page touchstart doesn't fire
-    sl.addEventListener('touchstart', function(e) {
-      e.stopPropagation();
-      dragging = true;
-    }, { passive: true });
-
-    sl.addEventListener('touchmove', function(e) {
-      e.stopPropagation();
-      // Manually map touch X position to slider value
-      var rect = sl.getBoundingClientRect();
-      var x = e.touches[0].clientX;
-      var pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
-      var val = parseFloat(sl.min || 0) + pct * (parseFloat(sl.max || 0) - parseFloat(sl.min || 0));
-      sl.value = val;
-      if (tm) tm.textContent = fmtT(val) + ' / ' + fmtT(a.duration || 0);
-    }, { passive: true });
-
-    sl.addEventListener('touchend', function(e) {
-      e.stopPropagation();
-      dragging = false;
-      a.currentTime = parseFloat(sl.value);
-    }, { passive: true });
-
-    // Remove the oninput handler that fights with dragging
-    sl.oninput = null;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSeek);
-  } else {
-    initSeek();
-  }
-})();
-</script>
-
 <script>
 const S=[
 [1,"oṃ śrīmātā śrīmahārājñī śrīmat-siṃhāsaneśvarī .","cidagni-kuṇḍa-sambhūtā devakārya-samudyatā .. 1.."],
