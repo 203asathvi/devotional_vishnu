@@ -208,51 +208,12 @@ function fmtTime(s) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
-
-  // ── Seek slider: guard against timeupdate overwriting while user drags ────
-  let seekDragging = false;
-  const seekEl = document.getElementById('audioSeek');
-  if (seekEl) {
-    // Remove any inline oninput that fights with dragging
-    seekEl.oninput = null;
-
-    seekEl.addEventListener('mousedown', () => { seekDragging = true; });
-    seekEl.addEventListener('mouseup',   () => { seekDragging = false; a.currentTime = parseFloat(seekEl.value); });
-
-    seekEl.addEventListener('touchstart', e => {
-      seekDragging = true;
-      e.stopPropagation();          // don't let page touchstart fire
-    }, { passive: true });
-
-    seekEl.addEventListener('touchmove', e => {
-      e.stopPropagation();
-      // Manually map finger X → slider value (browser doesn't do this natively on mobile)
-      const rect = seekEl.getBoundingClientRect();
-      const pct  = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
-      const val  = parseFloat(seekEl.min || 0) + pct * (parseFloat(seekEl.max || 0) - parseFloat(seekEl.min || 0));
-      seekEl.value = val;
-      const time = document.getElementById('audioTime');
-      if (time) time.textContent = fmtTime(val) + ' / ' + fmtTime(a.duration || 0);
-    }, { passive: true });
-
-    seekEl.addEventListener('touchend', e => {
-      e.stopPropagation();
-      seekDragging = false;
-      a.currentTime = parseFloat(seekEl.value);
-    }, { passive: true });
-  }
-
+  // audioSeek is now a custom div — timeupdate for seek bar handled inline per page
   a.addEventListener('timeupdate', () => {
-    const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
-    if (!seekDragging) {
-      if (seek) seek.value = a.currentTime;
-      if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
-    }
+    if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
   a.addEventListener('loadedmetadata', () => {
-    const seek = document.getElementById('audioSeek');
-    if (seek) seek.max = a.duration;
     const time = document.getElementById('audioTime');
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
@@ -309,24 +270,38 @@ window.addEventListener('DOMContentLoaded', () => {
   syncSpeedUI();
 
   // ── Scroll play button ────────────────────────────────────────────────────
-  // Use ONLY JS listeners (no onclick in HTML) to prevent double-fire on mobile
+  // touchend fires toggleScroll; a flag blocks the ghost click that follows on mobile
   const scrollBtn = document.getElementById('scrollPlayBtn');
   if (scrollBtn) {
-    scrollBtn.addEventListener('click', toggleScroll);
+    let scrollBtnTouched = false;
     scrollBtn.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation(); toggleScroll();
+      e.preventDefault(); e.stopPropagation();
+      scrollBtnTouched = true;
+      toggleScroll();
+      setTimeout(() => { scrollBtnTouched = false; }, 400);
     }, { passive: false });
+    scrollBtn.addEventListener('click', e => {
+      if (scrollBtnTouched) { e.preventDefault(); e.stopPropagation(); return; }
+      toggleScroll();
+    });
   }
 
   // ── Speed buttons ─────────────────────────────────────────────────────────
-  // onclick removed from HTML; handled here to prevent double-fire on mobile
+  // Same touch-flag pattern prevents double-fire on mobile
   function wireSpeedBtn(id, dir) {
     var btn = document.getElementById(id);
     if (!btn) return;
-    btn.addEventListener('click', function() { adjustSpeed(dir); });
+    let touched = false;
     btn.addEventListener('touchend', function(e) {
-      e.preventDefault(); e.stopPropagation(); adjustSpeed(dir);
+      e.preventDefault(); e.stopPropagation();
+      touched = true;
+      adjustSpeed(dir);
+      setTimeout(() => { touched = false; }, 400);
     }, { passive: false });
+    btn.addEventListener('click', function(e) {
+      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
+      adjustSpeed(dir);
+    });
   }
   wireSpeedBtn('speedDown', -1);
   wireSpeedBtn('speedUp',    1);
