@@ -369,21 +369,26 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <script src="audio-controller.js"></script>
 <script src="scroll-controller.js"></script>
 <script>
-// ── Auto-hide pills after inactivity ─────────────────────────────────────────
-// ↓ Edit this value to change the idle timeout. Set to 0 to disable auto-hide.
-var PILL_AUTO_HIDE_MS = 10000;  // milliseconds  (10000 = 10 seconds)
-// ─────────────────────────────────────────────────────────────────────────────
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  AUTO-HIDE CONFIGURATION — edit the value below                 ║
+// ║  Time in milliseconds before pills hide when idle               ║
+// ║  Examples: 5000 = 5s,  10000 = 10s,  0 = disable auto-hide     ║
+// ╚══════════════════════════════════════════════════════════════════╝
+var PILL_AUTO_HIDE_MS = 10000;
+
 (function() {
   if (!PILL_AUTO_HIDE_MS) return;
-  var _timer  = null;
+  var _timer        = null;
   var _hiddenAudio  = false;
   var _hiddenScroll = false;
 
+  function scrollRunning() {
+    return typeof scrollActive !== 'undefined' && scrollActive;
+  }
+
   function maybeHide() {
-    // Never hide scroll pill while scroll is running
-    var scrollRunning = (typeof scrollActive !== 'undefined' && scrollActive);
-    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
-    if (!_hiddenScroll && !scrollRunning) { _hiddenScroll = true; hideScrollPill(); }
+    if (!_hiddenAudio)                      { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll && !scrollRunning()) { _hiddenScroll = true; hideScrollPill(); }
   }
 
   function restoreAll() {
@@ -397,29 +402,39 @@ var PILL_AUTO_HIDE_MS = 10000;  // milliseconds  (10000 = 10 seconds)
     _timer = setTimeout(maybeHide, PILL_AUTO_HIDE_MS);
   }
 
-  window.addEventListener('DOMContentLoaded', function() { resetTimer(); });
+  // Start timer immediately — script runs after DOM is ready
+  resetTimer();
 
-  // Any interaction: restore + reset timer
-  ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(function(ev) {
+  // Mouse/keyboard activity resets timer
+  ['mousemove', 'mousedown', 'keydown'].forEach(function(ev) {
     document.addEventListener(ev, function() {
       if (_hiddenAudio || _hiddenScroll) { restoreAll(); } else { resetTimer(); }
     }, { passive: true });
   });
 
-  // While audio playing or scroll active: suppress hide + restore if needed
+  // click handles both desktop and mobile tap (fires after touchend, won't conflict with scroll-stop)
+  document.addEventListener('click', function() {
+    if (_hiddenAudio || _hiddenScroll) { restoreAll(); } else { resetTimer(); }
+  }, { passive: true });
+
+  // page scroll resets timer but does NOT restore (avoids conflicting with auto-scroll)
+  document.addEventListener('scroll', function() {
+    if (!_hiddenAudio && !_hiddenScroll) resetTimer();
+  }, { passive: true });
+
+  // Suppress hide while audio playing or scroll active; restore scroll pill if scroll starts
   setInterval(function() {
     var a = document.getElementById('pageAudio');
-    var isPlaying  = a && !a.paused && !a.ended;
-    var scrollRunning = (typeof scrollActive !== 'undefined' && scrollActive);
-    if (isPlaying || scrollRunning) {
+    var playing = a && !a.paused && !a.ended;
+    if (playing || scrollRunning()) {
       clearTimeout(_timer);
-      if (_hiddenAudio)  { _hiddenAudio  = false; showAudioPill();  }
-      if (_hiddenScroll && !scrollRunning) { /* keep hidden if scroll not running */ }
-      if (_hiddenScroll &&  scrollRunning) { _hiddenScroll = false; showScrollPill(); }
+      if (_hiddenAudio)                        { _hiddenAudio  = false; showAudioPill();  }
+      if (_hiddenScroll && scrollRunning())    { _hiddenScroll = false; showScrollPill(); }
     }
   }, 1000);
 })();
 </script>
+
 <script>
 const CHAUPAIS = [
   [1,"Jai Hanuman gyan gun sagar |","Jai Kapis tihun lok ujagar ||","Victory to thee, O Hanuman! Ocean of Wisdom. All hail to you O Kapisa! You illuminate all the three worlds with your glory."],
