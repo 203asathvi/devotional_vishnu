@@ -125,7 +125,7 @@ function syncSpeedUI() {
   const s = currentSpeed();
   document.getElementById('speedVal').textContent = s + '×';
   // Slider shows nearest step position (custom values sit between notches)
-  const _sl=document.getElementById('speedSlider');if(_sl)_sl.value=speedIdx+1;
+  const _sls=document.getElementById('speedSlider'); if(_sls) _sls.value=speedIdx+1;
 }
 
 function updateSpeed(v) { updateSpeedFromSlider(v); }
@@ -209,13 +209,33 @@ function fmtTime(s) {
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
   a.addEventListener('timeupdate', () => {
+    const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
-    if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+    if (seek && !seek._dragging) seek.value = a.currentTime;
+    if (time && !(seek && seek._dragging)) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
   a.addEventListener('loadedmetadata', () => {
+    const seek = document.getElementById('audioSeek');
+    if (seek) { seek.max = a.duration; seek.value = 0; }
     const time = document.getElementById('audioTime');
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
+  // Seek drag wiring
+  (() => {
+    const seek = document.getElementById('audioSeek');
+    if (!seek) return;
+    const time = document.getElementById('audioTime');
+    seek._dragging = false;
+    seek.addEventListener('mousedown',  () => { seek._dragging = true; });
+    seek.addEventListener('touchstart', () => { seek._dragging = true; }, {passive:true});
+    seek.addEventListener('input', () => {
+      if (time) time.textContent = fmtTime(parseFloat(seek.value)) + ' / ' + fmtTime(a.duration || 0);
+    });
+    const commit = () => { seek._dragging = false; a.currentTime = parseFloat(seek.value); };
+    seek.addEventListener('change',   commit);
+    seek.addEventListener('mouseup',  commit);
+    seek.addEventListener('touchend', commit, {passive:true});
+  })();
   a.addEventListener('ended', () => {
     const btn = document.getElementById('audioPlayBtn');
     if (btn) btn.textContent = '▶';

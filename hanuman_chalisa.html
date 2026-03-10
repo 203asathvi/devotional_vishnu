@@ -121,7 +121,7 @@ body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 .pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
 .pill-close:hover{color:rgba(255,255,255,0.8);}
 /* Controls row */
-.pill-audio{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
+.pill-audio{flex-wrap:nowrap;display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
 /* Re-open tabs */
 .pill-tab{position:fixed;bottom:20px;z-index:300;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 4px 20px rgba(0,0,0,0.4);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
@@ -144,7 +144,7 @@ body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 .scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;}
 .scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
 /* Audio seek + time */
-.audio-seek{-webkit-appearance:none;appearance:none;width:90px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
+.audio-seek{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;outline:none;cursor:pointer;}
 .audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;}
 .audio-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
 .audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
@@ -165,7 +165,6 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 @media(max-width:480px){.audio-time{display:none;}}
 @media(max-width:400px){.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
 </style>
-<style>.audio-seek-slider::-webkit-slider-thumb{background:linear-gradient(135deg,#f0a030,#ff6a00);}.audio-seek-slider::-moz-range-thumb{background:linear-gradient(135deg,#f0a030,#ff6a00);}</style>
 </head>
 <body>
 <div class="progress-bar" id="progress"></div>
@@ -312,11 +311,9 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div class="pill-audio">
     <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
+    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1">
     <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
-  </div>
-  <div class="audio-seek-row">
-    <input type="range" id="audioSeek" class="audio-seek-slider" value="0" min="0" step="0.1">
   </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
@@ -342,35 +339,6 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <audio id="pageAudio" preload="none" src="https://audio-proxy.203asathvi.workers.dev/hanuman_chalisa.mp3"></audio>
 
 <script src="scroll-controller.js"></script>
-<script>
-(function(){
-  window.addEventListener('DOMContentLoaded', function() {
-    var a  = document.getElementById('pageAudio');
-    var sl = document.getElementById('audioSeek');
-    var tm = document.getElementById('audioTime');
-    if (!a || !sl) return;
-    var seeking = false;
-    function fmt(v) { v=isNaN(v)||!isFinite(v)?0:v; return Math.floor(v/60)+':'+String(Math.floor(v%60)).padStart(2,'0'); }
-    a.addEventListener('loadedmetadata', function() {
-      sl.max = a.duration;
-      sl.value = 0;
-      if (tm) tm.textContent = '0:00 / ' + fmt(a.duration);
-    });
-    a.addEventListener('timeupdate', function() {
-      if (seeking) return;
-      sl.value = a.currentTime;
-    });
-    sl.addEventListener('mousedown',  function() { seeking = true; });
-    sl.addEventListener('touchstart', function() { seeking = true; }, {passive:true});
-    sl.addEventListener('input', function() {
-      if (tm) tm.textContent = fmt(parseFloat(sl.value)) + ' / ' + fmt(a.duration||0);
-    });
-    sl.addEventListener('change',  function() { seeking = false; a.currentTime = parseFloat(sl.value); });
-    sl.addEventListener('touchend', function() { seeking = false; a.currentTime = parseFloat(sl.value); }, {passive:true});
-  });
-})();
-</script>
-
 <script>
 const CHAUPAIS = [
   [1,"Jai Hanuman gyan gun sagar |","Jai Kapis tihun lok ujagar ||","Victory to thee, O Hanuman! Ocean of Wisdom. All hail to you O Kapisa! You illuminate all the three worlds with your glory."],
