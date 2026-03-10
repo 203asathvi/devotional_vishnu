@@ -158,6 +158,9 @@ body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 .scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
 /* Audio seek + time */
 
+.pill-audio-seek{padding:2px 10px 8px;display:flex;align-items:center;gap:6px;}
+.audio-seek{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.18);outline:none;cursor:pointer;}
+body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
 .audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;}
 .audio-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
 .audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
@@ -329,6 +332,9 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="audio-ctrl-btn" id="audioFwdBtn"  onclick="audioSkip(30)"  title="Forward 30s">»</button>
     <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
+  </div>
+  <div class="pill-audio-seek">
+    <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0" oninput="seekAudio(this.value)" title="Seek">
   </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">

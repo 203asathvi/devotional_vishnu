@@ -169,6 +169,20 @@ function toggleAudio() {
 
 function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
 
+
+// ── Audio skip / stop ─────────────────────────────────────────────────────────
+function audioSkip(sec) {
+  const a = aud(); if (!a) return;
+  a.currentTime = Math.max(0, Math.min((a.duration || 0), a.currentTime + sec));
+}
+
+function audioStop() {
+  const a = aud(); if (!a) return;
+  a.pause(); a.currentTime = 0;
+  const btn = document.getElementById('audioPlayBtn');
+  if (btn) btn.textContent = '▶';
+}
+
 function editAudioSpeed(el) {
   const inp = document.createElement('input');
   inp.type = 'number';
