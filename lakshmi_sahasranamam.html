@@ -80,9 +80,10 @@ body.light-mode .audio-ctrl-btn:hover{background:rgba(0,0,0,0.14);}
 body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 @media(max-width:400px){.audio-ctrl-btn{width:28px;height:28px;font-size:12px;}}
-.pill-audio-row{display:flex;align-items:center;gap:7px;padding:4px 12px 10px;}
-.audio-seek{-webkit-appearance:none;appearance:none;flex:1;min-width:90px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18);outline:none;cursor:pointer;}
-body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
+.pill-audio{display:flex;align-items:center;gap:7px;padding:4px 12px 4px;}
+.audio-seek{-webkit-appearance:none;appearance:none;flex:1;min-width:80px;height:4px;border-radius:2px;background:rgba(255,255,255,0.2);outline:none;cursor:pointer;}
+body.light-mode .audio-seek{background:rgba(0,0,0,0.15);}
+.pill-audio-time{display:flex;align-items:center;justify-content:space-between;padding:2px 12px 9px;gap:8px;}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
 .pill-tab{position:fixed;bottom:20px;z-index:300;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 4px 20px rgba(0,0,0,0.4);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
 .pill-tab:hover{opacity:.8;}
@@ -288,14 +289,14 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <span class="pill-label">♪ Audio</span>
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
-  <div class="pill-audio-row">
+  <div class="pill-audio">
     <button class="audio-ctrl-btn" id="audioRewBtn"  onclick="audioSkip(-30)" title="Back 30s">«</button>
     <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()"  title="Play / Pause">▶</button>
     <button class="audio-ctrl-btn" id="audioStopBtn" onclick="audioStop()"    title="Stop">■</button>
     <button class="audio-ctrl-btn" id="audioFwdBtn"  onclick="audioSkip(30)"  title="Forward 30s">»</button>
-    <input  type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0" title="Seek">
+    <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0" title="Seek">
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px 8px;gap:8px;">
+  <div class="pill-audio-time">
     <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
