@@ -105,6 +105,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 @media(max-width:480px){.audio-time{display:none;}}
 @media(max-width:400px){.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
 </style>
+<style>.audio-seek-slider::-webkit-slider-thumb{background:linear-gradient(135deg,#3bb89a,#00b478);}.audio-seek-slider::-moz-range-thumb{background:linear-gradient(135deg,#3bb89a,#00b478);}</style>
 </head>
 <body>
 <div class="progress-bar" id="progress"></div>
@@ -305,28 +306,21 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <script src="scroll-controller.js"></script>
 <script>
 (function(){
-  /* Thumb gradient — hardcoded hex so no CSS var resolution needed */
-  var s = document.createElement('style');
-  s.textContent =
-    '.audio-seek-slider::-webkit-slider-thumb{background:linear-gradient(135deg,#3bb89a,#00b478);}' +
-    '.audio-seek-slider::-moz-range-thumb{background:linear-gradient(135deg,#3bb89a,#00b478);}';
-  document.head.appendChild(s);
-
   window.addEventListener('DOMContentLoaded', function() {
     var a  = document.getElementById('pageAudio');
     var sl = document.getElementById('audioSeek');
     var tm = document.getElementById('audioTime');
     if (!a || !sl) return;
     var seeking = false;
-    function fmt(v) { v = isNaN(v)||!isFinite(v)?0:v; return Math.floor(v/60)+':'+String(Math.floor(v%60)).padStart(2,'0'); }
+    function fmt(v) { v=isNaN(v)||!isFinite(v)?0:v; return Math.floor(v/60)+':'+String(Math.floor(v%60)).padStart(2,'0'); }
+    a.addEventListener('loadedmetadata', function() {
+      sl.max = a.duration;
+      sl.value = 0;
+      if (tm) tm.textContent = '0:00 / ' + fmt(a.duration);
+    });
     a.addEventListener('timeupdate', function() {
       if (seeking) return;
       sl.value = a.currentTime;
-      if (tm) tm.textContent = fmt(a.currentTime) + ' / ' + fmt(a.duration||0);
-    });
-    a.addEventListener('loadedmetadata', function() {
-      sl.max = a.duration;
-      if (tm) tm.textContent = '0:00 / ' + fmt(a.duration);
     });
     sl.addEventListener('mousedown',  function() { seeking = true; });
     sl.addEventListener('touchstart', function() { seeking = true; }, {passive:true});
