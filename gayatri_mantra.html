@@ -96,24 +96,22 @@ body.light-mode td.verse .devanagari{color:#b07818;}
 .pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
 .pill-close:hover{color:rgba(255,255,255,0.8);}
 
-/* ── Audio pill ── */
-.pill-audio-row{display:flex;align-items:center;gap:7px;padding:4px 12px 10px;}
-
-.audio-ctrl-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fff;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-weight:bold;}
+.audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.audio-play-btn:hover{opacity:.8;}
+.audio-ctrl-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#fff;width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-weight:bold;}
 .audio-ctrl-btn:hover{background:rgba(255,255,255,0.2);}
 .audio-ctrl-btn:active{transform:scale(0.9);}
-.audio-seek{-webkit-appearance:none;appearance:none;flex:1;min-width:80px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18);outline:none;cursor:pointer;}
-.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
-.audio-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
-.audio-time{color:rgba(255,255,255,0.45);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;letter-spacing:.3px;}
-.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:30px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;flex-shrink:0;}
+.audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;flex:1;}
+.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;flex-shrink:0;}
 .audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
 body.light-mode .audio-ctrl-btn{background:rgba(0,0,0,0.07);border-color:rgba(0,0,0,0.15);color:#3a2000;}
-body.light-mode .audio-ctrl-btn:hover{background:rgba(0,0,0,0.13);}
+body.light-mode .audio-ctrl-btn:hover{background:rgba(0,0,0,0.14);}
 body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
+@media(max-width:400px){.audio-ctrl-btn{width:28px;height:28px;font-size:12px;}}
+.pill-audio-row{display:flex;align-items:center;gap:7px;padding:4px 12px 10px;}
+.audio-seek{-webkit-appearance:none;appearance:none;flex:1;min-width:90px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18);outline:none;cursor:pointer;}
 body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
-@media(max-width:400px){.audio-ctrl-btn{width:26px;height:26px;font-size:12px;}.audio-play-btn{width:32px;height:32px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
 .pill-tab{position:fixed;bottom:20px;z-index:300;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 4px 20px rgba(0,0,0,0.4);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
 .pill-tab:hover{opacity:.8;}
@@ -121,7 +119,8 @@ body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
 #audioTab{left:14px;}
 #scrollTab{right:14px;}
 .tab-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));flex-shrink:0;}
-
+.audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.audio-play-btn:hover{opacity:.8;}
 .scroll-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
 .scroll-play-btn:hover{opacity:.8;}
 .scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
@@ -275,16 +274,18 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <div class="pill-base" id="audioPill">
   <div class="pill-header">
     <span class="pill-label">♪ Audio</span>
-    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
-    <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
   <div class="pill-audio-row">
-    <button class="audio-ctrl-btn" id="audioRewBtn"  title="Back 30s">«</button>
-    <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
-    <button class="audio-ctrl-btn" id="audioStopBtn" title="Stop">■</button>
-    <button class="audio-ctrl-btn" id="audioFwdBtn"  title="Forward 30s">»</button>
+    <button class="audio-ctrl-btn" id="audioRewBtn"  onclick="audioSkip(-30)" title="Back 30s">«</button>
+    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()"  title="Play / Pause">▶</button>
+    <button class="audio-ctrl-btn" id="audioStopBtn" onclick="audioStop()"    title="Stop">■</button>
+    <button class="audio-ctrl-btn" id="audioFwdBtn"  onclick="audioSkip(30)"  title="Forward 30s">»</button>
     <input  type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0" title="Seek">
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 12px 8px;gap:8px;">
+    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+    <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
@@ -461,7 +462,38 @@ window.addEventListener('scroll', () => {
 
 window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill')) stopScroll(); }, { passive: true });
 
+// ── Local audio override: handles load-first + visible error feedback ─────────
+function toggleAudio() {
+  const a = document.getElementById('pageAudio');
+  const btn = document.getElementById('audioPlayBtn');
+  if (!a || !btn) return;
 
+  if (!a.paused) {
+    a.pause();
+    btn.textContent = '▶';
+    return;
+  }
+
+  // Show loading state immediately on tap
+  btn.textContent = '…';
+  btn.disabled = true;
+
+  // Force load if not already loaded (needed after preload=metadata on some browsers)
+  if (a.readyState < 2) { a.load(); }
+
+  a.play()
+    .then(() => {
+      btn.textContent = '⏸';
+      btn.disabled = false;
+    })
+    .catch(err => {
+      btn.textContent = '✕';
+      btn.disabled = false;
+      btn.title = 'Audio unavailable — check file is uploaded';
+      setTimeout(() => { btn.textContent = '▶'; btn.title = 'Play / Pause audio'; }, 2500);
+      console.warn('Audio play failed:', err);
+    });
+}
 
 (function () {
   if (localStorage.getItem('sacredTheme') === 'light') {

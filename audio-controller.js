@@ -1,7 +1,9 @@
-// ─── Standalone Audio Controller ─────────────────────────────────────────────
-// Used by: aditya_hridayam, hanuman_chalisa, lakshmi_sahasranamam,
-//          lalitha_sahasranamam, vishnu_sahasranamam, gayatri_mantra
-// Handles: play/pause, skip ±30s, stop, seek slider, speed, pill show/hide
+// ─── Audio Controller ─────────────────────────────────────────────────────────
+// Defines: toggleAudio, audioSkip, audioStop, seekAudio, editAudioSpeed,
+//          hideAudioPill, showAudioPill, fmtTime
+//
+// Button event wiring is handled by scroll-controller.js (wireAudioBtn).
+// Load this BEFORE scroll-controller.js.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function aud() { return document.getElementById('pageAudio'); }
@@ -61,7 +63,7 @@ function seekAudio(v) {
   if (a) a.currentTime = parseFloat(v);
 }
 
-// ── Speed ─────────────────────────────────────────────────────────────────────
+// ── Speed editor ──────────────────────────────────────────────────────────────
 function editAudioSpeed(el) {
   const inp = document.createElement('input');
   inp.type = 'number';
@@ -85,7 +87,7 @@ function editAudioSpeed(el) {
     span.id = 'audioSpeedVal';
     span.title = 'Click to set audio speed';
     span.onclick = function () { editAudioSpeed(this); };
-    span.textContent = v + '×';
+    span.textContent = v + 'x';
     inp.replaceWith(span);
   }
   setTimeout(() => inp.addEventListener('blur', commit), 300);
@@ -105,7 +107,7 @@ function showAudioPill() {
   document.getElementById('audioTab').classList.add('hidden');
 }
 
-// ── Wire everything on load ───────────────────────────────────────────────────
+// ── Seek slider + state events wired on load ──────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud();
   if (!a) return;
@@ -114,32 +116,32 @@ window.addEventListener('DOMContentLoaded', () => {
   const seek = document.getElementById('audioSeek');
   const time = document.getElementById('audioTime');
 
-  // State events → update button icon
+  // Button state events → icon sync
   a.addEventListener('waiting', () => { if (btn) btn.textContent = '…'; });
   a.addEventListener('playing', () => { if (btn) { btn.textContent = '⏸'; btn.disabled = false; } });
   a.addEventListener('pause',   () => { if (btn) btn.textContent = '▶'; });
   a.addEventListener('ended',   () => { if (btn) btn.textContent = '▶'; });
   a.addEventListener('error',   () => {
     if (!btn) return;
-    btn.textContent = '✕'; btn.disabled = false;
+    btn.textContent = 'x'; btn.disabled = false;
     btn.title = 'Audio unavailable';
     setTimeout(() => { btn.textContent = '▶'; btn.title = 'Play / Pause'; }, 3000);
   });
 
-  // Duration known → set seek max and time display
+  // Duration loaded → set seek max
   a.addEventListener('loadedmetadata', () => {
     if (seek) { seek.max = a.duration; seek.value = 0; }
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
 
-  // Playback progress → move seek thumb + update time
+  // Playback progress → update seek thumb + time display
   a.addEventListener('timeupdate', () => {
     if (seek && !seek._dragging) seek.value = a.currentTime;
     if (time && !(seek && seek._dragging))
       time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
 
-  // Seek drag wiring (prevents jumpy updates while dragging)
+  // Seek drag — pause live updates while dragging
   if (seek) {
     seek._dragging = false;
     seek.addEventListener('mousedown',  () => { seek._dragging = true; });
@@ -155,26 +157,4 @@ window.addEventListener('DOMContentLoaded', () => {
     seek.addEventListener('mouseup',  commitSeek);
     seek.addEventListener('touchend', commitSeek, { passive: true });
   }
-
-  // Touch-safe button wiring (prevents double-fire on mobile)
-  function wireBtn(id, fn) {
-    const b = document.getElementById(id);
-    if (!b) return;
-    let touched = false;
-    b.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation();
-      touched = true;
-      fn();
-      setTimeout(() => { touched = false; }, 400);
-    }, { passive: false });
-    b.addEventListener('click', e => {
-      if (touched) { e.preventDefault(); return; }
-      fn();
-    });
-  }
-
-  wireBtn('audioPlayBtn', toggleAudio);
-  wireBtn('audioRewBtn',  () => audioSkip(-30));
-  wireBtn('audioFwdBtn',  () => audioSkip(30));
-  wireBtn('audioStopBtn', audioStop);
 });
