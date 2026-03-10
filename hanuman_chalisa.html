@@ -109,10 +109,10 @@ body.light-mode .scroll-bar-open-btn{color:#3a2000;}
 body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 
 /* ── Two floating pills: Audio (bottom-left) + Scroll (bottom-right) ─────── */
-.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .2s,transform .2s;}
+.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
 /* Audio pill — bottom-left */
-#audioPill{left:14px;width:220px;}
+#audioPill{left:14px;}
 /* Scroll pill — bottom-right */
 #scrollPill{right:14px;}
 /* Section label row */
@@ -527,10 +527,14 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
 })();
 </script>
 
+
 <script>
-// ── Auto-hide pills after 10s of no interaction ───────────────────────────────
+// ── Auto-hide pills after inactivity ─────────────────────────────────────────
+// ↓ Change this value to adjust the idle timeout (milliseconds)
+var PILL_AUTO_HIDE_MS = 10000;   // 10 seconds — set to 0 to disable
+
 (function() {
-  var TIMEOUT = 10000;
+  if (!PILL_AUTO_HIDE_MS) return;
   var _timer = null;
   var _hidden = false;
 
@@ -550,24 +554,18 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
 
   function resetTimer() {
     clearTimeout(_timer);
-    _timer = setTimeout(hideBoth, TIMEOUT);
+    _timer = setTimeout(hideBoth, PILL_AUTO_HIDE_MS);
   }
 
-  window.addEventListener('DOMContentLoaded', function() {
-    resetTimer();
-  });
+  window.addEventListener('DOMContentLoaded', function() { resetTimer(); });
 
   ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(function(ev) {
     document.addEventListener(ev, function() {
-      if (_hidden) {
-        showBoth();
-      } else {
-        resetTimer();
-      }
+      if (_hidden) { showBoth(); } else { resetTimer(); }
     }, { passive: true });
   });
 
-  // Keep visible while audio playing or scroll active
+  // Keep visible while audio is playing or auto-scroll is active
   setInterval(function() {
     var a = document.getElementById('pageAudio');
     var isPlaying = a && !a.paused && !a.ended;
