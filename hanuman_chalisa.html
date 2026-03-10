@@ -387,8 +387,8 @@ var PILL_AUTO_HIDE_MS = 10000;
   }
 
   function maybeHide() {
-    if (!_hiddenAudio)                      { _hiddenAudio  = true; hideAudioPill();  }
-    if (!_hiddenScroll && !scrollRunning()) { _hiddenScroll = true; hideScrollPill(); }
+    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
   }
 
   function restoreAll() {
@@ -422,15 +422,9 @@ var PILL_AUTO_HIDE_MS = 10000;
     if (!_hiddenAudio && !_hiddenScroll) resetTimer();
   }, { passive: true });
 
-  // Suppress hide while audio playing or scroll active; restore scroll pill if scroll starts
+  // Restore scroll pill if scroll starts while pill is hidden
   setInterval(function() {
-    var a = document.getElementById('pageAudio');
-    var playing = a && !a.paused && !a.ended;
-    if (playing || scrollRunning()) {
-      clearTimeout(_timer);
-      if (_hiddenAudio)                        { _hiddenAudio  = false; showAudioPill();  }
-      if (_hiddenScroll && scrollRunning())    { _hiddenScroll = false; showScrollPill(); }
-    }
+    if (_hiddenScroll && scrollRunning()) { _hiddenScroll = false; showScrollPill(); }
   }, 1000);
 })();
 </script>

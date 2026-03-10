@@ -309,7 +309,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
   </div>
   <div class="pill-scroll-row">
-    <button class="scroll-play-btn" id="scrollPlayBtn" onclick="toggleScroll()" title="Play / Pause auto-scroll">⇓</button>
+    <button class="scroll-play-btn" id="scrollPlayBtn" title="Play / Pause auto-scroll">⇓</button>
     <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
     <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
     <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
@@ -340,8 +340,8 @@ var PILL_AUTO_HIDE_MS = 10000;
   }
 
   function maybeHide() {
-    if (!_hiddenAudio)                      { _hiddenAudio  = true; hideAudioPill();  }
-    if (!_hiddenScroll && !scrollRunning()) { _hiddenScroll = true; hideScrollPill(); }
+    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
   }
 
   function restoreAll() {
@@ -375,15 +375,9 @@ var PILL_AUTO_HIDE_MS = 10000;
     if (!_hiddenAudio && !_hiddenScroll) resetTimer();
   }, { passive: true });
 
-  // Suppress hide while audio playing or scroll active; restore scroll pill if scroll starts
+  // Restore scroll pill if scroll starts while pill is hidden
   setInterval(function() {
-    var a = document.getElementById('pageAudio');
-    var playing = a && !a.paused && !a.ended;
-    if (playing || scrollRunning()) {
-      clearTimeout(_timer);
-      if (_hiddenAudio)                        { _hiddenAudio  = false; showAudioPill();  }
-      if (_hiddenScroll && scrollRunning())    { _hiddenScroll = false; showScrollPill(); }
-    }
+    if (_hiddenScroll && scrollRunning()) { _hiddenScroll = false; showScrollPill(); }
   }, 1000);
 })();
 </script>
