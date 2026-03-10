@@ -168,6 +168,13 @@ function toggleAudio() {
 }
 
 function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
+function audioSkip(sec) { const a = aud(); if (!a) return; a.currentTime = Math.max(0, Math.min(a.duration || 0, a.currentTime + sec)); }
+function audioStop() {
+  const a = aud(); if (!a) return;
+  a.pause(); a.currentTime = 0;
+  const btn = document.getElementById('audioPlayBtn');
+  if (btn) btn.textContent = '▶';
+}
 
 function editAudioSpeed(el) {
   const inp = document.createElement('input');
@@ -208,44 +215,15 @@ function fmtTime(s) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const a    = aud();
-  const seek = document.getElementById('audioSeek');
   const time = document.getElementById('audioTime');
-
-  // ── Seek slider ───────────────────────────────────────────────────────────
-  // Use a module-level flag so timeupdate cannot fight the thumb during drag
-  let isSeeking = false;
-
-  if (seek) {
-    // While dragging: update display but do NOT seek audio yet
-    seek.addEventListener('input', () => {
-      isSeeking = true;
-      if (time && a) time.textContent = fmtTime(+seek.value) + ' / ' + fmtTime(a.duration || 0);
-    });
-    // On release: commit the seek and clear the flag
-    const commitSeek = () => {
-      if (!isSeeking) return;
-      isSeeking = false;
-      if (a) a.currentTime = +seek.value;
-    };
-    seek.addEventListener('change',  commitSeek);
-    seek.addEventListener('mouseup', commitSeek);
-    seek.addEventListener('touchend', commitSeek, { passive: true });
-    // Safety: if pointer leaves window without release
-    window.addEventListener('mouseup',  commitSeek);
-    window.addEventListener('touchend', commitSeek, { passive: true });
-  }
 
   if (!a) return;
 
-  // Keep slider in sync during normal playback
   a.addEventListener('timeupdate', () => {
-    if (isSeeking) return;
-    if (seek) seek.value = a.currentTime;
     if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
 
   a.addEventListener('loadedmetadata', () => {
-    if (seek) { seek.max = a.duration; seek.value = 0; }
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
 
