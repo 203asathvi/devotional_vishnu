@@ -122,26 +122,26 @@ body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 .pill-close:hover{color:rgba(255,255,255,0.8);}
 /* Controls row */
 
-.pill-audio-row{display:flex;align-items:center;gap:10px;padding:4px 14px 4px;}
-.pill-audio-time{text-align:center;padding:2px 14px 8px;color:rgba(255,255,255,0.4);font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;}
+.pill-audio-top{display:flex;align-items:center;gap:10px;padding:6px 14px 4px;}
+.pill-audio-seek-row{padding:2px 14px 2px;display:flex;align-items:center;gap:8px;}
+.pill-audio-time{display:flex;justify-content:space-between;padding:1px 14px 8px;color:rgba(255,255,255,0.4);font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;}
 .audio-play-btn{background:linear-gradient(135deg,var(--gold),#ff6a00);border:none;color:var(--deep);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
 .audio-play-btn:hover{opacity:.85;}
-.audio-ctrl-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#e0d8f0;width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
-.audio-ctrl-btn:hover{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.35);}
-.audio-ctrl-btn:active{transform:scale(0.9);}
 .audio-val-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
-.audio-val-num{color:#fff;font-size:13px;font-family:'Cinzel',serif;letter-spacing:.5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 7px;min-width:38px;text-align:center;transition:background .15s;}
+.audio-val-num{color:#fff;font-size:13px;font-family:'Cinzel',serif;letter-spacing:.5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 8px;min-width:42px;text-align:center;transition:background .15s;}
 .audio-val-wrap:hover .audio-val-num{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);}
 .audio-val-label{color:rgba(255,255,255,0.35);font-size:8px;font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;}
+.audio-seek{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
+.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.audio-seek::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#ff6a00);cursor:pointer;border:none;}
 .audio-skip-val{display:none;}
 .audio-speed-val{display:none;}
-body.light-mode .audio-ctrl-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);color:#3a2000;}
-body.light-mode .audio-ctrl-btn:hover{background:rgba(0,0,0,0.13);border-color:rgba(0,0,0,0.3);}
+body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
 body.light-mode .audio-val-num{color:#3a2000;background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);}
 body.light-mode .audio-val-wrap:hover .audio-val-num{background:rgba(0,0,0,0.12);}
 body.light-mode .audio-val-label{color:rgba(0,0,0,0.3);}
 body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
-@media(max-width:400px){.audio-ctrl-btn{width:28px;height:28px;font-size:13px;}.audio-play-btn{width:34px;height:34px;font-size:14px;}}
+@media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
 /* Re-open tabs */
 .pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:12px;backdrop-filter:blur(14px);box-shadow:0 4px 20px rgba(0,0,0,0.4);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
@@ -329,20 +329,20 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <span class="pill-label">♪ Audio</span>
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
-  <div class="pill-audio-row">
-    <button class="audio-ctrl-btn" id="audioRewBtn" title="Rewind">«</button>
-    <div class="audio-val-wrap" onclick="editAudioSkip(document.getElementById('audioSkipVal'))" title="Click to change skip duration">
-      <span class="audio-val-num" id="audioSkipVal">30s</span>
-      <span class="audio-val-label">skip</span>
-    </div>
+  <div class="pill-audio-top">
     <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
     <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
       <span class="audio-val-num" id="audioSpeedVal">1×</span>
       <span class="audio-val-label">speed</span>
     </div>
-    <button class="audio-ctrl-btn" id="audioFwdBtn" title="Forward">»</button>
   </div>
-  <div class="pill-audio-time" id="audioTime">0:00 / 0:00</div>
+  <div class="pill-audio-seek-row">
+    <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
+  </div>
+  <div class="pill-audio-time">
+    <span id="audioTimeCur">0:00</span>
+    <span id="audioTimeDur">0:00</span>
+  </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
   <span class="tab-dot"></span>Audio

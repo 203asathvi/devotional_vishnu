@@ -1,6 +1,6 @@
 // ─── Audio Controller ─────────────────────────────────────────────────────────
-// Defines audioSkip(), audioStop(), editAudioSkip() as globals.
-// Load BEFORE scroll-controller.js.
+// Defines audioStop(), editAudioSpeed() as globals.
+// Wires seek slider. Load BEFORE scroll-controller.js.
 // ─────────────────────────────────────────────────────────────────────────────
 
 var __audioLog = [];
@@ -22,29 +22,33 @@ window.downloadAudioLog = function() {
   a.click();
 };
 
-// ── Skip duration state ───────────────────────────────────────────────────────
-var _skipSec = 30;
+// ── Kept as no-ops so wireAudioBtn in scroll-controller doesn't throw ─────────
+function audioSkip(sec) { /* replaced by slider */ }
 
-function _skipLabel(s) {
-  if (s >= 60 && s % 60 === 0) return (s / 60) + 'm';
-  if (s >= 60) return (s / 60).toFixed(1).replace(/\.0$/, '') + 'm';
-  return s + 's';
+function audioStop() {
+  var a = document.getElementById('pageAudio');
+  if (!a) return;
+  a.pause(); a.currentTime = 0;
+  var btn = document.getElementById('audioPlayBtn');
+  if (btn) { btn.textContent = '▶'; btn.disabled = false; }
+  var seek = document.getElementById('audioSeek');
+  if (seek) seek.value = 0;
+  var cur = document.getElementById('audioTimeCur');
+  if (cur) cur.textContent = '0:00';
 }
 
-// ── Inline editor — replaces the num span with an input, restores on commit ──
-function _inlineEdit(spanId, opts) {
-  // opts: { min, max, step, getValue, onCommit(v), format(v) }
+// ── Speed editor — click the speed badge to change playback rate ──────────────
+function editAudioSpeed(el) {
+  var spanId = 'audioSpeedVal';
   var span = document.getElementById(spanId);
-  if (!span) return;
-  // If already editing, ignore
-  if (document.getElementById(spanId + '_inp')) return;
+  if (!span || document.getElementById(spanId + '_inp')) return;
+  var a = document.getElementById('pageAudio');
 
   var inp = document.createElement('input');
-  inp.type = 'number';
-  inp.id = spanId + '_inp';
+  inp.type = 'number'; inp.id = spanId + '_inp';
   inp.className = 'scroll-speed-input';
-  inp.min = opts.min; inp.max = opts.max; inp.step = opts.step;
-  inp.value = opts.getValue();
+  inp.min = '0.5'; inp.max = '4'; inp.step = '0.05';
+  inp.value = a ? a.playbackRate : 1;
   inp.style.cssText = 'width:52px;font-size:12px;text-align:center;';
   span.replaceWith(inp);
   inp.focus(); inp.select();
@@ -53,14 +57,15 @@ function _inlineEdit(spanId, opts) {
   function commit() {
     if (committed) return; committed = true;
     var v = parseFloat(inp.value);
-    if (isNaN(v) || v < opts.min) v = opts.min;
-    if (v > opts.max) v = opts.max;
-    v = opts.onCommit(v);
+    if (isNaN(v) || v < 0.5) v = 0.5;
+    if (v > 4) v = 4;
+    v = Math.round(v * 100) / 100;
+    if (a) a.playbackRate = v;
     var newSpan = document.createElement('span');
-    newSpan.id = spanId;
-    newSpan.className = span.className;
-    newSpan.textContent = opts.format(v);
+    newSpan.id = spanId; newSpan.className = span.className;
+    newSpan.textContent = v + '×';
     inp.replaceWith(newSpan);
+    _alog('INFO', 'speed set', {rate: v});
   }
   setTimeout(function() { inp.addEventListener('blur', commit); }, 300);
   inp.addEventListener('keydown', function(e) {
@@ -69,84 +74,25 @@ function _inlineEdit(spanId, opts) {
   });
 }
 
-function editAudioSkip(el) {
-  _inlineEdit('audioSkipVal', {
-    min: 1, max: 3600, step: 1,
-    getValue: function() { return _skipSec; },
-    onCommit: function(v) {
-      v = Math.round(v);
-      _skipSec = v;
-      var rew = document.getElementById('audioRewBtn');
-      var fwd = document.getElementById('audioFwdBtn');
-      if (rew) rew.title = 'Rewind ' + _skipLabel(v);
-      if (fwd) fwd.title = 'Forward ' + _skipLabel(v);
-      _alog('INFO', 'skip set', {sec: v});
-      return v;
-    },
-    format: function(v) { return _skipLabel(v); }
-  });
-}
-
-function editAudioSpeed(el) {
-  var a = document.getElementById('pageAudio');
-  _inlineEdit('audioSpeedVal', {
-    min: 0.5, max: 4, step: 0.05,
-    getValue: function() { return a ? a.playbackRate : 1; },
-    onCommit: function(v) {
-      v = Math.round(v * 100) / 100;
-      if (a) a.playbackRate = v;
-      _alog('INFO', 'speed set', {rate: v});
-      return v;
-    },
-    format: function(v) { return v + '×'; }
-  });
-}
-
-// ── Skip: reads _skipSec, sign of arg = direction ─────────────────────────────
-function audioSkip(sec) {
-  var amount = (sec > 0 ? 1 : -1) * _skipSec;
-  var a = document.getElementById('pageAudio');
-  if (!a) { _alog('ERROR', 'audioSkip: no #pageAudio'); return; }
-
-  _alog('INFO', 'audioSkip', {
-    direction: sec > 0 ? 'fwd' : 'rew', amount: amount,
-    readyState: a.readyState, duration: a.duration, currentTime: a.currentTime
-  });
-
-  if (!isFinite(a.duration) || a.readyState < 1) {
-    a.addEventListener('loadedmetadata', function onMeta() {
-      a.removeEventListener('loadedmetadata', onMeta);
-      a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + amount));
-    });
-    a.load();
-    return;
-  }
-
-  a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + amount));
-}
-
-function audioStop() {
-  var a = document.getElementById('pageAudio');
-  if (!a) return;
-  a.pause(); a.currentTime = 0;
-  var btn = document.getElementById('audioPlayBtn');
-  if (btn) { btn.textContent = '▶'; btn.disabled = false; }
-}
-
-// ── Time display ──────────────────────────────────────────────────────────────
+// ── Seek slider + time display ────────────────────────────────────────────────
 function _fmt(s) {
   if (!isFinite(s) || s < 0) return '0:00';
-  return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 }
 
 window.addEventListener('DOMContentLoaded', function() {
   var a    = document.getElementById('pageAudio');
-  var time = document.getElementById('audioTime');
+  var seek = document.getElementById('audioSeek');
+  var cur  = document.getElementById('audioTimeCur');
+  var dur  = document.getElementById('audioTimeDur');
+
+  _alog('INFO', 'init', {audio: !!a, seek: !!seek, src: a ? a.src : null});
   if (!a) return;
 
+  // Log key events for debug
   ['loadedmetadata','play','playing','pause','ended','error','stalled','waiting'].forEach(function(ev) {
     a.addEventListener(ev, function() {
-      var info = {readyState:a.readyState, duration:a.duration, currentTime:a.currentTime};
+      var info = {readyState: a.readyState, duration: a.duration, currentTime: a.currentTime};
       if (ev === 'error' && a.error) {
         var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
         info.errorType = codes[a.error.code] || 'UNKNOWN';
@@ -155,12 +101,38 @@ window.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  if (time) {
-    a.addEventListener('timeupdate', function() {
-      time.textContent = _fmt(a.currentTime) + ' / ' + _fmt(a.duration);
-    });
-    a.addEventListener('loadedmetadata', function() {
-      time.textContent = '0:00 / ' + _fmt(a.duration);
-    });
+  // Once metadata loads — set slider range and duration display
+  a.addEventListener('loadedmetadata', function() {
+    if (seek) { seek.max = a.duration; seek.value = 0; }
+    if (dur)  dur.textContent = _fmt(a.duration);
+    if (cur)  cur.textContent = '0:00';
+  });
+
+  // While playing — update slider thumb and current time
+  a.addEventListener('timeupdate', function() {
+    if (seek && !seek._dragging) seek.value = a.currentTime;
+    if (cur  && !seek._dragging) cur.textContent = _fmt(a.currentTime);
+  });
+
+  if (!seek) return;
+
+  // Drag start — freeze updates while user is scrubbing
+  seek._dragging = false;
+  seek.addEventListener('mousedown',  function() { seek._dragging = true; });
+  seek.addEventListener('touchstart', function() { seek._dragging = true; }, {passive: true});
+
+  // While dragging — show time preview
+  seek.addEventListener('input', function() {
+    if (cur) cur.textContent = _fmt(+seek.value);
+  });
+
+  // Commit seek — on mouse/touch release
+  function commitSeek() {
+    seek._dragging = false;
+    a.currentTime = +seek.value;
+    _alog('INFO', 'seek committed', {to: seek.value, duration: a.duration});
   }
+  seek.addEventListener('change',   commitSeek);
+  seek.addEventListener('mouseup',  commitSeek);
+  seek.addEventListener('touchend', commitSeek, {passive: true});
 });
