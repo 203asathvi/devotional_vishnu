@@ -1245,10 +1245,13 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
   <div class="pill-audio">
-    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button> <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
+    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
     <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
-  <div class="audio-seek-row"><div class="audio-seek-bar" id="audioSeekBar"><div class="audio-seek-track"></div><div class="audio-seek-fill" id="audioSeekFill"></div><div class="audio-seek-thumb" id="audioSeekThumb"></div></div><div class="audio-seek-times"><span class="audio-time-cur" id="audioTimeCur">0:00</span><span class="audio-time-dur" id="audioTimeDur">0:00</span></div></div>
+  <div class="audio-seek-row">
+    <input type="range" id="audioSeek" class="audio-seek-slider" value="0" min="0" step="0.1">
+  </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
   <span class="tab-dot"></span>Audio
@@ -1265,7 +1268,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="scroll-speed-btn" id="speedDown" title="Slower">−</button>
     <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
     <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
-    </div>
+  </div>
 </div>
 <button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">
   <span class="tab-dot"></span>Scroll
@@ -1277,44 +1280,37 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <script src="scroll-controller.js"></script>
 <script>
 (function(){
-  var GRAD='linear-gradient(135deg,var(--vis),var(--vis2))';
-  function init(){
-    var a=document.getElementById('pageAudio');
-    var bar=document.getElementById('audioSeekBar');
-    var fill=document.getElementById('audioSeekFill');
-    var thumb=document.getElementById('audioSeekThumb');
-    var tcur=document.getElementById('audioTimeCur');
-    var tdur=document.getElementById('audioTimeDur');
-    if(!a||!bar)return;
-    fill.style.background=GRAD; thumb.style.background=GRAD;
-    function fmt(s){s=isNaN(s)||!isFinite(s)?0:s;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
-    function setPct(pct){pct=Math.max(0,Math.min(1,pct));fill.style.width=(pct*100)+'%';thumb.style.left=(pct*100)+'%';}
-    function getX(e){var r=bar.getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));}
-    var dragging=false;
-    a.addEventListener('timeupdate',function(){
-      if(dragging||!a.duration||isNaN(a.duration))return;
-      setPct(a.currentTime/a.duration);
-      if(tcur)tcur.textContent=fmt(a.currentTime);
-      if(tdur)tdur.textContent=fmt(a.duration);
+  /* Thumb gradient — hardcoded hex so no CSS var resolution needed */
+  var s = document.createElement('style');
+  s.textContent =
+    '.audio-seek-slider::-webkit-slider-thumb{background:linear-gradient(135deg,#7a2095,#b060e0);}' +
+    '.audio-seek-slider::-moz-range-thumb{background:linear-gradient(135deg,#7a2095,#b060e0);}';
+  document.head.appendChild(s);
+
+  window.addEventListener('DOMContentLoaded', function() {
+    var a  = document.getElementById('pageAudio');
+    var sl = document.getElementById('audioSeek');
+    var tm = document.getElementById('audioTime');
+    if (!a || !sl) return;
+    var seeking = false;
+    function fmt(v) { v = isNaN(v)||!isFinite(v)?0:v; return Math.floor(v/60)+':'+String(Math.floor(v%60)).padStart(2,'0'); }
+    a.addEventListener('timeupdate', function() {
+      if (seeking) return;
+      sl.value = a.currentTime;
+      if (tm) tm.textContent = fmt(a.currentTime) + ' / ' + fmt(a.duration||0);
     });
-    a.addEventListener('loadedmetadata',function(){if(tdur)tdur.textContent=fmt(a.duration);});
-    bar.addEventListener('pointerdown',function(e){
-      e.preventDefault();e.stopPropagation();
-      dragging=true;bar.setPointerCapture(e.pointerId);
-      var p=getX(e);setPct(p);if(tcur)tcur.textContent=fmt(p*(a.duration||0));
+    a.addEventListener('loadedmetadata', function() {
+      sl.max = a.duration;
+      if (tm) tm.textContent = '0:00 / ' + fmt(a.duration);
     });
-    bar.addEventListener('pointermove',function(e){
-      if(!dragging)return;e.preventDefault();e.stopPropagation();
-      var p=getX(e);setPct(p);if(tcur)tcur.textContent=fmt(p*(a.duration||0));
+    sl.addEventListener('mousedown',  function() { seeking = true; });
+    sl.addEventListener('touchstart', function() { seeking = true; }, {passive:true});
+    sl.addEventListener('input', function() {
+      if (tm) tm.textContent = fmt(parseFloat(sl.value)) + ' / ' + fmt(a.duration||0);
     });
-    bar.addEventListener('pointerup',function(e){
-      if(!dragging)return;e.stopPropagation();dragging=false;
-      var p=getX(e);setPct(p);a.currentTime=p*(a.duration||0);
-    });
-    bar.addEventListener('pointercancel',function(){dragging=false;});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
-  else init();
+    sl.addEventListener('change',  function() { seeking = false; a.currentTime = parseFloat(sl.value); });
+    sl.addEventListener('touchend', function() { seeking = false; a.currentTime = parseFloat(sl.value); }, {passive:true});
+  });
 })();
 </script>
 

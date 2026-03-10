@@ -125,7 +125,7 @@ function syncSpeedUI() {
   const s = currentSpeed();
   document.getElementById('speedVal').textContent = s + '×';
   // Slider shows nearest step position (custom values sit between notches)
-  const sl = document.getElementById('speedSlider'); if (sl) sl.value = speedIdx + 1;
+  const sl=document.getElementById('speedSlider');if(sl)sl.value=speedIdx+1;
 }
 
 function updateSpeed(v) { updateSpeedFromSlider(v); }
