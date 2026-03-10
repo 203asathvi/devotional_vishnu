@@ -433,7 +433,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPlayBtn')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill')) stopScroll(); }, { passive: true });
 </script>
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>

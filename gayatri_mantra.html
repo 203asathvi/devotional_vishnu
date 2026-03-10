@@ -439,7 +439,7 @@ window.addEventListener('scroll', () => {
   document.getElementById('backTop').classList.toggle('visible', s > 400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPlayBtn')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill')) stopScroll(); }, { passive: true });
 
 // ── Local audio override: handles load-first + visible error feedback ─────────
 function toggleAudio() {
