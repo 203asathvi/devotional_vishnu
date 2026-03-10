@@ -405,24 +405,21 @@ var PILL_AUTO_HIDE_MS = 10000;
   // Start timer immediately — script runs after DOM is ready
   resetTimer();
 
-  // Mouse/keyboard activity resets timer
-  ['mousemove', 'mousedown', 'keydown'].forEach(function(ev) {
-    document.addEventListener(ev, function() {
+  // User interactions reset the idle timer or restore pills
+  // NOTE: 'scroll' is intentionally excluded — auto-scroll fires scroll events
+  // constantly and would prevent the timer from ever expiring.
+  ['mousemove', 'mousedown', 'keydown', 'touchend', 'click'].forEach(function(ev) {
+    document.addEventListener(ev, function(e) {
+      // touchend: only act if NOT on the scroll pill itself (avoid conflict with scroll-stop)
+      if (ev === 'touchend') {
+        var t = e.target;
+        if (t && (t.closest('#scrollPill') || t.closest('#scrollTab'))) return;
+      }
       if (_hiddenAudio || _hiddenScroll) { restoreAll(); } else { resetTimer(); }
     }, { passive: true });
   });
 
-  // click handles both desktop and mobile tap (fires after touchend, won't conflict with scroll-stop)
-  document.addEventListener('click', function() {
-    if (_hiddenAudio || _hiddenScroll) { restoreAll(); } else { resetTimer(); }
-  }, { passive: true });
-
-  // page scroll resets timer but does NOT restore (avoids conflicting with auto-scroll)
-  document.addEventListener('scroll', function() {
-    if (!_hiddenAudio && !_hiddenScroll) resetTimer();
-  }, { passive: true });
-
-  // Restore scroll pill if scroll starts while pill is hidden
+  // Restore scroll pill immediately if auto-scroll starts while pills are hidden
   setInterval(function() {
     if (_hiddenScroll && scrollRunning()) { _hiddenScroll = false; showScrollPill(); }
   }, 1000);
@@ -630,6 +627,10 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
     if (_touchCount++ > 10) return;
     log('touchstart on: ' + (e.target ? (e.target.id || e.target.className || e.target.tagName) : '?')
       + ' scrollActive=' + (typeof scrollActive !== 'undefined' ? scrollActive : '?'), '#aaf');
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    if (_touchCount > 10) return;
+    log('touchend on: ' + (e.target ? (e.target.id || e.target.className || e.target.tagName) : '?'), '#aaf');
   }, { passive: true });
 
   // Log click on document
