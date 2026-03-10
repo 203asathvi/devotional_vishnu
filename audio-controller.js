@@ -1,165 +1,111 @@
-// ─── Audio Controller + Diagnostic Logger ─────────────────────────────────────
-// Fixes: audioSkip(), audioStop() were undefined — causing wireAudioBtn in
-//        scroll-controller.js to throw ReferenceError on touchend, which called
-//        e.preventDefault() before crashing, blocking onclick too.
-//
-// Logging: window.__audioLog[] captures every event. To download:
-//   1. Open browser console and type: downloadAudioLog()
-//   OR the floating 📋 button appears after any audio error.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Audio Controller ──────────────────────────────────────────────────────────
+// Defines audioSkip() and audioStop() as globals — called by scroll-controller.js
+// wireAudioBtn() and by onclick= attributes.
+// Also wires seek slider progress and diagnostic logging.
+// ──────────────────────────────────────────────────────────────────────────────
 
-(function() {
-  // ── Log ring buffer ───────────────────────────────────────────────────────
-  var LOG = [];
-  window.__audioLog = LOG;
+// ── Diagnostic log ────────────────────────────────────────────────────────────
+var __audioLog = [];
+window.__audioLog = __audioLog;
 
-  function log(level, msg, data) {
-    var entry = {
-      t:    new Date().toISOString(),
-      lvl:  level,
-      msg:  msg,
-      data: data || null
-    };
-    LOG.push(entry);
-    if (LOG.length > 200) LOG.shift();
-    if (level === 'ERROR' || level === 'WARN') {
-      console.warn('[AudioCtrl]', msg, data || '');
-      showLogBtn();
-    } else {
-      console.log('[AudioCtrl]', msg, data || '');
-    }
+function _alog(level, msg, data) {
+  var entry = { t: new Date().toISOString(), lvl: level, msg: msg, data: data || null };
+  __audioLog.push(entry);
+  if (__audioLog.length > 200) __audioLog.shift();
+  if (level === 'ERROR' || level === 'WARN') {
+    console.warn('[Audio]', msg, data || '');
+    _showLogBtn();
   }
+}
 
-  // ── Download log as JSON file ─────────────────────────────────────────────
-  window.downloadAudioLog = function() {
-    var page = location.pathname.split('/').pop().replace('.html','') || 'page';
-    var blob = new Blob([JSON.stringify(LOG, null, 2)], {type:'application/json'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'audio-log-' + page + '-' + Date.now() + '.json';
-    a.click();
-    log('INFO', 'Log downloaded');
-  };
+var _logBtnShown = false;
+function _showLogBtn() {
+  if (_logBtnShown) return; _logBtnShown = true;
+  var b = document.createElement('button');
+  b.textContent = '📋 Audio Log';
+  b.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9999;background:#c00;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;';
+  b.onclick = function() { window.downloadAudioLog(); };
+  document.body.appendChild(b);
+}
 
-  // ── Floating log button (appears on error) ────────────────────────────────
-  var _logBtnShown = false;
-  function showLogBtn() {
-    if (_logBtnShown) return;
-    _logBtnShown = true;
-    var btn = document.createElement('button');
-    btn.textContent = '📋 Audio Log';
-    btn.title = 'Download audio diagnostic log';
-    btn.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9999;'
-      + 'background:#c00;color:#fff;border:none;border-radius:8px;'
-      + 'padding:6px 12px;font-size:12px;cursor:pointer;opacity:0.9;';
-    btn.onclick = function() { window.downloadAudioLog(); };
-    document.body.appendChild(btn);
-  }
+window.downloadAudioLog = function() {
+  var blob = new Blob([JSON.stringify(__audioLog, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'audio-log-' + Date.now() + '.json';
+  a.click();
+};
 
-  // ── Core audio functions ──────────────────────────────────────────────────
-  function getAudio() { return document.getElementById('pageAudio'); }
+// ── Core functions (globals — used by onclick= and wireAudioBtn) ───────────────
+function audioSkip(sec) {
+  var a = document.getElementById('pageAudio');
+  if (!a) { _alog('ERROR','audioSkip: no #pageAudio'); return; }
+  var before = a.currentTime;
+  a.currentTime = Math.max(0, Math.min(a.duration || 0, a.currentTime + sec));
+  _alog('INFO','audioSkip',{sec:sec,before:before,after:a.currentTime});
+}
 
-  window.audioSkip = function(sec) {
-    var a = getAudio();
-    if (!a) { log('ERROR', 'audioSkip: #pageAudio not found'); return; }
-    var before = a.currentTime;
-    a.currentTime = Math.max(0, Math.min(a.duration || 0, a.currentTime + sec));
-    log('INFO', 'audioSkip', {sec: sec, before: before, after: a.currentTime, duration: a.duration});
-  };
+function audioStop() {
+  var a = document.getElementById('pageAudio');
+  if (!a) { _alog('ERROR','audioStop: no #pageAudio'); return; }
+  a.pause(); a.currentTime = 0;
+  var btn = document.getElementById('audioPlayBtn');
+  if (btn) { btn.textContent = '▶'; btn.disabled = false; }
+  var seek = document.getElementById('audioSeek');
+  if (seek) seek.value = 0;
+  _alog('INFO','audioStop');
+}
 
-  window.audioStop = function() {
-    var a = getAudio();
-    if (!a) { log('ERROR', 'audioStop: #pageAudio not found'); return; }
-    a.pause();
-    a.currentTime = 0;
-    var btn = document.getElementById('audioPlayBtn');
-    if (btn) { btn.textContent = '▶'; btn.disabled = false; }
-    var seek = document.getElementById('audioSeek');
-    if (seek) seek.value = 0;
-    log('INFO', 'audioStop called');
-  };
+// ── Seek slider + time display ────────────────────────────────────────────────
+function _fmt(s) {
+  if (!isFinite(s) || s < 0) return '0:00';
+  return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+}
 
-  // ── Seek slider + time display ────────────────────────────────────────────
-  function fmt(s) {
-    if (!isFinite(s) || s < 0) return '0:00';
-    return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
-  }
+window.addEventListener('DOMContentLoaded', function() {
+  var a    = document.getElementById('pageAudio');
+  var seek = document.getElementById('audioSeek');
+  var time = document.getElementById('audioTime');
 
-  window.addEventListener('DOMContentLoaded', function() {
-    var a    = getAudio();
-    var seek = document.getElementById('audioSeek');
-    var time = document.getElementById('audioTime');
-    var btn  = document.getElementById('audioPlayBtn');
+  _alog('INFO','init',{audio:!!a, seek:!!seek, src: a ? a.src : null});
+  if (!a) return;
 
-    log('INFO', 'DOMContentLoaded', {
-      audioFound: !!a,
-      seekFound:  !!seek,
-      timeFound:  !!time,
-      btnFound:   !!btn,
-      src:        a ? a.src : null
+  // Log key audio events for diagnosis
+  ['play','playing','pause','ended','error','stalled','waiting','loadedmetadata'].forEach(function(ev) {
+    a.addEventListener(ev, function() {
+      var info = {readyState:a.readyState, networkState:a.networkState,
+                  currentTime:a.currentTime, duration:a.duration, paused:a.paused};
+      if (ev === 'error' && a.error) {
+        info.code = a.error.code;
+        info.msg  = a.error.message;
+        var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
+        info.type = codes[a.error.code] || 'UNKNOWN';
+      }
+      _alog(ev === 'error' ? 'ERROR' : 'INFO', 'audio:'+ev, info);
     });
-
-    if (!a) return;
-
-    // Log all audio element events for diagnosis
-    ['loadstart','loadedmetadata','loadeddata','canplay','canplaythrough',
-     'play','playing','pause','ended','waiting','stalled','suspend',
-     'error','abort','emptied'].forEach(function(ev) {
-      a.addEventListener(ev, function() {
-        var info = {readyState: a.readyState, networkState: a.networkState,
-                    currentTime: a.currentTime, duration: a.duration,
-                    paused: a.paused, src: a.src};
-        if (ev === 'error' && a.error) {
-          info.errorCode = a.error.code;
-          info.errorMsg  = a.error.message;
-          // MediaError codes: 1=ABORTED 2=NETWORK 3=DECODE 4=SRC_NOT_SUPPORTED
-          var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
-          info.errorType = codes[a.error.code] || 'UNKNOWN';
-        }
-        log(ev === 'error' ? 'ERROR' : 'INFO', 'audio:' + ev, info);
-      });
-    });
-
-    // Seek slider wiring
-    if (seek) {
-      a.addEventListener('loadedmetadata', function() {
-        seek.max = a.duration; seek.value = 0;
-        if (time) time.textContent = '0:00 / ' + fmt(a.duration);
-      });
-      a.addEventListener('timeupdate', function() {
-        if (!seek._drag) seek.value = a.currentTime;
-        if (time && !seek._drag)
-          time.textContent = fmt(a.currentTime) + ' / ' + fmt(a.duration || 0);
-      });
-      seek._drag = false;
-      seek.addEventListener('mousedown',  function() { seek._drag = true; });
-      seek.addEventListener('touchstart', function() { seek._drag = true; }, {passive:true});
-      seek.addEventListener('input', function() {
-        if (time) time.textContent = fmt(+seek.value) + ' / ' + fmt(a.duration||0);
-      });
-      var done = function() {
-        seek._drag = false;
-        a.currentTime = +seek.value;
-        log('INFO', 'seek committed', {to: seek.value});
-      };
-      seek.addEventListener('change',   done);
-      seek.addEventListener('mouseup',  done);
-      seek.addEventListener('touchend', done, {passive:true});
-    }
-
-    // Log when play button is clicked (onclick= calls toggleAudio)
-    if (btn) {
-      btn.addEventListener('click', function() {
-        var a2 = getAudio();
-        log('INFO', 'play-btn click', {
-          paused: a2 ? a2.paused : null,
-          disabled: btn.disabled,
-          readyState: a2 ? a2.readyState : null,
-          networkState: a2 ? a2.networkState : null
-        });
-      });
-    }
   });
 
-  log('INFO', 'audio-controller.js loaded', {href: location.href});
-})();
+  if (!seek) return;
+
+  a.addEventListener('loadedmetadata', function() {
+    seek.max = a.duration; seek.value = 0;
+    if (time) time.textContent = '0:00 / ' + _fmt(a.duration);
+  });
+
+  a.addEventListener('timeupdate', function() {
+    if (!seek._drag) seek.value = a.currentTime;
+    if (time && !seek._drag)
+      time.textContent = _fmt(a.currentTime) + ' / ' + _fmt(a.duration || 0);
+  });
+
+  seek._drag = false;
+  seek.addEventListener('mousedown',  function() { seek._drag = true; });
+  seek.addEventListener('touchstart', function() { seek._drag = true; }, {passive:true});
+  seek.addEventListener('input', function() {
+    if (time) time.textContent = _fmt(+seek.value) + ' / ' + _fmt(a.duration || 0);
+  });
+  var done = function() { seek._drag = false; a.currentTime = +seek.value; };
+  seek.addEventListener('change',   done);
+  seek.addEventListener('mouseup',  done);
+  seek.addEventListener('touchend', done, {passive:true});
+});
