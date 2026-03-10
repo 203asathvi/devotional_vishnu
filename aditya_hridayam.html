@@ -430,40 +430,53 @@ function toggleAudio() {
     d.scrollTop = d.scrollHeight;
   };
   window._dbgLog = log;
-  
-  // Check on load
   window.addEventListener('DOMContentLoaded', function() {
     log('DOMContentLoaded fired');
-    log('audioSkip defined: ' + (typeof audioSkip));
-    log('audioStop defined: ' + (typeof audioStop));
-    log('toggleAudio defined: ' + (typeof toggleAudio));
+    log('audioSkip: ' + (typeof audioSkip));
+    log('audioStop: ' + (typeof audioStop));
+    log('toggleAudio: ' + (typeof toggleAudio));
+    var audio = document.getElementById('pageAudio');
+    log('pageAudio: ' + !!audio);
+    if (audio) {
+      log('src: ' + audio.src);
+      log('readyState: ' + audio.readyState);
+      log('duration: ' + audio.duration);
+      audio.addEventListener('loadedmetadata', function() {
+        log('loadedmetadata: duration=' + audio.duration + ' readyState=' + audio.readyState);
+      });
+      audio.addEventListener('error', function() {
+        var c = audio.error ? audio.error.code : '?';
+        var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
+        log('ERROR: code=' + c + ' (' + (codes[c]||'UNKNOWN') + ')');
+      });
+      audio.addEventListener('play',    function() { log('event: play'); });
+      audio.addEventListener('playing', function() { log('event: playing, currentTime=' + audio.currentTime + ' duration=' + audio.duration); });
+      audio.addEventListener('pause',   function() { log('event: pause, currentTime=' + audio.currentTime); });
+    }
     var rew = document.getElementById('audioRewBtn');
     var fwd = document.getElementById('audioFwdBtn');
-    log('audioRewBtn found: ' + !!rew);
-    log('audioFwdBtn found: ' + !!fwd);
-    var audio = document.getElementById('pageAudio');
-    log('pageAudio found: ' + !!audio);
-    if (audio) log('audio.src: ' + audio.src);
-    
-    // Patch the buttons to also log on click
+    var play = document.getElementById('audioPlayBtn');
+    log('audioRewBtn: ' + !!rew + '  audioFwdBtn: ' + !!fwd + '  audioPlayBtn: ' + !!play);
     if (rew) rew.addEventListener('click', function() {
-      log('REW clicked — calling audioSkip(-30)');
-      log('audioSkip type: ' + typeof audioSkip);
-      try { audioSkip(-30); log('audioSkip(-30) OK'); }
-      catch(e) { log('ERROR: ' + e.message); }
+      var a = document.getElementById('pageAudio');
+      log('REW click — readyState=' + (a?a.readyState:'?') + ' duration=' + (a?a.duration:'?') + ' currentTime=' + (a?a.currentTime:'?'));
+      try { audioSkip(-30); log('audioSkip(-30) returned OK, new currentTime=' + (a?a.currentTime:'?')); }
+      catch(e) { log('ERROR in audioSkip: ' + e.message); }
     });
     if (fwd) fwd.addEventListener('click', function() {
-      log('FWD clicked — calling audioSkip(30)');
-      log('audioSkip type: ' + typeof audioSkip);
-      try { audioSkip(30); log('audioSkip(30) OK'); }
-      catch(e) { log('ERROR: ' + e.message); }
+      var a = document.getElementById('pageAudio');
+      log('FWD click — readyState=' + (a?a.readyState:'?') + ' duration=' + (a?a.duration:'?') + ' currentTime=' + (a?a.currentTime:'?'));
+      try { audioSkip(30); log('audioSkip(30) returned OK, new currentTime=' + (a?a.currentTime:'?')); }
+      catch(e) { log('ERROR in audioSkip: ' + e.message); }
+    });
+    if (play) play.addEventListener('click', function() {
+      var a = document.getElementById('pageAudio');
+      log('PLAY click — paused=' + (a?a.paused:'?') + ' readyState=' + (a?a.readyState:'?') + ' currentTime=' + (a?a.currentTime:'?'));
     });
   });
-  
-  // Check after everything loads
   window.addEventListener('load', function() {
-    log('window.load fired');
-    log('audioSkip at load: ' + (typeof audioSkip));
+    var a = document.getElementById('pageAudio');
+    log('window.load — audioSkip:' + (typeof audioSkip) + ' readyState:' + (a?a.readyState:'?') + ' duration:' + (a?a.duration:'?'));
   });
 })();
 </script>
