@@ -405,12 +405,18 @@ var PILL_AUTO_HIDE_MS = 10000;
   // Start timer immediately — script runs after DOM is ready
   resetTimer();
 
-  // User interactions reset the idle timer or restore pills
-  // NOTE: 'scroll' is intentionally excluded — auto-scroll fires scroll events
-  // constantly and would prevent the timer from ever expiring.
-  ['mousemove', 'mousedown', 'keydown', 'touchend', 'click'].forEach(function(ev) {
+  // mousemove/keydown reset the timer while pills are visible, but do NOT restore when hidden
+  // (mousemove is too sensitive — any cursor twitch would immediately undo the hide)
+  ['mousemove', 'mousedown', 'keydown'].forEach(function(ev) {
+    document.addEventListener(ev, function() {
+      if (!_hiddenAudio && !_hiddenScroll) resetTimer();
+    }, { passive: true });
+  });
+
+  // click and touchend restore pills when hidden, or reset timer when visible
+  ['click', 'touchend'].forEach(function(ev) {
     document.addEventListener(ev, function(e) {
-      // touchend: only act if NOT on the scroll pill itself (avoid conflict with scroll-stop)
+      // touchend: skip if touch was on scroll pill/tab (avoid conflict with scroll-stop listener)
       if (ev === 'touchend') {
         var t = e.target;
         if (t && (t.closest('#scrollPill') || t.closest('#scrollTab'))) return;
