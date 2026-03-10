@@ -168,13 +168,6 @@ function toggleAudio() {
 }
 
 function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
-function audioSkip(sec) { const a = aud(); if (!a) return; a.currentTime = Math.max(0, Math.min(a.duration || 0, a.currentTime + sec)); }
-function audioStop() {
-  const a = aud(); if (!a) return;
-  a.pause(); a.currentTime = 0;
-  const btn = document.getElementById('audioPlayBtn');
-  if (btn) btn.textContent = '▶';
-}
 
 function editAudioSpeed(el) {
   const inp = document.createElement('input');
@@ -214,19 +207,35 @@ function fmtTime(s) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const a    = aud();
-  const time = document.getElementById('audioTime');
-
-  if (!a) return;
-
+  const a = aud(); if (!a) return;
   a.addEventListener('timeupdate', () => {
-    if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+    const seek = document.getElementById('audioSeek');
+    const time = document.getElementById('audioTime');
+    if (seek && !seek._dragging) seek.value = a.currentTime;
+    if (time && !(seek && seek._dragging)) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
-
   a.addEventListener('loadedmetadata', () => {
+    const seek = document.getElementById('audioSeek');
+    if (seek) { seek.max = a.duration; seek.value = 0; }
+    const time = document.getElementById('audioTime');
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
-
+  // Seek drag wiring
+  (() => {
+    const seek = document.getElementById('audioSeek');
+    if (!seek) return;
+    const time = document.getElementById('audioTime');
+    seek._dragging = false;
+    seek.addEventListener('mousedown',  () => { seek._dragging = true; });
+    seek.addEventListener('touchstart', () => { seek._dragging = true; }, {passive:true});
+    seek.addEventListener('input', () => {
+      if (time) time.textContent = fmtTime(parseFloat(seek.value)) + ' / ' + fmtTime(a.duration || 0);
+    });
+    const commit = () => { seek._dragging = false; a.currentTime = parseFloat(seek.value); };
+    seek.addEventListener('change',   commit);
+    seek.addEventListener('mouseup',  commit);
+    seek.addEventListener('touchend', commit, {passive:true});
+  })();
   a.addEventListener('ended', () => {
     const btn = document.getElementById('audioPlayBtn');
     if (btn) btn.textContent = '▶';
@@ -317,10 +326,24 @@ window.addEventListener('DOMContentLoaded', () => {
   wireSpeedBtn('speedUp',    1);
 
   // ── Audio play button ─────────────────────────────────────────────────────
-  const audioBtn = document.getElementById('audioPlayBtn');
-  if (audioBtn) {
-    audioBtn.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation(); toggleAudio();
+  // Wire all audio control buttons with touchend + click pattern
+  function wireAudioBtn(id, fn) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    let touched = false;
+    btn.addEventListener('touchend', e => {
+      e.preventDefault(); e.stopPropagation();
+      touched = true;
+      fn();
+      setTimeout(() => { touched = false; }, 400);
     }, { passive: false });
+    btn.addEventListener('click', e => {
+      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
+      fn();
+    });
   }
+  wireAudioBtn('audioPlayBtn', toggleAudio);
+  wireAudioBtn('audioRewBtn',  () => audioSkip(-30));
+  wireAudioBtn('audioFwdBtn',  () => audioSkip(30));
+  wireAudioBtn('audioStopBtn', audioStop);
 });
