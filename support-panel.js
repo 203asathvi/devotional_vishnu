@@ -1,110 +1,73 @@
 /**
- * support-panel.js  v4
- * Shared donate + comment + security panel for all devotional pages.
+ * support-panel.js  v6
+ * Shared donate + comment panel. Comments stored in Cloudflare D1 via Worker API.
  *
  * Add before </body> on every page:
- *   <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID"></script>
- *
- * FAB sits on the LEFT side, above the audio pill (left:14px).
- * Right side is left free for scroll pill + back-to-top button.
+ *   <script src="support-panel.js"
+ *           data-paypal-id="YOUR_PAYPAL_ID"
+ *           data-api="https://devotional-comments.YOUR_SUBDOMAIN.workers.dev">
+ *   </script>
  *
  * © 2025 – All rights reserved. Personal devotional use only.
  */
 (function () {
   'use strict';
 
-  /* ── CONFIG ── */
   var scriptEl  = document.currentScript;
-  var PAYPAL_ID = (scriptEl && scriptEl.dataset && scriptEl.dataset.paypalId) || 'YOUR_PAYPAL_ID';
-  var API_BASE  = (scriptEl && scriptEl.dataset && scriptEl.dataset.api) || '';
-  var PAGE_KEY  = location.pathname.replace(/.*\//, '').replace(/\.html$/, '') || 'index';
+  var PAYPAL_ID = (scriptEl && scriptEl.dataset.paypalId) || 'YOUR_PAYPAL_ID';
+  var API_BASE  = (scriptEl && scriptEl.dataset.api)      || '';
+  // Page key derived from filename e.g. "vishnu_sahasranamam"
+  var PAGE_KEY  = location.pathname.replace(/^.*\//, '').replace(/\.html$/, '') || 'index';
 
   /* ── CSS ── */
   var style = document.createElement('style');
   style.textContent =
     '#spFab{position:fixed;left:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;}' +
-    '#spFabBtn{width:46px;height:46px;border-radius:50%;' +
-      'background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));' +
-      'border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;' +
-      'box-shadow:0 4px 20px rgba(122,32,149,0.6);' +
-      'display:flex;align-items:center;justify-content:center;' +
-      'transition:transform .22s;outline:none;flex-shrink:0;}' +
+    /* Back-to-top position is set entirely via inline style in placeFab() */
+    '#spFabBtn{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s;outline:none;flex-shrink:0;}' +
     '#spFabBtn:hover{transform:scale(1.08);}' +
     '#spFabBtn.open{transform:rotate(45deg);}' +
-    '#spFabMenu{display:flex;flex-direction:column;gap:7px;align-items:flex-start;' +
-      'opacity:0;pointer-events:none;transform:translateY(6px);' +
-      'transition:opacity .2s,transform .2s;}' +
+    '#spFabMenu{display:flex;flex-direction:column;gap:7px;align-items:flex-start;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .2s,transform .2s;}' +
     '#spFabMenu.open{opacity:1;pointer-events:all;transform:translateY(0);}' +
-    '.sp-fab-item{display:flex;align-items:center;gap:8px;' +
-      'background:var(--card,#130f1e);' +
-      'border:1px solid var(--border,rgba(201,168,76,0.3));' +
-      'border-radius:20px;padding:8px 14px 8px 11px;cursor:pointer;' +
-      'color:var(--gold,#c9a84c);font-family:Cinzel,serif;font-size:12px;' +
-      'letter-spacing:.5px;white-space:nowrap;' +
-      'box-shadow:0 2px 14px rgba(0,0,0,.5);transition:all .18s;}' +
+    '.sp-fab-item{display:flex;align-items:center;gap:8px;background:var(--card,#130f1e);border:1px solid var(--border,rgba(201,168,76,0.3));border-radius:20px;padding:8px 14px 8px 11px;cursor:pointer;color:var(--gold,#c9a84c);font-family:Cinzel,serif;font-size:12px;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 14px rgba(0,0,0,.5);transition:all .18s;}' +
     '.sp-fab-item:hover{border-color:var(--gold,#c9a84c);background:rgba(201,168,76,0.14);}' +
-    '#spPanel{position:fixed;inset:0;z-index:700;display:flex;align-items:center;' +
-      'justify-content:center;padding:16px;' +
-      'opacity:0;pointer-events:none;transition:opacity .25s;}' +
+    '#spPanel{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s;}' +
     '#spPanel.open{opacity:1;pointer-events:all;}' +
     '#spBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);}' +
-    '#spBox{position:relative;background:var(--card,#130f1e);' +
-      'border:1px solid var(--border,rgba(201,168,76,0.3));' +
-      'border-radius:14px;width:100%;max-width:440px;max-height:88vh;' +
-      'overflow-y:auto;padding:24px;box-shadow:0 8px 40px rgba(0,0,0,.7);}' +
-    '#spCloseBtn{position:absolute;top:12px;right:14px;background:none;border:none;' +
-      'color:var(--muted,#9d8050);font-size:22px;cursor:pointer;line-height:1;padding:0;}' +
+    '#spBox{position:relative;background:var(--card,#130f1e);border:1px solid var(--border,rgba(201,168,76,0.3));border-radius:14px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto;padding:24px;box-shadow:0 8px 40px rgba(0,0,0,.7);}' +
+    '#spCloseBtn{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted,#9d8050);font-size:22px;cursor:pointer;line-height:1;padding:0;}' +
     '#spCloseBtn:hover{color:var(--gold,#c9a84c);}' +
-    '.sp-modal-title{font-family:Cinzel,serif;font-size:14px;letter-spacing:1.5px;' +
-      'color:var(--gold,#c9a84c);margin-bottom:16px;padding-bottom:10px;' +
-      'border-bottom:1px solid var(--border,rgba(201,168,76,0.25));}' +
-    '.sp-tabs{display:flex;margin-bottom:18px;' +
-      'border:1px solid var(--border,rgba(201,168,76,0.25));border-radius:6px;overflow:hidden;}' +
-    '.sp-tab{flex:1;background:transparent;border:none;' +
-      'color:var(--muted,#9d8050);font-family:Cinzel,serif;' +
-      'font-size:12px;letter-spacing:.8px;padding:9px 6px;cursor:pointer;transition:all .2s;}' +
+    '.sp-modal-title{font-family:Cinzel,serif;font-size:14px;letter-spacing:1.5px;color:var(--gold,#c9a84c);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border,rgba(201,168,76,0.25));}' +
+    '.sp-tabs{display:flex;margin-bottom:18px;border:1px solid var(--border,rgba(201,168,76,0.25));border-radius:6px;overflow:hidden;}' +
+    '.sp-tab{flex:1;background:transparent;border:none;color:var(--muted,#9d8050);font-family:Cinzel,serif;font-size:12px;letter-spacing:.8px;padding:9px 6px;cursor:pointer;transition:all .2s;}' +
     '.sp-tab.on{background:rgba(201,168,76,0.18);color:var(--gold,#c9a84c);}' +
     '.sp-pane{display:none;}' +
     '.sp-pane.on{display:block;}' +
-    '.sp-intro{font-size:15px;color:var(--muted,#9d8050);font-style:italic;' +
-      'margin-bottom:16px;line-height:1.6;}' +
+    '.sp-intro{font-size:15px;color:var(--muted,#9d8050);font-style:italic;margin-bottom:16px;line-height:1.6;}' +
     '.sp-amts{display:flex;gap:8px;margin-bottom:14px;}' +
-    '.sp-amt{flex:1;background:rgba(201,168,76,0.07);' +
-      'border:1px solid var(--border,rgba(201,168,76,0.25));' +
-      'color:var(--gold,#c9a84c);padding:9px 4px;border-radius:6px;' +
-      'font-size:13px;cursor:pointer;font-family:Cinzel,serif;' +
-      'text-align:center;transition:all .18s;}' +
+    '.sp-amt{flex:1;background:rgba(201,168,76,0.07);border:1px solid var(--border,rgba(201,168,76,0.25));color:var(--gold,#c9a84c);padding:9px 4px;border-radius:6px;font-size:13px;cursor:pointer;font-family:Cinzel,serif;text-align:center;transition:all .18s;}' +
     '.sp-amt:hover,.sp-amt.on{background:rgba(201,168,76,0.22);border-color:var(--gold,#c9a84c);}' +
-    '.sp-custom{width:100%;background:var(--bg,#0a0812);' +
-      'border:1px solid var(--border,rgba(201,168,76,0.25));' +
-      'color:var(--text,#f0e6cc);padding:9px 12px;border-radius:6px;' +
-      'font-size:15px;margin-bottom:14px;outline:none;' +
-      'font-family:"EB Garamond",serif;box-sizing:border-box;}' +
+    '.sp-custom{width:100%;background:var(--bg,#0a0812);border:1px solid var(--border,rgba(201,168,76,0.25));color:var(--text,#f0e6cc);padding:9px 12px;border-radius:6px;font-size:15px;margin-bottom:14px;outline:none;font-family:"EB Garamond",serif;box-sizing:border-box;}' +
     '.sp-custom:focus{border-color:var(--gold,#c9a84c);}' +
-    '.sp-pp-btn{display:flex;align-items:center;justify-content:center;gap:10px;' +
-      'width:100%;padding:13px;background:#0070ba;border:none;border-radius:8px;' +
-      'color:#fff;font-size:15px;font-weight:600;cursor:pointer;' +
-      'text-decoration:none;transition:background .2s;}' +
+    '.sp-pp-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;background:#0070ba;border:none;border-radius:8px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s;}' +
     '.sp-pp-btn:hover{background:#005ea6;}' +
-    '.sp-note{text-align:center;font-size:12px;color:var(--muted,#9d8050);' +
-      'margin-top:10px;font-style:italic;}' +
+    '.sp-note{text-align:center;font-size:12px;color:var(--muted,#9d8050);margin-top:10px;font-style:italic;}' +
     '.sp-cmt-form{display:flex;flex-direction:column;gap:10px;}' +
     '.sp-cmt-form input,.sp-cmt-form textarea{background:var(--bg,#0a0812);border:1px solid var(--border,rgba(201,168,76,0.25));color:var(--text,#f0e6cc);padding:9px 12px;border-radius:6px;font-size:15px;outline:none;font-family:"EB Garamond",serif;resize:vertical;width:100%;box-sizing:border-box;}' +
     '.sp-cmt-form input:focus,.sp-cmt-form textarea:focus{border-color:var(--gold,#c9a84c);}' +
     '.sp-cmt-form textarea{min-height:90px;}' +
-    '.sp-submit{background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));' +
-      'border:1px solid var(--gold,#c9a84c);color:#fff;padding:10px;' +
-      'border-radius:6px;font-family:Cinzel,serif;font-size:13px;' +
-      'letter-spacing:1px;cursor:pointer;width:100%;transition:opacity .2s;}' +
+    '.sp-submit{background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:1px solid var(--gold,#c9a84c);color:#fff;padding:10px;border-radius:6px;font-family:Cinzel,serif;font-size:13px;letter-spacing:1px;cursor:pointer;width:100%;transition:opacity .2s;}' +
     '.sp-submit:hover{opacity:.88;}' +
+    '.sp-submit:disabled{opacity:.5;cursor:not-allowed;}' +
     '.sp-cmts{margin-top:18px;display:flex;flex-direction:column;gap:10px;}' +
     '.sp-cmt{background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:8px;padding:11px 13px;}' +
     '.sp-cmt-who{font-family:Cinzel,serif;font-size:11px;color:var(--gold,#c9a84c);margin-bottom:4px;}' +
     '.sp-cmt-body{font-size:14px;color:var(--text,#f0e6cc);line-height:1.55;}' +
     '.sp-cmt-when{font-size:11px;color:var(--muted,#9d8050);margin-top:4px;}' +
     '.sp-empty{font-style:italic;color:var(--muted,#9d8050);font-size:14px;text-align:center;padding:16px 0;}' +
-    '.sp-ok{text-align:center;padding:20px 0;font-size:15px;color:var(--gold-light,#f5d78a);}';
-
+    '.sp-loading{font-style:italic;color:var(--muted,#9d8050);font-size:13px;text-align:center;padding:12px 0;}' +
+    '.sp-ok{text-align:center;padding:20px 0;font-size:15px;color:var(--gold-light,#f5d78a);}' +
+    '.sp-err{text-align:center;padding:8px;font-size:13px;color:#e06060;margin-top:6px;}';
   document.head.appendChild(style);
 
   /* ── HTML ── */
@@ -145,6 +108,7 @@
               '<input type="text" id="spName" placeholder="Your name (optional)" maxlength="60">' +
               '<textarea id="spText" placeholder="Share your experience or a prayer&hellip;" maxlength="600"></textarea>' +
               '<button class="sp-submit" id="spSubmit">&#x1F64F; Submit</button>' +
+              '<div id="spErr"></div>' +
             '</div>' +
           '</div>' +
           '<div class="sp-cmts" id="spCmts"></div>' +
@@ -153,27 +117,28 @@
     '</div>'
   );
 
-  /* ── POSITIONING ── */
+  /* ── POSITIONING (RAF-based, above audioPill) ── */
   function placeFab() {
-    var fab  = document.getElementById('spFab');
+    var fab = document.getElementById('spFab');
+    var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
+    var audioPill   = document.getElementById('audioPill');
     if (!fab) return;
-    var pill = document.getElementById('audioPill');
-    if (pill && pill.offsetParent !== null && pill.offsetHeight > 0) {
-      fab.style.bottom = (20 + pill.offsetHeight + 14) + 'px';
-    } else {
-      fab.style.bottom = '20px';
+    // FAB (left side) sits above audioPill
+    var fabBottom = 20;
+    if (audioPill && !audioPill.classList.contains('hidden') && audioPill.offsetHeight > 0) {
+      fabBottom = 20 + audioPill.offsetHeight + 16;
     }
+    fab.style.bottom = fabBottom + 'px';
+    // Back-to-top: let each page's CSS control position/display — do not override with inline styles
   }
-
-  placeFab();
-  window.addEventListener('load', placeFab);
-  window.addEventListener('resize', placeFab);
-
+  requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
+  window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
   var pill = document.getElementById('audioPill');
   if (pill && window.MutationObserver) {
     new MutationObserver(function () { requestAnimationFrame(placeFab); })
       .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
   }
+
 
   /* ── FAB ── */
   var isOpen = false;
@@ -195,7 +160,6 @@
     showTab(t);
   }
   function closePanel() { q('spPanel').classList.remove('open'); }
-
   q('spCloseBtn').addEventListener('click', closePanel);
   q('spBackdrop').addEventListener('click', closePanel);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePanel(); });
@@ -210,7 +174,7 @@
     });
     q('spDonate').classList.toggle('on',  t === 'donate');
     q('spComment').classList.toggle('on', t === 'comment');
-    if (t === 'comment') renderComments();
+    if (t === 'comment') loadComments();
   }
 
   /* ── DONATE ── */
@@ -234,47 +198,38 @@
   });
 
   /* ── COMMENTS ── */
-  function x(s) {
+  function esc(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
-  function renderComments() {
+
+  function loadComments() {
     var el = q('spCmts');
-    var list = [];
-    if (API_BASE) {
-      el.innerHTML = '<div class="sp-empty">Loading…</div>';
-      fetch(API_BASE + '/api/comments?page=' + encodeURIComponent(PAGE_KEY))
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-          var comments = data.comments || data || [];
-          if (!comments.length) {
-            el.innerHTML = '<div class="sp-empty">No comments yet. Be the first!</div>';
-            return;
-          }
-          el.innerHTML = comments.map(function(c){
-            return '<div class="sp-cmt">' +
-              '<div class="sp-cmt-who">' + x(c.name || 'Anonymous Devotee') + '</div>' +
-              '<div class="sp-cmt-body">' + x(c.text) + '</div>' +
-              '<div class="sp-cmt-when">' + x(c.date || '') + '</div>' +
-              '</div>';
-          }).join('');
-        })
-        .catch(function(){ el.innerHTML = '<div class="sp-empty">Could not load comments.</div>'; });
-    } else {
-      var stored = [];
-      try { stored = JSON.parse(localStorage.getItem('sp_' + PAGE_KEY) || '[]'); } catch(e){}
-      if (!stored.length) {
-        el.innerHTML = '<div class="sp-empty">No comments yet. Be the first!</div>';
-        return;
-      }
-      el.innerHTML = stored.slice().reverse().map(function(c){
-        return '<div class="sp-cmt">' +
-          '<div class="sp-cmt-who">' + x(c.name || 'Anonymous Devotee') + '</div>' +
-          '<div class="sp-cmt-body">' + x(c.text) + '</div>' +
-          '<div class="sp-cmt-when">' + x(c.date) + '</div>' +
-          '</div>';
-      }).join('');
+    if (!API_BASE) {
+      el.innerHTML = '<div class="sp-empty">Comments unavailable — API not configured.</div>';
+      return;
     }
+    el.innerHTML = '<div class="sp-loading">Loading comments&hellip;</div>';
+    fetch(API_BASE + '/api/comments?page=' + encodeURIComponent(PAGE_KEY))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var list = data.comments || [];
+        if (!list.length) {
+          el.innerHTML = '<div class="sp-empty">No comments yet. Be the first!</div>';
+          return;
+        }
+        el.innerHTML = list.map(function (c) {
+          return '<div class="sp-cmt">' +
+            '<div class="sp-cmt-who">' + esc(c.name || 'Anonymous Devotee') + '</div>' +
+            '<div class="sp-cmt-body">' + esc(c.text) + '</div>' +
+            '<div class="sp-cmt-when">' + esc(c.date) + '</div>' +
+            '</div>';
+        }).join('');
+      })
+      .catch(function () {
+        el.innerHTML = '<div class="sp-empty">Could not load comments.</div>';
+      });
   }
+
   function rebuildForm() {
     var wrap = q('spFormWrap');
     if (!wrap) return;
@@ -283,32 +238,46 @@
         '<input type="text" id="spName" placeholder="Your name (optional)" maxlength="60">' +
         '<textarea id="spText" placeholder="Share your experience or a prayer\u2026" maxlength="600"></textarea>' +
         '<button class="sp-submit" id="spSubmit">&#x1F64F; Submit</button>' +
+        '<div id="spErr"></div>' +
       '</div>';
     q('spSubmit').addEventListener('click', doSubmit);
   }
+
   function doSubmit() {
-    var name = (q('spName').value || '').trim();
-    var text = (q('spText').value || '').trim();
-    if (!text) { alert('Please write something first.'); return; }
-    if (API_BASE) {
-      fetch(API_BASE + '/api/comments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page: PAGE_KEY, name: name, text: text })
+    var name = q('spName').value.trim();
+    var text = q('spText').value.trim();
+    var err  = q('spErr');
+    if (!text) { if(err) err.innerHTML = '<div class="sp-err">Please write something first.</div>'; return; }
+    if (!API_BASE) { if(err) err.innerHTML = '<div class="sp-err">API not configured.</div>'; return; }
+
+    var btn = q('spSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Sending\u2026';
+
+    fetch(API_BASE + '/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page: PAGE_KEY, name: name, text: text })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          q('spFormWrap').innerHTML = '<div class="sp-ok">&#x1F64F; Thank you! Your comment has been saved.</div>';
+          setTimeout(rebuildForm, 2500);
+          loadComments();
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = '&#x1F64F; Submit';
+          if (err) err.innerHTML = '<div class="sp-err">' + esc(data.error || 'Something went wrong.') + '</div>';
+        }
       })
-        .then(function(){ q('spFormWrap').innerHTML = '<div class="sp-ok">&#x1F64F; Thank you!</div>'; setTimeout(rebuildForm, 2500); renderComments(); })
-        .catch(function(){ alert('Could not submit. Please try again.'); });
-    } else {
-      var list = [];
-      try { list = JSON.parse(localStorage.getItem('sp_' + PAGE_KEY) || '[]'); } catch(e){}
-      list.push({ name: name, text: text,
-        date: new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) });
-      localStorage.setItem('sp_' + PAGE_KEY, JSON.stringify(list));
-      q('spFormWrap').innerHTML = '<div class="sp-ok">&#x1F64F; Thank you!</div>';
-      setTimeout(rebuildForm, 2500);
-      renderComments();
-    }
+      .catch(function () {
+        btn.disabled = false;
+        btn.innerHTML = '&#x1F64F; Submit';
+        if (err) err.innerHTML = '<div class="sp-err">Network error. Please try again.</div>';
+      });
   }
+
   q('spSubmit').addEventListener('click', doSubmit);
 
   /* ── SECURITY ── */
@@ -317,7 +286,7 @@
     if ((e.ctrlKey || e.metaKey) && 'sua'.indexOf(e.key.toLowerCase()) > -1) e.preventDefault();
     if (e.key === 'F12') e.preventDefault();
   });
-  console.log('%c\u00A9 2025 Devotional Pages \u2014 All rights reserved.',
-    'color:#c9a84c;font-size:13px;font-weight:bold;');
+  console.log('%c\u00A9 2025 Devotional Pages \u2014 All rights reserved.', 'color:#c9a84c;font-size:13px;font-weight:bold;');
+  document.addEventListener('copy', function () { console.warn('\u00A9 2025 \u2014 Personal devotional use only.'); });
 
 })();
