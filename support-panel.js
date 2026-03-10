@@ -121,20 +121,26 @@
   function placeFab() {
     var fab = document.getElementById('spFab');
     var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
-    var pill = document.getElementById('audioPill');
+    var audioPill   = document.getElementById('audioPill');
+    var scrollPill  = document.getElementById('scrollPill');
     if (!fab) return;
-    var bottom = 20;
-    if (pill && !pill.classList.contains('hidden') && pill.offsetHeight > 0) {
-      bottom = 20 + pill.offsetHeight + 16;
+    // FAB (left side) sits above audioPill
+    var fabBottom = 20;
+    if (audioPill && !audioPill.classList.contains('hidden') && audioPill.offsetHeight > 0) {
+      fabBottom = 20 + audioPill.offsetHeight + 16;
     }
-    // Inline styles beat any stylesheet rule — no need for !important
-    fab.style.bottom = bottom + 'px';
+    fab.style.bottom = fabBottom + 'px';
+    // Back-to-top (right side) sits above scrollPill
     if (bt) {
+      var btBottom = 20;
+      if (scrollPill && !scrollPill.classList.contains('hidden') && scrollPill.offsetHeight > 0) {
+        btBottom = 20 + scrollPill.offsetHeight + 16;
+      }
       bt.style.position = 'fixed';
-      bt.style.bottom   = bottom + 'px';
-      bt.style.right    = '16px';
+      bt.style.bottom   = btBottom + 'px';
+      bt.style.right    = '20px';
       bt.style.left     = 'auto';
-      bt.style.zIndex   = '500';
+      bt.style.zIndex   = '400';
     }
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
