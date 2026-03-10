@@ -378,10 +378,7 @@ var PILL_AUTO_HIDE_MS = 10000;
     }, { passive: true });
   });
 
-  // Restore scroll pill immediately if auto-scroll starts while pills are hidden
-  setInterval(function() {
-    if (_hiddenScroll && scrollRunning()) { _hiddenScroll = false; showScrollPill(); }
-  }, 1000);
+  // No setInterval needed — pills restore on click/touchend only
 })();
 </script>
 
