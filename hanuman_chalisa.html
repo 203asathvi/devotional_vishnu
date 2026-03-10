@@ -109,10 +109,10 @@ body.light-mode .scroll-bar-open-btn{color:#3a2000;}
 body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 
 /* ── Two floating pills: Audio (bottom-left) + Scroll (bottom-right) ─────── */
-.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;gap:0;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .2s;white-space:nowrap;}
+.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.93);border:1px solid rgba(255,255,255,0.11);border-radius:16px;backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:opacity .2s,transform .2s;}
 .pill-base.hidden{display:none;}
 /* Audio pill — bottom-left */
-#audioPill{left:14px;}
+#audioPill{left:14px;width:220px;}
 /* Scroll pill — bottom-right */
 #scrollPill{right:14px;}
 /* Section label row */
@@ -524,6 +524,58 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
     var a = document.getElementById('pageAudio');
     log('window.load — readyState:' + (a?a.readyState:'?') + ' duration:' + (a?a.duration:'?'));
   });
+})();
+</script>
+
+<script>
+// ── Auto-hide pills after 10s of no interaction ───────────────────────────────
+(function() {
+  var TIMEOUT = 10000;
+  var _timer = null;
+  var _hidden = false;
+
+  function hideBoth() {
+    if (_hidden) return;
+    _hidden = true;
+    hideAudioPill();
+    hideScrollPill();
+  }
+
+  function showBoth() {
+    _hidden = false;
+    showAudioPill();
+    showScrollPill();
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearTimeout(_timer);
+    _timer = setTimeout(hideBoth, TIMEOUT);
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    resetTimer();
+  });
+
+  ['mousemove','mousedown','keydown','scroll','touchstart','click'].forEach(function(ev) {
+    document.addEventListener(ev, function() {
+      if (_hidden) {
+        showBoth();
+      } else {
+        resetTimer();
+      }
+    }, { passive: true });
+  });
+
+  // Keep visible while audio playing or scroll active
+  setInterval(function() {
+    var a = document.getElementById('pageAudio');
+    var isPlaying = a && !a.paused && !a.ended;
+    if (isPlaying || (typeof scrollActive !== 'undefined' && scrollActive)) {
+      clearTimeout(_timer);
+      if (_hidden) { _hidden = false; showAudioPill(); showScrollPill(); }
+    }
+  }, 2000);
 })();
 </script>
 </body>
