@@ -102,8 +102,8 @@ body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
 body.light-mode .scroll-speed-val,body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
 body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
 body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
-@media(max-width:480px){.scroll-speed-slider{width:50px;}.audio-time{display:none;}}
-@media(max-width:400px){.scroll-speed-slider{display:none;}.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
+@media(max-width:480px){.audio-seek{width:60px;}.scroll-speed-slider{width:50px;}.audio-time{display:none;}}
+@media(max-width:400px){.audio-seek{width:44px;}.scroll-speed-slider{display:none;}.audio-time{display:none;}.pill-audio{gap:6px;padding:0 10px 8px;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}.audio-play-btn{width:32px;height:32px;font-size:13px;}}
 </style>
 </head>
 <body>
@@ -273,10 +273,12 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
   <div class="pill-audio">
-    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button> <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
+    <button class="audio-play-btn" id="audioPlayBtn" onclick="toggleAudio()" title="Play / Pause audio">▶</button>
+    <input type="range" class="audio-seek" id="audioSeek" value="0" min="0" step="0.1" oninput="seekAudio(this.value)">
+    <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+    <span class="audio-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)" title="Click to set speed">1×</span>
   </div>
 </div>
-  <div class="audio-seek-row"><div class="audio-seek-bar" id="audioSeekBar"><div class="audio-seek-track"></div><div class="audio-seek-fill" id="audioSeekFill"></div><div class="audio-seek-thumb" id="audioSeekThumb"></div></div><div class="audio-seek-times"><span class="audio-time-cur" id="audioTimeCur">0:00</span><span class="audio-time-dur" id="audioTimeDur">0:00</span></div></div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
   <span class="tab-dot"></span>Audio
 </button>
@@ -300,63 +302,6 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 </button>
 <audio id="pageAudio" preload="metadata" src="https://audio-proxy.203asathvi.workers.dev/lakshmi_sahasranamam.mp3"></audio>
 <script src="scroll-controller.js"></script>
-<script>
-(function(){
-  var GRAD='linear-gradient(135deg,var(--gold),#00b478)';
-  function init(){
-    var a=document.getElementById('pageAudio');
-    var bar=document.getElementById('audioSeekBar');
-    var fill=document.getElementById('audioSeekFill');
-    var thumb=document.getElementById('audioSeekThumb');
-    var tcur=document.getElementById('audioTimeCur');
-    var tdur=document.getElementById('audioTimeDur');
-    // legacy single time display (some pages may still have it)
-    var tlegacy=document.getElementById('audioTime');
-    if(!a||!bar)return;
-    fill.style.background=GRAD;
-    thumb.style.background=GRAD;
-    function fmt(s){s=isNaN(s)||!isFinite(s)?0:s;return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
-    function setPct(pct){pct=Math.max(0,Math.min(1,pct));fill.style.width=(pct*100)+'%';thumb.style.left=(pct*100)+'%';}
-    function getX(e){var r=bar.getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));}
-    function setTime(cur,dur){
-      if(tcur)tcur.textContent=fmt(cur);
-      if(tdur)tdur.textContent=fmt(dur);
-      if(tlegacy)tlegacy.textContent=fmt(cur)+' / '+fmt(dur);
-    }
-    var dragging=false;
-    a.addEventListener('timeupdate',function(){
-      if(dragging||!a.duration||isNaN(a.duration))return;
-      setPct(a.currentTime/a.duration);
-      setTime(a.currentTime,a.duration);
-    });
-    a.addEventListener('loadedmetadata',function(){
-      setTime(0,a.duration);
-    });
-    bar.addEventListener('pointerdown',function(e){
-      e.preventDefault();e.stopPropagation();
-      dragging=true;bar.setPointerCapture(e.pointerId);
-      var p=getX(e);setPct(p);
-      setTime(p*(a.duration||0),a.duration||0);
-    });
-    bar.addEventListener('pointermove',function(e){
-      if(!dragging)return;
-      e.preventDefault();e.stopPropagation();
-      var p=getX(e);setPct(p);
-      setTime(p*(a.duration||0),a.duration||0);
-    });
-    bar.addEventListener('pointerup',function(e){
-      if(!dragging)return;
-      e.stopPropagation();dragging=false;
-      var p=getX(e);setPct(p);
-      a.currentTime=p*(a.duration||0);
-    });
-    bar.addEventListener('pointercancel',function(){dragging=false;});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
-  else init();
-})();
-</script>
-
 <script>
 const S = [
   [1,"nityagatananta-nitya nandinijana-ranjanī |","nitya-prakashinī caiva svaprakasha-svarupiṇī || 1 ||"],
@@ -558,7 +503,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPlayBtn')) stopScroll(); }, { passive: true });
 
 // ── Audio error feedback ──────────────────────────────────────────────────────
 (function(){

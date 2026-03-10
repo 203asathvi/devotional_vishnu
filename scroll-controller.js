@@ -208,12 +208,15 @@ function fmtTime(s) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
-  // audioSeek replaced by custom div seek bar — handled per-page
   a.addEventListener('timeupdate', () => {
+    const seek = document.getElementById('audioSeek');
     const time = document.getElementById('audioTime');
+    if (seek) seek.value = a.currentTime;
     if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
   });
   a.addEventListener('loadedmetadata', () => {
+    const seek = document.getElementById('audioSeek');
+    if (seek) seek.max = a.duration;
     const time = document.getElementById('audioTime');
     if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
   });
