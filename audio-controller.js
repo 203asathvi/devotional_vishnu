@@ -22,7 +22,7 @@ window.downloadAudioLog = function() {
   a.click();
 };
 
-// ── Skip duration state — default 30s ────────────────────────────────────────
+// ── Skip duration state ───────────────────────────────────────────────────────
 var _skipSec = 30;
 
 function _skipLabel(s) {
@@ -31,83 +31,106 @@ function _skipLabel(s) {
   return s + 's';
 }
 
-// ── Editable skip span — same pattern as editAudioSpeed ──────────────────────
-function editAudioSkip(el) {
+// ── Inline editor — replaces the num span with an input, restores on commit ──
+function _inlineEdit(spanId, opts) {
+  // opts: { min, max, step, getValue, onCommit(v), format(v) }
+  var span = document.getElementById(spanId);
+  if (!span) return;
+  // If already editing, ignore
+  if (document.getElementById(spanId + '_inp')) return;
+
   var inp = document.createElement('input');
   inp.type = 'number';
+  inp.id = spanId + '_inp';
   inp.className = 'scroll-speed-input';
-  inp.min = '1'; inp.max = '3600'; inp.step = '1';
-  inp.value = _skipSec;
-  inp.title = 'Skip duration in seconds (e.g. 600 = 10 min)';
-  el.replaceWith(inp);
+  inp.min = opts.min; inp.max = opts.max; inp.step = opts.step;
+  inp.value = opts.getValue();
+  inp.style.cssText = 'width:52px;font-size:12px;text-align:center;';
+  span.replaceWith(inp);
   inp.focus(); inp.select();
 
   var committed = false;
   function commit() {
     if (committed) return; committed = true;
-    var v = parseInt(inp.value, 10);
-    if (isNaN(v) || v < 1)    v = 1;
-    if (v > 3600)              v = 3600;
-    _skipSec = v;
-    var span = document.createElement('span');
-    span.className = 'audio-skip-val'; span.id = 'audioSkipVal';
-    span.title = 'Click to set skip duration';
-    span.onclick = function() { editAudioSkip(this); };
-    span.textContent = _skipLabel(v);
-    inp.replaceWith(span);
-    // Update button tooltips
-    var rew = document.getElementById('audioRewBtn');
-    var fwd = document.getElementById('audioFwdBtn');
-    if (rew) rew.title = 'Rewind ' + _skipLabel(v);
-    if (fwd) fwd.title = 'Forward ' + _skipLabel(v);
-    _alog('INFO', 'skip duration set', {sec: v, label: _skipLabel(v)});
+    var v = parseFloat(inp.value);
+    if (isNaN(v) || v < opts.min) v = opts.min;
+    if (v > opts.max) v = opts.max;
+    v = opts.onCommit(v);
+    var newSpan = document.createElement('span');
+    newSpan.id = spanId;
+    newSpan.className = span.className;
+    newSpan.textContent = opts.format(v);
+    inp.replaceWith(newSpan);
   }
   setTimeout(function() { inp.addEventListener('blur', commit); }, 300);
   inp.addEventListener('keydown', function(e) {
     if (e.key === 'Enter')  { commit(); }
-    if (e.key === 'Escape') { committed = true; inp.replaceWith(el); }
+    if (e.key === 'Escape') { committed = true; inp.replaceWith(span); }
   });
 }
 
-// ── Skip: reads _skipSec, handles unloaded audio ──────────────────────────────
+function editAudioSkip(el) {
+  _inlineEdit('audioSkipVal', {
+    min: 1, max: 3600, step: 1,
+    getValue: function() { return _skipSec; },
+    onCommit: function(v) {
+      v = Math.round(v);
+      _skipSec = v;
+      var rew = document.getElementById('audioRewBtn');
+      var fwd = document.getElementById('audioFwdBtn');
+      if (rew) rew.title = 'Rewind ' + _skipLabel(v);
+      if (fwd) fwd.title = 'Forward ' + _skipLabel(v);
+      _alog('INFO', 'skip set', {sec: v});
+      return v;
+    },
+    format: function(v) { return _skipLabel(v); }
+  });
+}
+
+function editAudioSpeed(el) {
+  var a = document.getElementById('pageAudio');
+  _inlineEdit('audioSpeedVal', {
+    min: 0.5, max: 4, step: 0.05,
+    getValue: function() { return a ? a.playbackRate : 1; },
+    onCommit: function(v) {
+      v = Math.round(v * 100) / 100;
+      if (a) a.playbackRate = v;
+      _alog('INFO', 'speed set', {rate: v});
+      return v;
+    },
+    format: function(v) { return v + '×'; }
+  });
+}
+
+// ── Skip: reads _skipSec, sign of arg = direction ─────────────────────────────
 function audioSkip(sec) {
-  // sec argument from wireAudioBtn is ±1 sentinel — multiply by actual skip amount
   var amount = (sec > 0 ? 1 : -1) * _skipSec;
   var a = document.getElementById('pageAudio');
   if (!a) { _alog('ERROR', 'audioSkip: no #pageAudio'); return; }
 
-  _alog('INFO', 'audioSkip called', {
-    direction: sec > 0 ? 'fwd' : 'rew',
-    amount: amount,
-    readyState: a.readyState,
-    duration: a.duration,
-    currentTime: a.currentTime
+  _alog('INFO', 'audioSkip', {
+    direction: sec > 0 ? 'fwd' : 'rew', amount: amount,
+    readyState: a.readyState, duration: a.duration, currentTime: a.currentTime
   });
 
   if (!isFinite(a.duration) || a.readyState < 1) {
-    _alog('INFO', 'audioSkip: metadata not ready, loading first');
     a.addEventListener('loadedmetadata', function onMeta() {
       a.removeEventListener('loadedmetadata', onMeta);
-      var target = Math.max(0, Math.min(a.duration, a.currentTime + amount));
-      _alog('INFO', 'audioSkip: seeking after load', {target: target, duration: a.duration});
-      a.currentTime = target;
+      a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + amount));
     });
     a.load();
     return;
   }
 
-  var target = Math.max(0, Math.min(a.duration, a.currentTime + amount));
-  _alog('INFO', 'audioSkip: seeking', {from: a.currentTime, to: target});
-  a.currentTime = target;
+  a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + amount));
 }
 
 function audioStop() {
   var a = document.getElementById('pageAudio');
-  if (!a) { _alog('ERROR', 'audioStop: no #pageAudio'); return; }
+  if (!a) return;
   a.pause(); a.currentTime = 0;
   var btn = document.getElementById('audioPlayBtn');
   if (btn) { btn.textContent = '▶'; btn.disabled = false; }
-  _alog('INFO', 'audioStop');
 }
 
 // ── Time display ──────────────────────────────────────────────────────────────
@@ -123,12 +146,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
   ['loadedmetadata','play','playing','pause','ended','error','stalled','waiting'].forEach(function(ev) {
     a.addEventListener(ev, function() {
-      var info = {readyState:a.readyState, duration:a.duration,
-                  currentTime:a.currentTime, paused:a.paused};
+      var info = {readyState:a.readyState, duration:a.duration, currentTime:a.currentTime};
       if (ev === 'error' && a.error) {
-        info.code = a.error.code;
         var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
-        info.type = codes[a.error.code] || 'UNKNOWN';
+        info.errorType = codes[a.error.code] || 'UNKNOWN';
       }
       _alog(ev === 'error' ? 'ERROR' : 'INFO', 'audio:' + ev, info);
     });
