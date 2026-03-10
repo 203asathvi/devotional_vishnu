@@ -273,24 +273,38 @@ window.addEventListener('DOMContentLoaded', () => {
   syncSpeedUI();
 
   // ── Scroll play button ────────────────────────────────────────────────────
-  // Use ONLY JS listeners (no onclick in HTML) to prevent double-fire on mobile
+  // touchend fires toggleScroll; a flag blocks the ghost click that follows on mobile
   const scrollBtn = document.getElementById('scrollPlayBtn');
   if (scrollBtn) {
-    scrollBtn.addEventListener('click', toggleScroll);
+    let scrollBtnTouched = false;
     scrollBtn.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation(); toggleScroll();
+      e.preventDefault(); e.stopPropagation();
+      scrollBtnTouched = true;
+      toggleScroll();
+      setTimeout(() => { scrollBtnTouched = false; }, 400);
     }, { passive: false });
+    scrollBtn.addEventListener('click', e => {
+      if (scrollBtnTouched) { e.preventDefault(); e.stopPropagation(); return; }
+      toggleScroll();
+    });
   }
 
   // ── Speed buttons ─────────────────────────────────────────────────────────
-  // onclick removed from HTML; handled here to prevent double-fire on mobile
+  // Same touch-flag pattern prevents double-fire on mobile
   function wireSpeedBtn(id, dir) {
     var btn = document.getElementById(id);
     if (!btn) return;
-    btn.addEventListener('click', function() { adjustSpeed(dir); });
+    let touched = false;
     btn.addEventListener('touchend', function(e) {
-      e.preventDefault(); e.stopPropagation(); adjustSpeed(dir);
+      e.preventDefault(); e.stopPropagation();
+      touched = true;
+      adjustSpeed(dir);
+      setTimeout(() => { touched = false; }, 400);
     }, { passive: false });
+    btn.addEventListener('click', function(e) {
+      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
+      adjustSpeed(dir);
+    });
   }
   wireSpeedBtn('speedDown', -1);
   wireSpeedBtn('speedUp',    1);
