@@ -504,64 +504,119 @@ function toggleAudio() {
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
 
-<div id="dbg" style="position:fixed;top:60px;left:10px;right:10px;z-index:9999;background:rgba(0,0,0,0.85);color:#0f0;font-family:monospace;font-size:11px;padding:8px;border-radius:8px;max-height:200px;overflow-y:auto;display:none;"></div>
-<button onclick="document.getElementById('dbg').style.display=document.getElementById('dbg').style.display==='none'?'block':'none'" style="position:fixed;top:60px;right:10px;z-index:10000;background:#333;color:#fff;border:none;padding:4px 8px;font-size:11px;border-radius:4px;cursor:pointer;">Debug</button>
+<div id="dbg" style="position:fixed;top:60px;left:4px;right:4px;z-index:9999;background:rgba(0,0,0,0.92);color:#0f0;font-family:monospace;font-size:10px;padding:6px;border-radius:8px;max-height:240px;overflow-y:auto;display:none;"></div>
+<div style="position:fixed;top:60px;right:4px;z-index:10000;display:flex;gap:4px;">
+  <button id="dbgToggle" onclick="var d=document.getElementById('dbg');d.style.display=d.style.display==='none'?'block':'none';" style="background:#333;color:#0f0;border:1px solid #0f0;padding:3px 7px;font-size:10px;border-radius:4px;cursor:pointer;">📋 Log</button>
+  <button onclick="document.getElementById('dbg').innerHTML=''" style="background:#333;color:#f80;border:1px solid #f80;padding:3px 7px;font-size:10px;border-radius:4px;cursor:pointer;">CLR</button>
+</div>
 <script>
 (function(){
-  var log = function(msg) {
+  // ── Shared log function ───────────────────────────────────────────
+  var log = function(msg, color) {
     var d = document.getElementById('dbg');
-    d.innerHTML += '<div>' + new Date().toISOString().substr(11,8) + ' ' + msg + '</div>';
+    var t = new Date().toISOString().substr(11,8);
+    var c = color || '#0f0';
+    d.innerHTML += '<div style="color:' + c + '">' + t + ' ' + msg + '</div>';
     d.scrollTop = d.scrollHeight;
   };
   window._dbgLog = log;
-  window.addEventListener('DOMContentLoaded', function() {
-    log('DOMContentLoaded fired');
-    log('audioSkip: ' + (typeof audioSkip));
-    log('audioStop: ' + (typeof audioStop));
-    log('toggleAudio: ' + (typeof toggleAudio));
-    var audio = document.getElementById('pageAudio');
-    log('pageAudio: ' + !!audio);
-    if (audio) {
-      log('src: ' + audio.src);
-      log('readyState: ' + audio.readyState);
-      log('duration: ' + audio.duration);
-      audio.addEventListener('loadedmetadata', function() {
-        log('loadedmetadata: duration=' + audio.duration + ' readyState=' + audio.readyState);
+
+  // ── Audio diagnostics ─────────────────────────────────────────────
+  var audio = document.getElementById('pageAudio');
+  log('audioSkip:' + (typeof audioSkip) + ' toggleAudio:' + (typeof toggleAudio));
+  log('pageAudio:' + !!audio + (audio ? ' src:'+audio.src.split('/').pop() : ''));
+  if (audio) {
+    audio.addEventListener('loadedmetadata', function() {
+      log('audio loadedmetadata duration=' + audio.duration.toFixed(1) + 's');
+    });
+    audio.addEventListener('error', function() {
+      var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
+      log('audio ERROR: ' + (codes[audio.error&&audio.error.code]||'?'), '#f44');
+    });
+    audio.addEventListener('play',    function() { log('audio play', '#8f8'); });
+    audio.addEventListener('pause',   function() { log('audio pause t=' + audio.currentTime.toFixed(1), '#ff8'); });
+    audio.addEventListener('playing', function() { log('audio playing t=' + audio.currentTime.toFixed(1) + ' dur=' + audio.duration.toFixed(1), '#8f8'); });
+    var seekEl = document.getElementById('audioSeek');
+    if (seekEl) {
+      seekEl.addEventListener('change', function() {
+        log('seek → ' + (+seekEl.value).toFixed(1) + 's  (duration=' + (audio.duration||0).toFixed(1) + ')', '#8ff');
       });
-      audio.addEventListener('error', function() {
-        var c = audio.error ? audio.error.code : '?';
-        var codes = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
-        log('ERROR: code=' + c + ' (' + (codes[c]||'UNKNOWN') + ')');
-      });
-      audio.addEventListener('play',    function() { log('event: play'); });
-      audio.addEventListener('playing', function() { log('event: playing, currentTime=' + audio.currentTime + ' duration=' + audio.duration); });
-      audio.addEventListener('pause',   function() { log('event: pause, currentTime=' + audio.currentTime); });
     }
-    var rew = document.getElementById('audioRewBtn');
-    var fwd = document.getElementById('audioFwdBtn');
-    var play = document.getElementById('audioPlayBtn');
-    log('audioRewBtn: ' + !!rew + '  audioFwdBtn: ' + !!fwd + '  audioPlayBtn: ' + !!play);
-    if (rew) rew.addEventListener('click', function() {
-      var a = document.getElementById('pageAudio');
-      log('REW click — readyState=' + (a?a.readyState:'?') + ' duration=' + (a?a.duration:'?') + ' currentTime=' + (a?a.currentTime:'?'));
-      try { audioSkip(-30); log('audioSkip(-30) OK, currentTime=' + (a?a.currentTime:'?')); }
-      catch(e) { log('ERROR: ' + e.message); }
+  }
+
+  // ── Scroll diagnostics ────────────────────────────────────────────
+  var scrollBtn = document.getElementById('scrollPlayBtn');
+  log('scrollPlayBtn:' + !!scrollBtn + '  scrollActive:' + (typeof scrollActive));
+  if (scrollBtn) {
+    scrollBtn.addEventListener('click', function() {
+      log('scrollBtn click — scrollActive=' + (typeof scrollActive !== 'undefined' ? scrollActive : '?'), '#8ff');
     });
-    if (fwd) fwd.addEventListener('click', function() {
-      var a = document.getElementById('pageAudio');
-      log('FWD click — readyState=' + (a?a.readyState:'?') + ' duration=' + (a?a.duration:'?') + ' currentTime=' + (a?a.currentTime:'?'));
-      try { audioSkip(30); log('audioSkip(30) OK, currentTime=' + (a?a.currentTime:'?')); }
-      catch(e) { log('ERROR: ' + e.message); }
-    });
-    if (play) play.addEventListener('click', function() {
-      var a = document.getElementById('pageAudio');
-      log('PLAY click — paused=' + (a?a.paused:'?') + ' readyState=' + (a?a.readyState:'?') + ' currentTime=' + (a?a.currentTime:'?'));
-    });
-  });
-  window.addEventListener('load', function() {
-    var a = document.getElementById('pageAudio');
-    log('window.load — readyState:' + (a?a.readyState:'?') + ' duration:' + (a?a.duration:'?'));
-  });
+  }
+  // Patch toggleScroll to log every call
+  var _origToggle = window.toggleScroll;
+  if (typeof _origToggle === 'function') {
+    window.toggleScroll = function() {
+      log('toggleScroll() called — was ' + scrollActive, '#ff8');
+      _origToggle();
+      log('toggleScroll() done — now ' + scrollActive, '#ff8');
+    };
+  }
+  // Patch stopScroll to log caller
+  var _origStop = window.stopScroll;
+  if (typeof _origStop === 'function') {
+    window.stopScroll = function() {
+      var caller = '';
+      try { throw new Error(); } catch(e) {
+        var lines = e.stack.split('\n');
+        caller = lines[2] ? lines[2].trim().substring(0,80) : '?';
+      }
+      log('stopScroll() called from: ' + caller, '#f88');
+      _origStop();
+    };
+  }
+
+  // ── Auto-hide diagnostics ─────────────────────────────────────────
+  // Patch hide/show functions to log every call
+  var _origHideAudio  = window.hideAudioPill;
+  var _origShowAudio  = window.showAudioPill;
+  var _origHideScroll = window.hideScrollPill;
+  var _origShowScroll = window.showScrollPill;
+  if (_origHideAudio)  window.hideAudioPill  = function() { log('hideAudioPill()',  '#f88'); _origHideAudio();  };
+  if (_origShowAudio)  window.showAudioPill  = function() { log('showAudioPill()',  '#8f8'); _origShowAudio();  };
+  if (_origHideScroll) window.hideScrollPill = function() { log('hideScrollPill()', '#f88'); _origHideScroll(); };
+  if (_origShowScroll) window.showScrollPill = function() { log('showScrollPill()', '#8f8'); _origShowScroll(); };
+
+  // Log PILL_AUTO_HIDE_MS value
+  setTimeout(function() {
+    log('PILL_AUTO_HIDE_MS = ' + (typeof PILL_AUTO_HIDE_MS !== 'undefined' ? PILL_AUTO_HIDE_MS : 'UNDEFINED'), '#ff8');
+    log('scrollActive type = ' + (typeof scrollActive), '#ff8');
+  }, 200);
+
+  // Poll state every 3 seconds
+  setInterval(function() {
+    var audioPill  = document.getElementById('audioPill');
+    var scrollPill = document.getElementById('scrollPill');
+    log('[poll] scrollActive=' + (typeof scrollActive !== 'undefined' ? scrollActive : '?')
+      + ' audioPillHidden=' + (audioPill  ? audioPill.classList.contains('hidden')  : '?')
+      + ' scrollPillHidden=' + (scrollPill ? scrollPill.classList.contains('hidden') : '?'), '#888');
+  }, 3000);
+
+  // Log touchstart on document (first only, to avoid spam)
+  var _touchCount = 0;
+  document.addEventListener('touchstart', function(e) {
+    if (_touchCount++ > 10) return;
+    log('touchstart on: ' + (e.target ? (e.target.id || e.target.className || e.target.tagName) : '?')
+      + ' scrollActive=' + (typeof scrollActive !== 'undefined' ? scrollActive : '?'), '#aaf');
+  }, { passive: true });
+
+  // Log click on document
+  var _clickCount = 0;
+  document.addEventListener('click', function(e) {
+    if (_clickCount++ > 20) return;
+    log('click on: ' + (e.target ? (e.target.id || e.target.className || e.target.tagName) : '?'), '#aaf');
+  }, { passive: true });
+
+  log('--- debug ready ---', '#ff8');
 })();
 </script>
 
