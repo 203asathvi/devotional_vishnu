@@ -208,7 +208,7 @@ function fmtTime(s) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
-  // audioSeek is now a custom div — timeupdate for seek bar handled inline per page
+  // audioSeek replaced by custom div seek bar — handled per-page
   a.addEventListener('timeupdate', () => {
     const time = document.getElementById('audioTime');
     if (time) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
