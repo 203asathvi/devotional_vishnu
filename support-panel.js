@@ -130,12 +130,11 @@
       fabBottom = 20 + audioPill.offsetHeight + 16;
     }
     fab.style.bottom = fabBottom + 'px';
-    // Back-to-top (right side) sits above scrollPill
+    // Back-to-top (right side) — fixed position above scroll pill
     if (bt) {
-      var btBottom = 20;
-      if (scrollPill && !scrollPill.classList.contains('hidden') && scrollPill.offsetHeight > 0) {
-        btBottom = 20 + scrollPill.offsetHeight + 16;
-      }
+      var scrollPillH = (scrollPill && !scrollPill.classList.contains('hidden') && scrollPill.offsetHeight > 0)
+                        ? scrollPill.offsetHeight : 0;
+      var btBottom = scrollPillH > 0 ? (20 + scrollPillH + 12) : 80;
       bt.style.position = 'fixed';
       bt.style.bottom   = btBottom + 'px';
       bt.style.right    = '20px';
@@ -149,6 +148,11 @@
   if (pill && window.MutationObserver) {
     new MutationObserver(function () { requestAnimationFrame(placeFab); })
       .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
+  }
+  var sPill = document.getElementById('scrollPill');
+  if (sPill && window.MutationObserver) {
+    new MutationObserver(function () { requestAnimationFrame(placeFab); })
+      .observe(sPill, { attributes: true, attributeFilter: ['class', 'style'] });
   }
 
   /* ── FAB ── */
