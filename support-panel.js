@@ -22,7 +22,8 @@
   /* ── CSS ── */
   var style = document.createElement('style');
   style.textContent =
-    '#spFab{position:fixed;left:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;}' +
+    '#spFab{position:fixed;left:16px;z-index:500;display:flex;flex-direction:column;align-items:flex-start;gap:8px;bottom:20px;opacity:0.72;}' +
+    '#spFab:hover{opacity:1;}' +
     /* Back-to-top position is set entirely via inline style in placeFab() */
     '#spFabBtn{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s;outline:none;flex-shrink:0;}' +
     '#spFabBtn:hover{transform:scale(1.08);}' +
@@ -68,8 +69,10 @@
     '.sp-loading{font-style:italic;color:var(--muted,#9d8050);font-size:13px;text-align:center;padding:12px 0;}' +
     '.sp-ok{text-align:center;padding:20px 0;font-size:15px;color:var(--gold-light,#f5d78a);}' +
     '.sp-err{text-align:center;padding:8px;font-size:13px;color:#e06060;margin-top:6px;}' +
-    '#backTop{position:fixed;right:16px;bottom:20px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.6);display:flex;align-items:center;justify-content:center;transition:transform .22s,opacity .22s;outline:none;opacity:0;pointer-events:none;z-index:500;}' +
-    '#backTop.visible{opacity:1;pointer-events:all;}' +
+    '#backTop{position:fixed;right:16px;bottom:20px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--vis,#7a2095),var(--vis2,#b060e0));border:2px solid var(--gold,#c9a84c);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(122,32,149,0.4);display:flex;align-items:center;justify-content:center;transition:transform .22s,opacity .22s;outline:none;opacity:0;pointer-events:none;z-index:500;}' +
+    '#backTop.visible{opacity:0.72 !important;}' +
+    '#backTop:hover{opacity:1 !important;}' +
+    '#backTop.visible{pointer-events:all;}' +
     '#backTop:hover{transform:scale(1.08);}';
   document.head.appendChild(style);
 

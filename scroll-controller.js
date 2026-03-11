@@ -37,6 +37,7 @@ let customSpeed = null;       // non-null when user typed a value not in SPEED_S
 let scrollActive = false;
 let scrollRAF    = null;
 let lastTime     = null;
+let _scrollRemainder = 0;    // sub-pixel accumulator — eliminates rounding jumps
 
 function currentSpeed() { return customSpeed !== null ? customSpeed : SPEED_STEPS[speedIdx]; }
 function speedToPxPerSec(s) { return s * 18; }
@@ -47,7 +48,10 @@ function scrollStep(ts) {
   if (lastTime === null) lastTime = ts;
   const dt = Math.min(ts - lastTime, 100);
   lastTime = ts;
-  window.scrollBy(0, (speedToPxPerSec(currentSpeed()) * dt) / 1000);
+  const _raw = (speedToPxPerSec(currentSpeed()) * dt) / 1000 + _scrollRemainder;
+  const _px  = Math.trunc(_raw);
+  _scrollRemainder = _raw - _px;
+  if (_px !== 0) window.scrollBy(0, _px);
   const s = window.scrollY, tot = document.body.scrollHeight - window.innerHeight;
   if (s >= tot - 4) stopScroll();
   scrollRAF = requestAnimationFrame(scrollStep);
@@ -86,6 +90,7 @@ function startScroll() {
 function stopScroll() {
   scrollActive = false;
   lastTime = null;
+  _scrollRemainder = 0;
   if (scrollRAF) { cancelAnimationFrame(scrollRAF); scrollRAF = null; }
   document.getElementById('scrollPlayBtn').textContent = '⇓';
   document.getElementById('scrollPlayBtn').title = 'Play';
