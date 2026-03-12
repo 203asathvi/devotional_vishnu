@@ -12,7 +12,7 @@
   --text:#f5e8c8;--muted:#a88850;--accent:#ffb840;
   --sun:#ff8c00;--sun2:#ffcc44;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;}#audioPill .pill-header{display:none;}
 body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;min-height:100vh;}
 body::before{content:'';position:fixed;inset:0;background:
   radial-gradient(ellipse 70% 40% at 50% 0%,rgba(255,140,0,0.14) 0%,transparent 65%),
@@ -87,20 +87,20 @@ mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
 .pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(232,160,32,0.35);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
-#audioPill{left:14px;}
-#scrollPill{right:14px;}
-.pill-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px 4px;gap:8px;}
+#audioPill{top:54px;bottom:auto;left:14px;right:auto;width:auto;border-radius:0 0 12px 12px;border-top:none;border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:2px solid var(--gold);flex-direction:row;align-items:center;padding:6px 10px;gap:8px;box-sizing:border-box;}
+#scrollPill{top:54px;bottom:auto;right:0;left:auto;border-radius:0;border-top:none;border-right:none;border-left:none;border-bottom:2px solid var(--gold);flex-direction:row;align-items:center;padding:6px 14px;gap:10px;box-sizing:border-box;}
+.pill-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px 4px;gap:8px;}#scrollPill .pill-header{display:none;}
 .pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
 .pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
 .pill-close:hover{color:rgba(255,255,255,0.8);}
 
-.pill-audio-top{display:flex;align-items:center;gap:10px;padding:6px 14px 4px;}
-.pill-audio-seek-row{padding:2px 14px 2px;display:flex;align-items:center;gap:8px;}
-.pill-audio-time{display:flex;justify-content:space-between;padding:1px 14px 8px;color:rgba(255,255,255,0.4);font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;}
+.pill-audio-top{display:contents;}#audioPill .audio-val-label{display:none;}
+.pill-audio-seek-row{display:contents;}#audioPill .audio-seek{width:90px;flex:none;}
+.pill-audio-time{display:contents;}#audioPill #audioTimeCur::after{content:'/';}#audioPill #audioTimeDur{margin-left:2px;}
 .audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
 .audio-play-btn:hover{opacity:.85;}
 .audio-val-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
-.audio-val-num{color:#fff;font-size:13px;font-family:'Cinzel',serif;letter-spacing:.5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 8px;min-width:42px;text-align:center;transition:background .15s;}
+.audio-val-num{color:#fff;font-size:11px;font-family:'Cinzel',serif;letter-spacing:.3px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 6px;min-width:34px;text-align:center;transition:background .15s;}
 .audio-val-wrap:hover .audio-val-num{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);}
 .audio-val-label{color:rgba(255,255,255,0.35);font-size:8px;font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;}
 .audio-seek{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
@@ -112,14 +112,14 @@ body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
 body.light-mode .audio-val-num{color:#3a2000;background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);}
 body.light-mode .audio-val-wrap:hover .audio-val-num{background:rgba(0,0,0,0.12);}
 body.light-mode .audio-val-label{color:rgba(0,0,0,0.3);}
-body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
+body.light-mode #audioPill #audioTimeCur,#audioPill #audioTimeDur{color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px;white-space:nowrap;}
 @media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
-.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
+.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0;}
 .pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(232,160,32,0.35);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
 .pill-tab:hover{opacity:.8;}
 .pill-tab.hidden{display:none;}
-#audioTab{left:14px;}
-#scrollTab{right:14px;}
+#audioTab{top:54px;bottom:auto;left:14px;}
+#scrollTab{top:62px;bottom:auto;right:14px;}
 .tab-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));flex-shrink:0;}
 .audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
 .audio-play-btn:hover{opacity:.8;}
@@ -285,10 +285,6 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div class="pill-audio-top">
     <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
-    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
-      <span class="audio-val-num" id="audioSpeedVal">1×</span>
-      <span class="audio-val-label">speed</span>
-    </div>
   </div>
   <div class="pill-audio-seek-row">
     <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
@@ -296,6 +292,12 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="pill-audio-time">
     <span id="audioTimeCur">0:00</span>
     <span id="audioTimeDur">0:00</span>
+  </div>
+  <div class="pill-audio-top">
+    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
+      <span class="audio-val-num" id="audioSpeedVal">1×</span>
+      <span class="audio-val-label">speed</span>
+    </div>
   </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
