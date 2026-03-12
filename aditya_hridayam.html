@@ -85,7 +85,7 @@ mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
-.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.25);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.15);transition:opacity .2s;white-space:nowrap;}
+.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(232,160,32,0.35);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
 #audioPill{left:14px;}
 #scrollPill{right:14px;}
@@ -115,7 +115,7 @@ body.light-mode .audio-val-label{color:rgba(0,0,0,0.3);}
 body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 @media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0 12px 9px;}
-.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.25);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
+.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(232,160,32,0.35);color:rgba(255,255,255,0.6);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
 .pill-tab:hover{opacity:.8;}
 .pill-tab.hidden{display:none;}
 #audioTab{left:14px;}
@@ -139,7 +139,7 @@ body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 .audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
 .audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
 .audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
-body.light-mode .pill-base,body.light-mode .pill-tab{background:rgba(255,248,230,0.20);border-color:rgba(0,0,0,0.18);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+body.light-mode .pill-base,body.light-mode .pill-tab{background:rgba(255,248,230,0.20);border:1px solid rgba(0,0,0,0.10);border-top:2px solid var(--gold);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
 body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
 body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
 body.light-mode .pill-close:hover{color:rgba(0,0,0,0.65);}
