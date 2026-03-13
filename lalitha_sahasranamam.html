@@ -259,7 +259,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <span id="audioTimeDur">0:00</span>
   </div>
 </div>
-<button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
+<button class="pill-tab hidden" id="audioTab">
   <span class="tab-dot"></span>Audio
 </button>
 
@@ -276,7 +276,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
   </div>
 </div>
-<button class="pill-tab hidden" id="scrollTab" onclick="showScrollPill()">
+<button class="pill-tab hidden" id="scrollTab">
   <span class="tab-dot"></span>Scroll
 </button>
 <audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/lalitha_sahasranamam.mp3"></audio>
@@ -296,19 +296,9 @@ var PILL_AUTO_HIDE_MS = 10000;
   var _hiddenAudio  = false;
   var _hiddenScroll = false;
 
-  function scrollRunning() {
-    return typeof scrollActive !== 'undefined' && scrollActive;
-  }
-
   function maybeHide() {
     if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
     if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
-  }
-
-  function restoreAll() {
-    if (_hiddenAudio)  { _hiddenAudio  = false; showAudioPill();  }
-    if (_hiddenScroll) { _hiddenScroll = false; showScrollPill(); }
-    resetTimer();
   }
 
   function resetTimer() {
@@ -316,28 +306,49 @@ var PILL_AUTO_HIDE_MS = 10000;
     _timer = setTimeout(maybeHide, PILL_AUTO_HIDE_MS);
   }
 
-  // Start timer immediately — script runs after DOM is ready
+  // Start timer immediately on load
   resetTimer();
 
-  // mousemove/keydown reset timer while visible only — won't restore from hidden
-  ['mousemove', 'mousedown', 'keydown'].forEach(function(ev) {
-    document.addEventListener(ev, function() {
-      if (!_hiddenAudio && !_hiddenScroll) resetTimer();
+  // ── Tab buttons: each opens only its own pill, independently ──────────────
+  function wireTab(tabId, showFn, setHidden) {
+    var tab = document.getElementById(tabId);
+    if (!tab) return;
+    var touched = false;
+    tab.addEventListener('touchend', function(e) {
+      e.stopPropagation();
+      touched = true;
+      setHidden(false); showFn(); resetTimer();
+      setTimeout(function() { touched = false; }, 400);
     }, { passive: true });
-  });
+    tab.addEventListener('click', function(e) {
+      if (touched) return;
+      setHidden(false); showFn(); resetTimer();
+    });
+  }
+  wireTab('audioTab',
+    function() { showAudioPill(); },
+    function(v) { _hiddenAudio = v; }
+  );
+  wireTab('scrollTab',
+    function() { showScrollPill(); },
+    function(v) { _hiddenScroll = v; }
+  );
 
-  // click and touchend restore when hidden, or reset timer when visible
-  ['click', 'touchend'].forEach(function(ev) {
-    document.addEventListener(ev, function(e) {
-      if (ev === 'touchend') {
-        var t = e.target;
-        if (t && (t.closest('#scrollPill') || t.closest('#scrollTab'))) return;
-      }
-      if (_hiddenAudio || _hiddenScroll) { restoreAll(); } else { resetTimer(); }
-    }, { passive: true });
-  });
-
-  // No setInterval — pills restore on explicit interaction only
+  // ── Click / tap anywhere on page hides both pills ─────────────────────────
+  // Exceptions: taps on the pills themselves or their tabs don't hide
+  function onPageTap(e) {
+    var t = e.target;
+    if (!t) return;
+    // Don't hide if tap is inside a pill or a tab
+    if (t.closest('#audioPill') || t.closest('#scrollPill') ||
+        t.closest('#audioTab')  || t.closest('#scrollTab'))  return;
+    // Hide whichever pills are currently visible
+    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
+    clearTimeout(_timer);
+  }
+  document.addEventListener('click',    onPageTap, { passive: true });
+  document.addEventListener('touchend', onPageTap, { passive: true });
 })();
 </script>
 <script>
