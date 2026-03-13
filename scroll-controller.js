@@ -174,6 +174,24 @@ function toggleAudio() {
 
 function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
 
+// Audio playback speed steps — same 0.05 increments as editAudioSpeed range
+const AUDIO_SPEED_STEPS = [0.5,0.6,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.1,1.15,1.2,1.25,1.3,1.4,1.5,1.6,1.7,1.75,1.8,2.0,2.25,2.5,3.0];
+
+function adjustAudioSpeed(dir) {
+  const a = aud(); if (!a) return;
+  const cur = Math.round(a.playbackRate * 100) / 100;
+  let idx = AUDIO_SPEED_STEPS.findIndex(s => Math.abs(s - cur) < 0.01);
+  if (idx === -1) {
+    // snap to nearest
+    idx = AUDIO_SPEED_STEPS.reduce((best, s, i) =>
+      Math.abs(s - cur) < Math.abs(AUDIO_SPEED_STEPS[best] - cur) ? i : best, 0);
+  }
+  const next = Math.max(0, Math.min(AUDIO_SPEED_STEPS.length - 1, idx + dir));
+  a.playbackRate = AUDIO_SPEED_STEPS[next];
+  const el = document.getElementById('audioSpeedVal');
+  if (el) el.textContent = AUDIO_SPEED_STEPS[next] + '×';
+}
+
 function editAudioSpeed(el) {
   const inp = document.createElement('input');
   inp.type = 'number';
@@ -347,8 +365,10 @@ window.addEventListener('DOMContentLoaded', () => {
       fn();
     });
   }
-  wireAudioBtn('audioPlayBtn', toggleAudio);
-  wireAudioBtn('audioRewBtn',  () => audioSkip(-30));
-  wireAudioBtn('audioFwdBtn',  () => audioSkip(30));
-  wireAudioBtn('audioStopBtn', audioStop);
+  wireAudioBtn('audioPlayBtn',  toggleAudio);
+  wireAudioBtn('audioRewBtn',   () => audioSkip(-30));
+  wireAudioBtn('audioFwdBtn',   () => audioSkip(30));
+  wireAudioBtn('audioStopBtn',  audioStop);
+  wireAudioBtn('audioSpeedDown', () => adjustAudioSpeed(-1));
+  wireAudioBtn('audioSpeedUp',   () => adjustAudioSpeed(1));
 });

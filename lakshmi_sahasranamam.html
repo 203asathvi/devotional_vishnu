@@ -74,19 +74,19 @@ mark{background:rgba(60,185,155,0.3);color:inherit;border-radius:2px;}
 .pill-audio-time{display:flex;justify-content:space-between;padding:1px 14px 8px;color:rgba(255,255,255,0.4);font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;}
 .audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
 .audio-play-btn:hover{opacity:.85;}
-.audio-val-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
-.audio-val-num{color:#fff;font-size:13px;font-family:'Cinzel',serif;letter-spacing:.5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 8px;min-width:42px;text-align:center;transition:background .15s;}
-.audio-val-wrap:hover .audio-val-num{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);}
-.audio-val-label{color:rgba(255,255,255,0.35);font-size:8px;font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;}
+.audio-val-wrap{display:inline-flex;align-items:center;cursor:pointer;}
+.audio-val-num{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(255,255,255,0.6);}
+.audio-val-label{display:none;}
 .audio-seek{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
 .audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
 .audio-seek::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
 .audio-skip-val{display:none;}
 .audio-speed-val{display:none;}
 body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
-body.light-mode .audio-val-num{color:#3a2000;background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);}
-body.light-mode .audio-val-wrap:hover .audio-val-num{background:rgba(0,0,0,0.12);}
-body.light-mode .audio-val-label{color:rgba(0,0,0,0.3);}
+body.light-mode .audio-val-num{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);background:none;border:none;border-bottom:1px dashed rgba(0,0,0,0.2);}
+body.light-mode .audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(0,0,0,0.5);}
+
 body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 @media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
 @media(max-width:400px){.audio-ctrl-btn{width:28px;height:28px;font-size:12px;}}
@@ -297,10 +297,12 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div class="pill-audio-top">
     <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
+    <button class="scroll-speed-btn" id="audioSpeedDown" title="Slower">−</button>
     <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
       <span class="audio-val-num" id="audioSpeedVal">1×</span>
       <span class="audio-val-label">speed</span>
     </div>
+    <button class="scroll-speed-btn" id="audioSpeedUp" title="Faster">+</button>
   </div>
   <div class="pill-audio-seek-row">
     <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
