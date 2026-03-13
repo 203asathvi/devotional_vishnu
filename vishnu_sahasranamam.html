@@ -1262,7 +1262,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- ♪ AUDIO PILL (bottom-left) -->
-<div class="pill-base" id="audioPill">
+<div class="pill-base hidden" id="audioPill">
   <div class="pill-header">
     <span class="pill-label">♪ Audio</span>
     <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
@@ -1284,12 +1284,12 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <span id="audioTimeDur">0:00</span>
   </div>
 </div>
-<button class="pill-tab hidden" id="audioTab">
+<button class="pill-tab" id="audioTab">
   <span class="tab-dot"></span>Audio
 </button>
 
 <!-- ↕ SCROLL PILL (bottom-right) -->
-<div class="pill-base" id="scrollPill">
+<div class="pill-base hidden" id="scrollPill">
   <div class="pill-header">
     <span class="pill-label">↕ Scroll</span>
     <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
@@ -1301,7 +1301,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
   </div>
 </div>
-<button class="pill-tab hidden" id="scrollTab">
+<button class="pill-tab" id="scrollTab">
   <span class="tab-dot"></span>Scroll
 </button>
 
@@ -1334,8 +1334,10 @@ var PILL_AUTO_HIDE_MS = 10000;
     _timer = setTimeout(maybeHide, PILL_AUTO_HIDE_MS);
   }
 
-  // Start timer immediately on load
-  resetTimer();
+  // Pills start hidden — reflect that in state flags
+  _hiddenAudio  = true;
+  _hiddenScroll = true;
+  // No auto-hide timer needed at start since already hidden
 
   // ── Tab buttons: each opens only its own pill, independently ──────────────
   function wireTab(tabId, showFn, setHidden) {
