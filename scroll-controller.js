@@ -231,28 +231,37 @@ function fmtTime(s) {
 
 window.addEventListener('DOMContentLoaded', () => {
   const a = aud(); if (!a) return;
+
+  // Helper: update the two time spans (cur / dur)
+  function setTime(cur, dur) {
+    const elCur = document.getElementById('audioTimeCur');
+    const elDur = document.getElementById('audioTimeDur');
+    // Also support legacy single #audioTime element
+    const elTime = document.getElementById('audioTime');
+    if (elCur) elCur.textContent = fmtTime(cur);
+    if (elDur) elDur.textContent = fmtTime(dur || 0);
+    if (elTime) elTime.textContent = fmtTime(cur) + ' / ' + fmtTime(dur || 0);
+  }
+
   a.addEventListener('timeupdate', () => {
     const seek = document.getElementById('audioSeek');
-    const time = document.getElementById('audioTime');
     if (seek && !seek._dragging) seek.value = a.currentTime;
-    if (time && !(seek && seek._dragging)) time.textContent = fmtTime(a.currentTime) + ' / ' + fmtTime(a.duration || 0);
+    if (!seek || !seek._dragging) setTime(a.currentTime, a.duration);
   });
   a.addEventListener('loadedmetadata', () => {
     const seek = document.getElementById('audioSeek');
     if (seek) { seek.max = a.duration; seek.value = 0; }
-    const time = document.getElementById('audioTime');
-    if (time) time.textContent = '0:00 / ' + fmtTime(a.duration);
+    setTime(0, a.duration);
   });
   // Seek drag wiring
   (() => {
     const seek = document.getElementById('audioSeek');
     if (!seek) return;
-    const time = document.getElementById('audioTime');
     seek._dragging = false;
     seek.addEventListener('mousedown',  () => { seek._dragging = true; });
     seek.addEventListener('touchstart', () => { seek._dragging = true; }, {passive:true});
     seek.addEventListener('input', () => {
-      if (time) time.textContent = fmtTime(parseFloat(seek.value)) + ' / ' + fmtTime(a.duration || 0);
+      setTime(parseFloat(seek.value), a.duration);
     });
     const commit = () => { seek._dragging = false; a.currentTime = parseFloat(seek.value); };
     seek.addEventListener('change',   commit);
