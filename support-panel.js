@@ -149,14 +149,21 @@
     var fab = document.getElementById('spFab');
     var bt  = document.getElementById('backTop') || document.querySelector('.back-top');
     if (!fab) return;
-    // Left side (spFab): audio pill is now top bar, no bottom clearance needed
-    fab.style.bottom = '20px';
+    // Left side (spFab): clear audioPill or audioTab
+    fab.style.bottom = (20 + pillClearance('audioPill', 'audioTab')) + 'px';
     // Right side (backTop): clear scrollPill or scrollTab
-    if (bt) bt.style.bottom = '20px'; // scroll pill is now a top bar, no bottom clearance needed
+    if (bt) bt.style.bottom = (20 + pillClearance('scrollPill', 'scrollTab')) + 'px';
   }
   requestAnimationFrame(function () { requestAnimationFrame(placeFab); });
   window.addEventListener('resize', function () { requestAnimationFrame(placeFab); });
   // Pills are now top bars — no observers needed for bottom clearance
+  ['audioPill', 'scrollPill'].forEach(function(id) {
+    var pill = document.getElementById(id);
+    if (pill && window.MutationObserver) {
+      new MutationObserver(function () { requestAnimationFrame(placeFab); })
+        .observe(pill, { attributes: true, attributeFilter: ['class', 'style'] });
+    }
+  });
 
 
   /* ── FAB ── */
