@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--gold:#3bb89a;--gold-light:#7ae8c8;--deep:#001a10;--bg:#001208;--card:#001a10;--border:rgba(60,185,155,0.25);--text:#e8f5f0;--muted:#7aaa98;--blue:#80d4b8;}
-*{margin:0;padding:0;box-sizing:border-box;}#audioPill .pill-header{display:none;}
+*{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;min-height:100vh;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(60,185,155,0.12) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(0,180,120,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
 nav{position:sticky;top:0;z-index:100;background:rgba(0,18,8,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
@@ -60,7 +60,7 @@ mark{background:rgba(60,185,155,0.3);color:inherit;border-radius:2px;}
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
 .pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(60,185,155,0.35);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
-#audioPill{top:54px;bottom:auto;left:14px;right:auto;width:auto;border-radius:0 0 12px 12px;border-top:none;border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:2px solid var(--gold);flex-direction:row;align-items:center;padding:6px 10px;gap:8px;box-sizing:border-box;}
+#audioPill{top:54px;bottom:auto;left:14px;right:auto;width:auto;border-radius:0 0 12px 12px;border-top:none;border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:2px solid var(--gold);flex-direction:column;align-items:stretch;padding:0;gap:0;box-sizing:border-box;}
 #scrollPill{top:54px;bottom:auto;right:0;left:auto;border-radius:0;border-top:none;border-right:none;border-left:none;border-bottom:2px solid var(--gold);flex-direction:row;align-items:center;padding:6px 14px;gap:10px;box-sizing:border-box;}
 .pill-header{display:flex;align-items:center;justify-content:space-between;padding:7px 12px 4px;gap:8px;}#scrollPill .pill-header{display:none;}
 .pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
@@ -69,13 +69,13 @@ mark{background:rgba(60,185,155,0.3);color:inherit;border-radius:2px;}
 
 .audio-play-btn{background:linear-gradient(135deg,var(--gold),#00b478);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
 .audio-play-btn:hover{opacity:.8;}
-.pill-audio-top{display:contents;}#audioPill .audio-val-label{display:none;}
-.pill-audio-seek-row{display:contents;}#audioPill .audio-seek{width:90px;flex:none;}
-.pill-audio-time{display:contents;}#audioPill #audioTimeCur::after{content:'/';}#audioPill #audioTimeDur{margin-left:2px;}
+.pill-audio-top{display:flex;align-items:center;gap:10px;padding:6px 14px 4px;}
+.pill-audio-seek-row{padding:2px 14px 2px;display:flex;align-items:center;gap:8px;}
+.pill-audio-time{display:flex;justify-content:space-between;padding:1px 14px 8px;color:rgba(255,255,255,0.4);font-size:10px;font-family:'Cinzel',serif;letter-spacing:.5px;}
 .audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
 .audio-play-btn:hover{opacity:.85;}
 .audio-val-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
-.audio-val-num{color:#fff;font-size:11px;font-family:'Cinzel',serif;letter-spacing:.3px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 6px;min-width:34px;text-align:center;transition:background .15s;}
+.audio-val-num{color:#fff;font-size:13px;font-family:'Cinzel',serif;letter-spacing:.5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:2px 8px;min-width:42px;text-align:center;transition:background .15s;}
 .audio-val-wrap:hover .audio-val-num{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.4);}
 .audio-val-label{color:rgba(255,255,255,0.35);font-size:8px;font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;}
 .audio-seek{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
@@ -87,7 +87,7 @@ body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
 body.light-mode .audio-val-num{color:#3a2000;background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);}
 body.light-mode .audio-val-wrap:hover .audio-val-num{background:rgba(0,0,0,0.12);}
 body.light-mode .audio-val-label{color:rgba(0,0,0,0.3);}
-body.light-mode #audioPill #audioTimeCur,#audioPill #audioTimeDur{color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px;white-space:nowrap;}
+body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 @media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
 @media(max-width:400px){.audio-ctrl-btn{width:28px;height:28px;font-size:12px;}}
 .pill-scroll-row{display:flex;align-items:center;gap:8px;padding:0;}
@@ -297,6 +297,10 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   </div>
   <div class="pill-audio-top">
     <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
+    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
+      <span class="audio-val-num" id="audioSpeedVal">1×</span>
+      <span class="audio-val-label">speed</span>
+    </div>
   </div>
   <div class="pill-audio-seek-row">
     <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
@@ -304,12 +308,6 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="pill-audio-time">
     <span id="audioTimeCur">0:00</span>
     <span id="audioTimeDur">0:00</span>
-  </div>
-  <div class="pill-audio-top">
-    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
-      <span class="audio-val-num" id="audioSpeedVal">1×</span>
-      <span class="audio-val-label">speed</span>
-    </div>
   </div>
 </div>
 <button class="pill-tab hidden" id="audioTab" onclick="showAudioPill()">
