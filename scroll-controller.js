@@ -174,6 +174,19 @@ function toggleAudio() {
 
 function seekAudio(v) { const a = aud(); if (a) a.currentTime = v; }
 
+function audioSkip(sec) {
+  const a = aud(); if (!a) return;
+  a.currentTime = Math.max(0, Math.min(a.duration || 0, a.currentTime + sec));
+}
+
+function audioStop() {
+  const a = aud(); if (!a) return;
+  a.pause();
+  a.currentTime = 0;
+  const btn = document.getElementById('audioPlayBtn');
+  if (btn) btn.textContent = '▶';
+}
+
 // Audio playback speed steps — same 0.05 increments as editAudioSpeed range
 const AUDIO_SPEED_STEPS = [0.5,0.6,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.1,1.15,1.2,1.25,1.3,1.4,1.5,1.6,1.7,1.75,1.8,2.0,2.25,2.5,3.0];
 
