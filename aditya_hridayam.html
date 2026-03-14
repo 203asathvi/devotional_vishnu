@@ -459,16 +459,10 @@ function toggleSearch(){
   if(b.classList.contains('active'))document.getElementById('searchInput').focus();
   else doSearch('');
 }
-function _norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function doSearch(q){
-  q=_norm(q.trim());
-  document.querySelectorAll('.shloka').forEach(function(el){
-    if(!q){el.classList.remove('highlight');el.style.display='';return;}
-    var t=_norm(el.textContent);
-    el.classList.toggle('highlight',t.includes(q));
-    el.style.display=t.includes(q)?'':'none';
-  });
-}
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('.shloka').forEach(card=>{
+    if(!q){card.classList.remove('highlight');card.style.display='';return;}
     const t=card.textContent.toLowerCase();
     card.classList.toggle('highlight',t.includes(q));
     card.style.display=t.includes(q)?'':'none';
