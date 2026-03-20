@@ -17,7 +17,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 nav{position:sticky;top:0;z-index:100;background:rgba(13,7,0,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
 .nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
 .nav-controls{display:flex;gap:6px;align-items:center;}
-.nav-btn{background:rgba(240,160,48,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;touch-action:manipulation;}
+.nav-btn{background:rgba(240,160,48,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
 .nav-btn:hover,.nav-btn.active{background:rgba(240,160,48,0.28);border-color:var(--gold);}
 .nav-home{background:rgba(240,160,48,0.1);border:1px solid rgba(240,160,48,0.3);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;text-decoration:none;transition:all .2s;font-family:'Cinzel',serif;}
 .nav-home:hover{background:rgba(240,160,48,0.25);}
@@ -31,7 +31,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(13,7,0,0.94);backdrop-filt
 .divider{display:flex;align-items:center;gap:10px;max-width:360px;margin:14px auto 0;color:var(--gold);font-size:16px;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 .view-toggle{position:relative;z-index:1;display:flex;justify-content:center;padding:16px 14px 8px;}
-.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;touch-action:manipulation;}
+.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
 .vt-btn:first-child{border-radius:6px 0 0 6px;}
 .vt-btn:last-child{border-radius:0 6px 6px 0;border-left:none;}
 .vt-btn.active{background:rgba(240,160,48,0.18);border-color:var(--gold);color:var(--gold);}
@@ -95,7 +95,7 @@ body.light-mode .scroll-speed-val:hover{border-bottom-color:rgba(0,0,0,0.5);}
 .scroll-toggle-btn{background:none;border:none;color:rgba(255,255,255,0.4);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;transition:color .15s;flex-shrink:0;}
 .scroll-toggle-btn:hover{color:rgba(255,255,255,0.9);}
 @media(max-width:400px){.scroll-speed-val{min-width:28px;font-size:11px;}}
-.scroll-bar-open-btn{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:6px;padding:10px 18px 10px 14px;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(240,160,48,0.35);color:#e0d8f0;font-size:14px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:opacity .2s;touch-action:manipulation;}
+.scroll-bar-open-btn{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:6px;padding:10px 18px 10px 14px;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(240,160,48,0.35);color:#e0d8f0;font-size:14px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:opacity .2s;}
 .scroll-bar-open-btn:hover{opacity:.8;}
 .scroll-bar-open-btn.hidden{display:none;}
 .ob-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--gold),#ff6a00);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--deep);flex-shrink:0;}
@@ -109,7 +109,7 @@ body.light-mode .scroll-bar-open-btn{color:#3a2000;}
 body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 
 /* ── Two floating pills: Audio (bottom-left) + Scroll (bottom-right) ─────── */
-.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(240,160,48,0.35);transition:opacity .2s;white-space:nowrap;touch-action:manipulation;}
+.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(240,160,48,0.35);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
 /* Audio pill — bottom-left */
 #audioPill{top:auto;bottom:20px;left:14px;right:auto;width:min(200px,calc(50vw - 18px));border-radius:12px;border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:1px solid rgba(255,255,255,0.10);flex-direction:column;align-items:stretch;padding:0;gap:0;box-sizing:border-box;}
@@ -122,7 +122,7 @@ body.light-mode .sb-divider{background:rgba(0,0,0,0.12);}
 .pill-close:hover{color:rgba(255,255,255,0.8);}
 /* Controls row */
 
-.pill-audio-top{display:flex;align-items:center;gap:8px;padding:6px 10px 4px;touch-action:manipulation;}
+.pill-audio-top{display:flex;align-items:center;gap:8px;padding:6px 10px 4px;}
 .pill-audio-seek-row{padding:2px 10px 4px;display:flex;align-items:center;}
 .pill-audio-time{display:flex;justify-content:space-between;padding:1px 10px 8px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px;}
 .audio-play-btn{background:linear-gradient(135deg,var(--gold),#ff6a00);border:none;color:var(--deep);width:38px;height:38px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
@@ -142,9 +142,9 @@ body.light-mode .audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(0,
 
 body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 @media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
-.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:6px 12px 9px;touch-action:manipulation;}
+.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:6px 12px 9px;}
 /* Re-open tabs */
-.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.25);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(240,160,48,0.35);color:rgba(255,255,255,0.92);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;touch-action:manipulation;}
+.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.25);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(240,160,48,0.35);color:rgba(255,255,255,0.92);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
 .pill-tab:hover{opacity:1;background:rgba(15,10,25,0.90);}
 .pill-tab.hidden{display:none;}
 #audioTab{top:auto;bottom:20px;left:14px;}
@@ -155,7 +155,7 @@ body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 .audio-play-btn:hover{opacity:.8;}
 .scroll-play-btn{background:linear-gradient(135deg,var(--gold),#ff6a00);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
 .scroll-play-btn:hover{opacity:.8;}
-.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;touch-action:manipulation;}
+.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
 .scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
 .scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
 .scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
@@ -171,7 +171,6 @@ body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
 .audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
 .audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
 /* Light mode */
-tr.hl td,.hl{outline:2px solid var(--gold);background:rgba(240,160,48,0.07);}
 body.light-mode .pill-base{background:rgba(255,248,230,0.20);border:1px solid rgba(0,0,0,0.10);border-top:2px solid var(--gold);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
 body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
 body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
@@ -193,10 +192,10 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-title">🌞 Sri Hanuman Chalisa</div>
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
-    <button class="nav-btn" id="searchBtn">🔍</button>
-    <button class="nav-btn" id="fontDown">A−</button>
-    <button class="nav-btn" id="fontUp">A+</button>
-    <button class="nav-btn" id="modeBtn">☀️</button>
+    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
+    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
   </div>
 </nav>
 <div class="search-bar" id="searchBar">
@@ -520,16 +519,10 @@ function toggleSearch(){
   if(b.classList.contains('active'))document.getElementById('searchInput').focus();
   else doSearch('');
 }
-function _norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function doSearch(q){
-  q=_norm(q.trim());
-  document.querySelectorAll('tbody tr').forEach(function(el){
-    if(!q){el.classList.remove('hl');el.style.display='';return;}
-    var t=_norm(el.textContent);
-    el.classList.toggle('hl',t.includes(q));
-    el.style.display=t.includes(q)?'':'none';
-  });
-}
+  q=q.trim().toLowerCase();
+  document.querySelectorAll('tbody tr').forEach(tr=>{
+    if(!q){tr.classList.remove('hl');tr.style.display='';return;}
     const t=tr.textContent.toLowerCase();
     tr.classList.toggle('hl',t.includes(q));
     tr.style.display=t.includes(q)?'':'none';
