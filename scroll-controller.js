@@ -333,64 +333,49 @@ function editSpeed(el) {
 window.addEventListener('DOMContentLoaded', () => {
   syncSpeedUI();
 
-  // ── Scroll play button ────────────────────────────────────────────────────
-  // touchend fires toggleScroll; a flag blocks the ghost click that follows on mobile
-  const scrollBtn = document.getElementById('scrollPlayBtn');
-  if (scrollBtn) {
-    let scrollBtnTouched = false;
-    scrollBtn.addEventListener('touchend', e => {
+  // ── Generic pill button wirer ─────────────────────────────────────────────
+  // Uses timestamp debounce instead of a flag so pointerup + touchend + click
+  // never double-fire, and pointerup works reliably after pinch-zoom on mobile.
+  function wirePillBtn(id, fn) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    btn.style.touchAction = 'manipulation'; // stops browser treating btn as zoom target
+    var _last = 0;
+    function fire(e) {
       e.preventDefault(); e.stopPropagation();
-      scrollBtnTouched = true;
-      toggleScroll();
-      setTimeout(() => { scrollBtnTouched = false; }, 400);
-    }, { passive: false });
-    scrollBtn.addEventListener('click', e => {
-      if (scrollBtnTouched) { e.preventDefault(); e.stopPropagation(); return; }
-      toggleScroll();
+      var now = Date.now();
+      if (now - _last < 350) return;
+      _last = now;
+      fn();
+    }
+    btn.addEventListener('touchend', fire, { passive: false });
+    btn.addEventListener('pointerup', function(e) {
+      // skip if touchend already handled it
+      if (e.pointerType === 'touch' && Date.now() - _last < 350) return;
+      fire(e);
+    });
+    btn.addEventListener('click', function(e) {
+      if (Date.now() - _last < 350) { e.preventDefault(); return; }
+      fire(e);
     });
   }
 
+  // ── Scroll play button ────────────────────────────────────────────────────
+  wirePillBtn('scrollPlayBtn', toggleScroll);
+
   // ── Speed buttons ─────────────────────────────────────────────────────────
-  // Same touch-flag pattern prevents double-fire on mobile
-  function wireSpeedBtn(id, dir) {
-    var btn = document.getElementById(id);
-    if (!btn) return;
-    let touched = false;
-    btn.addEventListener('touchend', function(e) {
-      e.preventDefault(); e.stopPropagation();
-      touched = true;
-      adjustSpeed(dir);
-      setTimeout(() => { touched = false; }, 400);
-    }, { passive: false });
-    btn.addEventListener('click', function(e) {
-      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
-      adjustSpeed(dir);
-    });
-  }
-  wireSpeedBtn('speedDown', -1);
-  wireSpeedBtn('speedUp',    1);
+  wirePillBtn('speedDown', function() { adjustSpeed(-1); });
+  wirePillBtn('speedUp',   function() { adjustSpeed(1); });
 
   // ── Audio play button ─────────────────────────────────────────────────────
   // Wire all audio control buttons with touchend + click pattern
   function wireAudioBtn(id, fn) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    let touched = false;
-    btn.addEventListener('touchend', e => {
-      e.preventDefault(); e.stopPropagation();
-      touched = true;
-      fn();
-      setTimeout(() => { touched = false; }, 400);
-    }, { passive: false });
-    btn.addEventListener('click', e => {
-      if (touched) { e.preventDefault(); e.stopPropagation(); return; }
-      fn();
-    });
+    wirePillBtn(id, fn);
   }
-  wireAudioBtn('audioPlayBtn',  toggleAudio);
-  wireAudioBtn('audioRewBtn',   () => audioSkip(-30));
-  wireAudioBtn('audioFwdBtn',   () => audioSkip(30));
-  wireAudioBtn('audioStopBtn',  audioStop);
-  wireAudioBtn('audioSpeedDown', () => adjustAudioSpeed(-1));
-  wireAudioBtn('audioSpeedUp',   () => adjustAudioSpeed(1));
+  wireAudioBtn('audioPlayBtn',   toggleAudio);
+  wireAudioBtn('audioRewBtn',    function() { audioSkip(-30); });
+  wireAudioBtn('audioFwdBtn',    function() { audioSkip(30); });
+  wireAudioBtn('audioStopBtn',   audioStop);
+  wireAudioBtn('audioSpeedDown', function() { adjustAudioSpeed(-1); });
+  wireAudioBtn('audioSpeedUp',   function() { adjustAudioSpeed(1); });
 });
