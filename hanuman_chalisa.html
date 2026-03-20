@@ -17,7 +17,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 nav{position:sticky;top:0;z-index:100;background:rgba(13,7,0,0.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
 .nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
 .nav-controls{display:flex;gap:6px;align-items:center;}
-.nav-btn{background:rgba(240,160,48,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn{background:rgba(240,160,48,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;touch-action:manipulation;}
 .nav-btn:hover,.nav-btn.active{background:rgba(240,160,48,0.28);border-color:var(--gold);}
 .nav-home{background:rgba(240,160,48,0.1);border:1px solid rgba(240,160,48,0.3);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;text-decoration:none;transition:all .2s;font-family:'Cinzel',serif;}
 .nav-home:hover{background:rgba(240,160,48,0.25);}
@@ -31,7 +31,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(13,7,0,0.94);backdrop-filt
 .divider{display:flex;align-items:center;gap:10px;max-width:360px;margin:14px auto 0;color:var(--gold);font-size:16px;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 .view-toggle{position:relative;z-index:1;display:flex;justify-content:center;padding:16px 14px 8px;}
-.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
+.vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;touch-action:manipulation;}
 .vt-btn:first-child{border-radius:6px 0 0 6px;}
 .vt-btn:last-child{border-radius:0 6px 6px 0;border-left:none;}
 .vt-btn.active{background:rgba(240,160,48,0.18);border-color:var(--gold);color:var(--gold);}
@@ -193,10 +193,10 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-title">🌞 Sri Hanuman Chalisa</div>
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
-    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
-    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
-    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
+    <button class="nav-btn" id="searchBtn">🔍</button>
+    <button class="nav-btn" id="fontDown">A−</button>
+    <button class="nav-btn" id="fontUp">A+</button>
+    <button class="nav-btn" id="modeBtn">☀️</button>
   </div>
 </nav>
 <div class="search-bar" id="searchBar">

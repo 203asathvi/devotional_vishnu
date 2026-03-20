@@ -378,4 +378,10 @@ window.addEventListener('DOMContentLoaded', () => {
   wireAudioBtn('audioStopBtn',   audioStop);
   wireAudioBtn('audioSpeedDown', function() { adjustAudioSpeed(-1); });
   wireAudioBtn('audioSpeedUp',   function() { adjustAudioSpeed(1); });
+
+  // ── Nav buttons — wired here so they work after pinch-zoom ───────────────
+  wirePillBtn('fontDown',  function() { if (typeof changeFontSize === 'function') changeFontSize(-1); });
+  wirePillBtn('fontUp',    function() { if (typeof changeFontSize === 'function') changeFontSize(1); });
+  wirePillBtn('searchBtn', function() { if (typeof toggleSearch  === 'function') toggleSearch(); });
+  wirePillBtn('modeBtn',   function() { if (typeof toggleMode    === 'function') toggleMode(); });
 });

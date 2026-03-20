@@ -13,7 +13,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 nav{position:sticky;top:0;z-index:100;background:rgba(13,0,5,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;}
 .nav-title{font-family:'Cinzel',serif;font-size:13px;color:var(--gold);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%;}
 .nav-controls{display:flex;gap:6px;align-items:center;}
-.nav-btn{background:rgba(201,100,140,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;}
+.nav-btn{background:rgba(201,100,140,0.1);border:1px solid var(--border);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;transition:all .2s;touch-action:manipulation;}
 .nav-btn:hover,.nav-btn.active{background:rgba(201,100,140,0.25);border-color:var(--gold);}
 .nav-home{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:5px 11px;border-radius:4px;font-size:13px;cursor:pointer;text-decoration:none;display:flex;align-items:center;transition:all .2s;}
 .nav-home:hover{background:rgba(201,168,76,0.25);}
@@ -134,10 +134,10 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-title">ॐ Sri Lalitha Sahasranamam</div>
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
-    <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
-    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
-    <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
+    <button class="nav-btn" id="searchBtn">🔍</button>
+    <button class="nav-btn" id="fontDown">A−</button>
+    <button class="nav-btn" id="fontUp">A+</button>
+    <button class="nav-btn" id="modeBtn">☀️</button>
   </div>
 </nav>
 <div class="search-bar" id="searchBar">
