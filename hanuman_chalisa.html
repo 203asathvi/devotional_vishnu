@@ -185,6 +185,7 @@ body.light-mode
 
 
 
+
 /* ═══════════════════════════════════════════════════
    BOTTOM DOCK  (replaces floating pills + back-top)
    ═══════════════════════════════════════════════════ */
@@ -380,14 +381,7 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 </div>
 
 </main>
-</div>
-  <div class="pill-scroll-row">
-    <button class="scroll-play-btn" id="scrollPlayBtn" title="Play / Pause auto-scroll">⇓</button>
-    <button class="scroll-speed-btn" id="speedDown" title="Slower">−</button>
-    <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
-    <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
-  </div>
-</div>
+</div></div>
 <audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/hanuman_chalisa.mp3"></audio>
 
 <script src="audio-controller.js"></script>
@@ -485,11 +479,39 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest(');
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#sacDock')) stopScroll(); }, { passive: true });
 </script>
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
 
+<script>
+(function(){
+  var audioOpen=false,scrollOpen=false;
+  function openAudio(){audioOpen=true;scrollOpen=false;document.getElementById('dockAudioTray').classList.add('open');document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.add('active');document.getElementById('dockScrollBtn').classList.remove('active');}
+  function closeAudio(){audioOpen=false;document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.remove('active');}
+  function openScroll(){scrollOpen=true;audioOpen=false;document.getElementById('dockScrollTray').classList.add('open');document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.add('active');document.getElementById('dockAudioBtn').classList.remove('active');}
+  function closeScroll(){scrollOpen=false;document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.remove('active');}
+  window.showAudioPill=openAudio;window.hideAudioPill=closeAudio;
+  window.showScrollPill=openScroll;window.hideScrollPill=closeScroll;
+  window.showScrollBar=openScroll;window.hideScrollBar=closeScroll;
+  function wireToggle(id,openFn,closeFn,getOpen){
+    var btn=document.getElementById(id);if(!btn)return;
+    var touched=false;
+    btn.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();touched=true;getOpen()?closeFn():openFn();setTimeout(function(){touched=false;},400);},{passive:false});
+    btn.addEventListener('click',function(e){if(touched){e.preventDefault();return;}getOpen()?closeFn():openFn();});
+  }
+  wireToggle('dockAudioBtn',openAudio,closeAudio,function(){return audioOpen;});
+  wireToggle('dockScrollBtn',openScroll,closeScroll,function(){return scrollOpen;});
+  document.getElementById('dockAudioClose').addEventListener('click',closeAudio);
+  document.getElementById('dockScrollClose').addEventListener('click',closeScroll);
+  document.addEventListener('click',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
+  document.addEventListener('touchend',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
+  var autoTimer=null;
+  function resetAC(){clearTimeout(autoTimer);autoTimer=setTimeout(function(){closeAudio();closeScroll();},10000);}
+  document.getElementById('sacDock').addEventListener('touchend',resetAC,{passive:true});
+  document.getElementById('sacDock').addEventListener('click',resetAC);
+})();
+</script>
 
 <!-- ════════════════ BOTTOM DOCK ════════════════ -->
 <div id="sacDock">
