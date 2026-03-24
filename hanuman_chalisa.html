@@ -195,8 +195,6 @@ main{padding-bottom:130px!important}
 
 #sacDock{position:fixed;bottom:0;left:0;right:0;z-index:700;display:flex;flex-direction:column}
 
-.dock-tray{background:rgba(12,9,20,0.97);border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.08);border-right:1px solid rgba(255,255,255,0.08);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
-.dock-tray.open{max-height:200px}
 
 .dt-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px}
 .dt-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase}
@@ -222,24 +220,29 @@ main{padding-bottom:130px!important}
 .dt-scroll-play:hover{opacity:.85}
 .dt-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none}
 
-#sacDockBar{display:flex;align-items:stretch;background:rgba(9,7,15,0.97);border-top:2px solid var(--gold)}
+#sacDockBar{display:flex;align-items:stretch;background:rgba(0,0,0,0.25);-webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.3);backdrop-filter:blur(24px) saturate(1.8) brightness(1.3);border-top:1px solid rgba(255,255,255,0.15)}
 .dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px 10px;background:transparent;border:none;cursor:pointer;transition:background .18s;-webkit-tap-highlight-color:transparent}
-.dock-btn:hover,.dock-btn.active{background:rgba(201,168,76,0.10)}
-.dock-btn .dico{font-size:20px;line-height:1}
-.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:rgba(255,255,255,0.45);text-transform:uppercase;transition:color .18s}
-.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold)}
-.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.06)}
+.dock-btn:hover,.dock-btn.active{background:rgba(255,255,255,0.12)}
+.dock-btn .dico{font-size:20px;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.9))}
+.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:#fff;text-transform:uppercase;transition:color .18s;text-shadow:0 1px 5px rgba(0,0,0,1),0 0 8px rgba(0,0,0,0.9)}
+.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold);text-shadow:0 1px 5px rgba(0,0,0,0.9)}
+.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.10)}
 
-body.light-mode #sacDockBar{background:rgba(253,246,236,0.97);border-top:2px solid var(--gold)}
-body.light-mode .dock-tray{background:rgba(255,248,230,0.98);border-top:2px solid var(--gold)}
-body.light-mode .dock-btn .dlbl{color:rgba(0,0,0,0.35)}
-body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold)}
-body.light-mode .dt-label{color:rgba(0,0,0,0.3)}
-body.light-mode .dt-close{color:rgba(0,0,0,0.25)}
+.dock-tray{background:rgba(0,0,0,0.35);-webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.2);backdrop-filter:blur(24px) saturate(1.8) brightness(1.2);border-top:1px solid rgba(255,255,255,0.15);border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
+.dock-tray.open{max-height:200px}
+
+body.light-mode #sacDockBar{background:rgba(255,255,255,0.25);-webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.1);backdrop-filter:blur(24px) saturate(1.8) brightness(1.1);border-top:1px solid rgba(0,0,0,0.12)}
+body.light-mode .dock-tray{background:rgba(255,255,255,0.35);-webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);border-top:1px solid rgba(0,0,0,0.12)}
+body.light-mode .dock-btn .dlbl{color:rgba(30,15,0,0.9);text-shadow:0 1px 3px rgba(255,255,255,0.8)}
+body.light-mode .dock-btn .dico{filter:drop-shadow(0 1px 2px rgba(255,255,255,0.8))}
+body.light-mode .dock-btn:hover,.body.light-mode .dock-btn.active{background:rgba(0,0,0,0.08)}
+body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold);text-shadow:none}
+body.light-mode .dt-label{color:rgba(0,0,0,0.45)}
+body.light-mode .dt-close{color:rgba(0,0,0,0.3)}
 body.light-mode .dt-close:hover{color:rgba(0,0,0,0.7)}
-body.light-mode .dt-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000}
+body.light-mode .dt-speed-btn{background:rgba(0,0,0,0.07);border-color:rgba(0,0,0,0.15);color:#3a2000}
 body.light-mode .dt-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2)}
-body.light-mode .dt-time{color:rgba(0,0,0,0.4)}
+body.light-mode .dt-time{color:rgba(0,0,0,0.45)}
 body.light-mode .dt-seek{background:rgba(0,0,0,0.12)}
 body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000}
 
