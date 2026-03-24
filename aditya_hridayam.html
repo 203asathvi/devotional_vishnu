@@ -77,80 +77,80 @@ body.light-mode .shloka-line.indent{color:#7a3a00;}
 body.light-mode 
 /* View switching via CSS */
 
-.back-top{position:fixed;bottom:80px;right:70px;z-index:200;background:linear-gradient(135deg,var(--sun),var(--sun2));color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,140,0,0.45);}
-.back-top.visible{display:flex;}
+
+
 body.light-mode{--bg:#fffaf0;--card:#fff6e0;--text:#2a1a00;--muted:#80601a;--border:rgba(180,120,20,0.25);}
 mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
 @media(max-width:640px){body{font-size:16px;}}
 
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
-.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(232,160,32,0.35);transition:opacity .2s;white-space:nowrap;}
-.pill-base.hidden{display:none;}
-#audioPill{top:auto;bottom:20px;left:14px;right:auto;width:min(200px,calc(50vw - 18px));border-radius:12px;border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:1px solid rgba(255,255,255,0.10);flex-direction:column;align-items:stretch;padding:0;gap:0;box-sizing:border-box;}
-#scrollPill{top:auto;bottom:20px;right:14px;left:auto;border-radius:12px;border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:1px solid rgba(255,255,255,0.10);flex-direction:column;align-items:stretch;padding:0;gap:0;box-sizing:border-box;}
-.pill-header{display:flex;align-items:center;justify-content:space-between;padding:5px 10px 3px;gap:6px;}
-.pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
-.pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
-.pill-close:hover{color:rgba(255,255,255,0.8);}
 
-.pill-audio-top{display:flex;align-items:center;gap:8px;padding:6px 10px 4px;}
-.pill-audio-seek-row{padding:2px 10px 4px;display:flex;align-items:center;}
-.pill-audio-time{display:flex;justify-content:space-between;padding:1px 10px 8px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px;}
-.audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
-.audio-play-btn:hover{opacity:.85;}
-.audio-val-wrap{display:inline-flex;align-items:center;cursor:pointer;}
-.audio-val-num{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:32px;text-align:center;letter-spacing:.3px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
-.audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(255,255,255,0.6);}
-.audio-val-label{display:none;}
-.audio-seek{-webkit-appearance:none;appearance:none;width:100%;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
-.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.4);}
-.audio-seek::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .audio-skip-val{display:none;}
-.audio-speed-val{display:none;}
-body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
-body.light-mode .audio-val-num{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);background:none;border:none;border-bottom:1px dashed rgba(0,0,0,0.2);}
-body.light-mode .audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(0,0,0,0.5);}
 
-body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
-@media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
-.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:6px 12px 9px;}
-.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.25);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(232,160,32,0.35);color:rgba(255,255,255,0.92);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
-.pill-tab:hover{opacity:1;background:rgba(15,10,25,0.90);}
-.pill-tab.hidden{display:none;}
-#audioTab{top:auto;bottom:20px;left:14px;}
-#scrollTab{top:auto;bottom:20px;right:14px;}
-.tab-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));flex-shrink:0;}
-.audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
-.audio-play-btn:hover{opacity:.8;}
-.scroll-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
-.scroll-play-btn:hover{opacity:.8;}
-.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
-.scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
-.scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
-.scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
-.scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
+body.light-mode 
+body.light-mode 
+body.light-mode 
 
-.scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
-.scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
+body.light-mode 
 
-.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;}
-.audio-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
-.audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
-.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
-.audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
-body.light-mode .pill-base{background:rgba(255,248,230,0.20);border:1px solid rgba(0,0,0,0.10);border-top:2px solid var(--gold);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
-body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
-body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
-body.light-mode .pill-close:hover{color:rgba(0,0,0,0.65);}
-body.light-mode .pill-tab{background:rgba(255,248,230,0.90);border:1px solid rgba(0,0,0,0.18);border-top:2px solid var(--gold);color:rgba(0,0,0,0.80);}
-body.light-mode .scroll-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
-body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
-body.light-mode .scroll-speed-val,body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
-body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
-body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
-@media(max-width:480px){.audio-time{display:none;}}
-@media(max-width:400px){.audio-time{display:none;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+body.light-mode 
+
+
 .view-toggle{position:relative;z-index:1;display:flex;justify-content:center;padding:16px 14px 8px;}
 .vt-btn{font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;padding:8px 24px;border:1px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;}
 .vt-btn:first-child{border-radius:6px 0 0 6px;}
@@ -160,6 +160,64 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 .view-meaning .only-shloka{display:none;}
 
 @media(max-width:400px){.section-header h2{white-space:normal;font-size:11px;letter-spacing:1px;}.section-line{display:none;}}
+
+/* ═══════════════════════════════════════════════════
+   BOTTOM DOCK  (replaces floating pills + back-top)
+   ═══════════════════════════════════════════════════ */
+.pill-base,.pill-tab,.back-top,.scroll-bar,.scroll-bar-open-btn{display:none!important}
+main{padding-bottom:130px!important}
+#spFab{bottom:72px!important}
+
+#sacDock{position:fixed;bottom:0;left:0;right:0;z-index:700;display:flex;flex-direction:column}
+
+.dock-tray{background:rgba(12,9,20,0.97);border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.08);border-right:1px solid rgba(255,255,255,0.08);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
+.dock-tray.open{max-height:200px}
+
+.dt-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px}
+.dt-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase}
+.dt-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer;line-height:1;padding:2px 4px;transition:color .15s}
+.dt-close:hover{color:rgba(255,255,255,0.8)}
+
+.dt-audio-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 14px 4px}
+.dt-play-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+.dt-play-btn:hover{opacity:.85}
+.dt-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s}
+.dt-speed-btn:hover{background:rgba(255,255,255,0.18)}
+.dt-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:36px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s}
+.dt-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6)}
+
+.dt-seek-row{padding:2px 14px 2px;display:flex;align-items:center}
+.dt-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer}
+.dt-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
+.dt-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
+.dt-time{display:flex;justify-content:space-between;padding:1px 14px 6px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px}
+
+.dt-scroll-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px 12px}
+.dt-scroll-play{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+.dt-scroll-play:hover{opacity:.85}
+.dt-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none}
+
+#sacDockBar{display:flex;align-items:stretch;background:rgba(9,7,15,0.97);border-top:2px solid var(--gold)}
+.dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px 10px;background:transparent;border:none;cursor:pointer;transition:background .18s;-webkit-tap-highlight-color:transparent}
+.dock-btn:hover,.dock-btn.active{background:rgba(201,168,76,0.10)}
+.dock-btn .dico{font-size:20px;line-height:1}
+.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:rgba(255,255,255,0.45);text-transform:uppercase;transition:color .18s}
+.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold)}
+.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.06)}
+
+body.light-mode #sacDockBar{background:rgba(253,246,236,0.97);border-top:2px solid var(--gold)}
+body.light-mode .dock-tray{background:rgba(255,248,230,0.98);border-top:2px solid var(--gold)}
+body.light-mode .dock-btn .dlbl{color:rgba(0,0,0,0.35)}
+body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold)}
+body.light-mode .dt-label{color:rgba(0,0,0,0.3)}
+body.light-mode .dt-close{color:rgba(0,0,0,0.25)}
+body.light-mode .dt-close:hover{color:rgba(0,0,0,0.7)}
+body.light-mode .dt-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000}
+body.light-mode .dt-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2)}
+body.light-mode .dt-time{color:rgba(0,0,0,0.4)}
+body.light-mode .dt-seek{background:rgba(0,0,0,0.12)}
+body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000}
+
 </style>
 </head>
 <body>
@@ -275,41 +333,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
 </div>
 
 </main>
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-
-<!-- ♪ AUDIO PILL (bottom-left) -->
-<div class="pill-base hidden" id="audioPill">
-  <div class="pill-header">
-    <span class="pill-label">♪ Audio</span>
-    <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
-  </div>
-  <div class="pill-audio-top">
-    <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
-    <button class="scroll-speed-btn" id="audioSpeedDown" title="Slower">−</button>
-    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
-      <span class="audio-val-num" id="audioSpeedVal">1×</span>
-      <span class="audio-val-label">speed</span>
-    </div>
-    <button class="scroll-speed-btn" id="audioSpeedUp" title="Faster">+</button>
-  </div>
-  <div class="pill-audio-seek-row">
-    <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
-  </div>
-  <div class="pill-audio-time">
-    <span id="audioTimeCur">0:00</span>
-    <span id="audioTimeDur">0:00</span>
-  </div>
 </div>
-<button class="pill-tab" id="audioTab">
-  <span class="tab-dot"></span>Audio
-</button>
-
-<!-- ↕ SCROLL PILL (bottom-right) -->
-<div class="pill-base hidden" id="scrollPill">
-  <div class="pill-header">
-    <span class="pill-label">↕ Scroll</span>
-    <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
-  </div>
   <div class="pill-scroll-row">
     <button class="scroll-play-btn" id="scrollPlayBtn" title="Play / Pause auto-scroll">⇓</button>
     <button class="scroll-speed-btn" onclick="adjustSpeed(-1)" title="Slower">−</button>
@@ -317,84 +341,9 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
     <button class="scroll-speed-btn" onclick="adjustSpeed(1)" title="Faster">+</button>
   </div>
 </div>
-<button class="pill-tab" id="scrollTab">
-  <span class="tab-dot"></span>Scroll
-</button>
 <audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/aditya_hridayam.mp3"></audio>
 <script src="audio-controller.js"></script>
 <script src="scroll-controller.js"></script>
-<script>
-// ╔══════════════════════════════════════════════════════════════════╗
-// ║  AUTO-HIDE CONFIGURATION — edit the value below                 ║
-// ║  Time in milliseconds before pills hide when idle               ║
-// ║  Examples: 5000 = 5s,  10000 = 10s,  0 = disable auto-hide     ║
-// ╚══════════════════════════════════════════════════════════════════╝
-var PILL_AUTO_HIDE_MS = 10000;
-
-(function() {
-  if (!PILL_AUTO_HIDE_MS) return;
-  var _timer        = null;
-  var _hiddenAudio  = false;
-  var _hiddenScroll = false;
-
-  function maybeHide() {
-    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
-    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
-  }
-
-  function resetTimer() {
-    clearTimeout(_timer);
-    _timer = setTimeout(maybeHide, PILL_AUTO_HIDE_MS);
-  }
-
-  // Pills start hidden — reflect that in state flags
-  _hiddenAudio  = true;
-  _hiddenScroll = true;
-  // No auto-hide timer needed at start since already hidden
-
-  // ── Tab buttons: each opens only its own pill, independently ──────────────
-  function wireTab(tabId, showFn, setHidden) {
-    var tab = document.getElementById(tabId);
-    if (!tab) return;
-    var touched = false;
-    tab.addEventListener('touchend', function(e) {
-      e.stopPropagation();
-      touched = true;
-      setHidden(false); showFn(); resetTimer();
-      setTimeout(function() { touched = false; }, 400);
-    }, { passive: true });
-    tab.addEventListener('click', function(e) {
-      if (touched) return;
-      setHidden(false); showFn(); resetTimer();
-    });
-  }
-  wireTab('audioTab',
-    function() { showAudioPill(); },
-    function(v) { _hiddenAudio = v; }
-  );
-  wireTab('scrollTab',
-    function() { showScrollPill(); },
-    function(v) { _hiddenScroll = v; }
-  );
-
-  // ── Click / tap anywhere on page hides both pills ─────────────────────────
-  // Exceptions: taps on the pills themselves or their tabs don't hide
-  function onPageTap(e) {
-    var t = e.target;
-    if (!t) return;
-    // Don't hide if tap is inside a pill or a tab
-    if (t.closest('#audioPill') || t.closest('#scrollPill') ||
-        t.closest('#audioTab')  || t.closest('#scrollTab'))  return;
-    // Hide whichever pills are currently visible
-    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
-    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
-    clearTimeout(_timer);
-  }
-  document.addEventListener('click',    onPageTap, { passive: true });
-  document.addEventListener('touchend', onPageTap, { passive: true });
-})();
-</script>
-
 <script>
 const VERSES = [
   [4,"adityam hridayam punyam sarva shatru vina-shanam |","jayavaham japen nityam akshayyam paramam shivam || 4 ||","This Aditya Hridayam is holy, a destroyer of all enemies, ever victorious, imperishable, and supremely auspicious. One who chants this daily will attain these blessings."],
@@ -475,7 +424,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill') && !e.target.closest('#scrollTab') && !e.target.closest('#audioTab')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest(');
 
 // ── Audio error feedback ──────────────────────────────────────────────────────
 (function(){
@@ -511,5 +460,84 @@ function toggleAudio() {
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
 
+
+<!-- ════════════════ BOTTOM DOCK ════════════════ -->
+<div id="sacDock">
+  <div class="dock-tray" id="dockAudioTray">
+    <div class="dt-header">
+      <span class="dt-label">♪ Audio</span>
+      <button class="dt-close" id="dockAudioClose">✕</button>
+    </div>
+    <div class="dt-audio-controls">
+      <button class="dt-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
+      <button class="dt-speed-btn" id="audioSpeedDown">−</button>
+      <span class="dt-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)">1×</span>
+      <button class="dt-speed-btn" id="audioSpeedUp">+</button>
+    </div>
+    <div class="dt-seek-row">
+      <input type="range" class="dt-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
+    </div>
+    <div class="dt-time">
+      <span id="audioTimeCur">0:00</span>
+      <span id="audioTimeDur">0:00</span>
+    </div>
+  </div>
+  <div class="dock-tray" id="dockScrollTray">
+    <div class="dt-header">
+      <span class="dt-label">↕ Auto-Scroll</span>
+      <button class="dt-close" id="dockScrollClose">✕</button>
+    </div>
+    <div class="dt-scroll-controls">
+      <button class="dt-scroll-play" id="scrollPlayBtn" title="Start / Stop">⇓</button>
+      <button class="dt-speed-btn" id="speedDown">−</button>
+      <span class="dt-speed-val" id="speedVal" onclick="editSpeed(this)">1.6×</span>
+      <button class="dt-speed-btn" id="speedUp">+</button>
+    </div>
+  </div>
+  <div id="sacDockBar">
+    <button class="dock-btn" id="dockHomeBtn" onclick="window.location.href='index.html'">
+      <span class="dico">🏠</span><span class="dlbl">Home</span>
+    </button>
+    <button class="dock-btn" id="dockAudioBtn">
+      <span class="dico">🎵</span><span class="dlbl">Audio</span>
+    </button>
+    <button class="dock-btn" id="dockScrollBtn">
+      <span class="dico">↕</span><span class="dlbl">Scroll</span>
+    </button>
+    <button class="dock-btn" id="dockTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <span class="dico">↑</span><span class="dlbl">Top</span>
+    </button>
+  </div>
+</div>
+<!-- END DOCK -->
+
+<script>
+(function(){
+  var audioOpen=false,scrollOpen=false;
+  function openAudio(){audioOpen=true;scrollOpen=false;document.getElementById('dockAudioTray').classList.add('open');document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.add('active');document.getElementById('dockScrollBtn').classList.remove('active');}
+  function closeAudio(){audioOpen=false;document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.remove('active');}
+  function openScroll(){scrollOpen=true;audioOpen=false;document.getElementById('dockScrollTray').classList.add('open');document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.add('active');document.getElementById('dockAudioBtn').classList.remove('active');}
+  function closeScroll(){scrollOpen=false;document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.remove('active');}
+  window.showAudioPill=openAudio;window.hideAudioPill=closeAudio;
+  window.showScrollPill=openScroll;window.hideScrollPill=closeScroll;
+  window.showScrollBar=openScroll;window.hideScrollBar=closeScroll;
+  function wireToggle(id,openFn,closeFn,getOpen){
+    var btn=document.getElementById(id);if(!btn)return;
+    var touched=false;
+    btn.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();touched=true;getOpen()?closeFn():openFn();setTimeout(function(){touched=false;},400);},{passive:false});
+    btn.addEventListener('click',function(e){if(touched){e.preventDefault();return;}getOpen()?closeFn():openFn();});
+  }
+  wireToggle('dockAudioBtn',openAudio,closeAudio,function(){return audioOpen;});
+  wireToggle('dockScrollBtn',openScroll,closeScroll,function(){return scrollOpen;});
+  document.getElementById('dockAudioClose').addEventListener('click',closeAudio);
+  document.getElementById('dockScrollClose').addEventListener('click',closeScroll);
+  document.addEventListener('click',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
+  document.addEventListener('touchend',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
+  var autoTimer=null;
+  function resetAC(){clearTimeout(autoTimer);autoTimer=setTimeout(function(){closeAudio();closeScroll();},10000);}
+  document.getElementById('sacDock').addEventListener('touchend',resetAC,{passive:true});
+  document.getElementById('sacDock').addEventListener('click',resetAC);
+})();
+</script>
 </body>
 </html>
