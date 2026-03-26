@@ -730,6 +730,28 @@ function toggleAudio() {
     document.body.classList.add('ui-' + mode);
     if (btn) btn.innerHTML = mode === 'dock' ? '&#11041; Classic' : '&#11041; New UI';
     localStorage.setItem(KEY, mode);
+    if (mode === 'pill') {
+      // Reset pills to minimised (hidden panel, visible tab)
+      var ap = document.getElementById('audioPill');
+      var sp = document.getElementById('scrollPill');
+      var at = document.getElementById('audioTab');
+      var st = document.getElementById('scrollTab');
+      if (ap) ap.classList.add('hidden');
+      if (sp) sp.classList.add('hidden');
+      if (at) at.classList.remove('hidden');
+      if (st) st.classList.remove('hidden');
+    }
+    if (mode === 'dock') {
+      // Close dock trays when switching to dock
+      var dat = document.getElementById('dockAudioTray');
+      var dst = document.getElementById('dockScrollTray');
+      if (dat) dat.classList.remove('open');
+      if (dst) dst.classList.remove('open');
+      var dab = document.getElementById('dockAudioBtn');
+      var dsb = document.getElementById('dockScrollBtn');
+      if (dab) dab.classList.remove('active');
+      if (dsb) dsb.classList.remove('active');
+    }
   }
 
   var saved = localStorage.getItem(KEY) || 'pill';
