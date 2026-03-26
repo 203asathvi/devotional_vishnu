@@ -230,9 +230,11 @@ body.light-mode .pill-audio-time{color:rgba(0,0,0,0.4);}
    ═══════════════════════════════════════════════════ */
 
 /* ── PILL mode (default) ── */
-body.ui-pill .pill-base,
-body.ui-pill .pill-tab,
+body.ui-pill .pill-base:not(.hidden),
+body.ui-pill .pill-tab:not(.hidden),
 body.ui-pill .back-top { display:revert !important }
+body.ui-pill .pill-base.hidden,
+body.ui-pill .pill-tab.hidden { display:none !important }
 body.ui-pill #sacDock  { display:none !important }
 body.ui-pill main      { padding-bottom:80px !important }
 body.ui-pill #spFab    { bottom:18px !important }
