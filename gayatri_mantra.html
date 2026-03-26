@@ -442,12 +442,12 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 <div class="pill-base hidden" id="audioPill">
   <div class="pill-header">
     <span class="pill-label">&#9834; Audio</span>
-    <button class="pill-close" onclick="hideAudioPill()" title="Hide">&#10005;</button>
+    <button class="pill-close" id="audioCloseBtn" title="Hide">&#10005;</button>
   </div>
   <div class="pill-audio-top">
     <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">&#9654;</button>
     <button class="scroll-speed-btn" id="audioSpeedDown" title="Slower">&#8722;</button>
-    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))">
+    <div class="audio-val-wrap">
       <span class="audio-val-num" id="audioSpeedVal">1&times;</span>
     </div>
     <button class="scroll-speed-btn" id="audioSpeedUp" title="Faster">+</button>
@@ -468,12 +468,12 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 <div class="pill-base hidden" id="scrollPill">
   <div class="pill-header">
     <span class="pill-label">&#8597; Scroll</span>
-    <button class="pill-close" onclick="hideScrollPill()" title="Hide">&#10005;</button>
+    <button class="pill-close" id="scrollCloseBtn" title="Hide">&#10005;</button>
   </div>
   <div class="pill-scroll-row">
     <button class="scroll-play-btn" id="scrollPlayBtn" title="Start / Stop">&#8659;</button>
     <button class="scroll-speed-btn" id="speedDown" title="Slower">&#8722;</button>
-    <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)">1.6&times;</span>
+    <span class="scroll-speed-val" id="speedVal">1.6&times;</span>
     <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
   </div>
 </div>
@@ -481,7 +481,7 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
   <span class="tab-dot"></span>Scroll
 </button>
 
-<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
+<button class="back-top" id="backTop">&#8679;</button>
 <audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/gayatri_mantra.mp3"></audio>
 
 <script src="audio-controller.js"></script>
@@ -901,26 +901,59 @@ function toggleAudio() {
 })();
 </script>
 <script>
-// ── Pill auto-hide (classic mode) ─────────────────────────────────────────────
+// ── Pill UI wiring (classic mode) ─────────────────────────────────────────────
 (function(){
-  var _timer=null,_hA=true,_hS=true;
-  function maybeHide(){if(!_hA){_hA=true;hideAudioPill();}if(!_hS){_hS=true;hideScrollPill();}}
-  function reset(){clearTimeout(_timer);_timer=setTimeout(maybeHide,10000);}
-  function wireTab(id,showFn,setH){
-    var t=document.getElementById(id);if(!t)return;
-    var touched=false;
-    t.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();touched=true;setH(false);showFn();reset();setTimeout(function(){touched=false;},400);},{passive:false});
-    t.addEventListener('click',function(e){if(touched){e.preventDefault();return;}setH(false);showFn();reset();});
+  function wire(id, fn) {
+    var b = document.getElementById(id); if (!b) return;
+    var t = false;
+    b.addEventListener('touchend', function(e){
+      e.preventDefault(); e.stopPropagation(); t=true; fn();
+      setTimeout(function(){t=false;},400);
+    }, {passive:false});
+    b.addEventListener('click', function(e){ if(t){e.preventDefault();return;} fn(); });
   }
-  wireTab('audioTab',function(){showAudioPill();},function(v){_hA=v;});
-  wireTab('scrollTab',function(){showScrollPill();},function(v){_hS=v;});
-  function onTap(e){
-    var t=e.target;if(!t)return;
-    if(t.closest('#audioPill')||t.closest('#scrollPill')||t.closest('#audioTab')||t.closest('#scrollTab')||t.closest('#uiToggleBtn'))return;
-    if(!_hA){_hA=true;hideAudioPill();}if(!_hS){_hS=true;hideScrollPill();}clearTimeout(_timer);
+
+  // ── Tab buttons: open the pill panel ──
+  wire('audioTab',  function(){ showAudioPill();  resetPillTimer(); });
+  wire('scrollTab', function(){ showScrollPill(); resetPillTimer(); });
+
+  // ── Pill close buttons ──
+  wire('audioCloseBtn',  function(){ hideAudioPill(); });
+  wire('scrollCloseBtn', function(){ hideScrollPill(); });
+
+  // ── Audio controls ──
+  wire('audioPlayBtn',   function(){ if(typeof toggleAudio==='function') toggleAudio(); });
+  wire('audioSpeedDown', function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(-1); });
+  wire('audioSpeedUp',   function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(1); });
+
+  // ── Scroll controls ──
+  wire('scrollPlayBtn', function(){ if(typeof toggleScroll==='function') toggleScroll(); });
+  wire('speedDown',     function(){ if(typeof adjustSpeed==='function') adjustSpeed(-1); });
+  wire('speedUp',       function(){ if(typeof adjustSpeed==='function') adjustSpeed(1); });
+
+  // ── Speed val: tap to edit ──
+  var sv = document.getElementById('speedVal');
+  if (sv) sv.addEventListener('click', function(){ if(typeof editSpeed==='function') editSpeed(this); });
+  var av = document.getElementById('audioSpeedVal');
+  if (av) av.addEventListener('click', function(){ if(typeof editAudioSpeed==='function') editAudioSpeed(this); });
+
+  // ── Back to top ──
+  wire('backTop', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+
+  // ── Auto-hide: tap outside pills hides them ──
+  var _timer = null;
+  function resetPillTimer(){
+    clearTimeout(_timer);
+    _timer = setTimeout(function(){ hideAudioPill(); hideScrollPill(); }, 10000);
   }
-  document.addEventListener('click',onTap,{passive:true});
-  document.addEventListener('touchend',onTap,{passive:true});
+  function onOutsideTap(e){
+    var t = e.target; if (!t) return;
+    if (t.closest && (t.closest('#audioPill')||t.closest('#scrollPill')||
+        t.closest('#audioTab')||t.closest('#scrollTab')||t.closest('#uiToggleBtn'))) return;
+    hideAudioPill(); hideScrollPill(); clearTimeout(_timer);
+  }
+  document.addEventListener('click',    onOutsideTap, {passive:true});
+  document.addEventListener('touchend', onOutsideTap, {passive:true});
 })();
 </script>
 </body>
