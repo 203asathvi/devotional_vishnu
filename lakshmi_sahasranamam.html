@@ -128,16 +128,17 @@ body.light-mode
 
 
 
-
 /* ═══════════════════════════════════════════════════
    BOTTOM DOCK  (replaces floating pills + back-top)
    ═══════════════════════════════════════════════════ */
-.pill-base,.pill-tab,.back-top,.scroll-bar,.scroll-bar-open-btn{display:none!important}
+
 main{padding-bottom:130px!important}
 #spFab{bottom:72px!important}
 
 #sacDock{position:fixed;bottom:0;left:0;right:0;z-index:700;display:flex;flex-direction:column}
 
+.dock-tray{background:rgba(12,9,20,0.97);border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.08);border-right:1px solid rgba(255,255,255,0.08);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
+.dock-tray.open{max-height:200px}
 
 .dt-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px}
 .dt-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase}
@@ -163,23 +164,157 @@ main{padding-bottom:130px!important}
 .dt-scroll-play:hover{opacity:.85}
 .dt-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none}
 
-#sacDockBar{display:flex;align-items:stretch;background:rgba(0,0,0,0.25);-webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.3);backdrop-filter:blur(24px) saturate(1.8) brightness(1.3);border-top:1px solid rgba(255,255,255,0.15)}
+#sacDockBar{display:flex;align-items:stretch;background:rgba(9,7,15,0.97);border-top:2px solid var(--gold)}
 .dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px 10px;background:transparent;border:none;cursor:pointer;transition:background .18s;-webkit-tap-highlight-color:transparent}
-.dock-btn:hover,.dock-btn.active{background:rgba(255,255,255,0.12)}
-.dock-btn .dico{font-size:20px;line-height:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.9))}
-.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:#fff;text-transform:uppercase;transition:color .18s;text-shadow:0 1px 5px rgba(0,0,0,1),0 0 8px rgba(0,0,0,0.9)}
-.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold);text-shadow:0 1px 5px rgba(0,0,0,0.9)}
-.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.10)}
+.dock-btn:hover,.dock-btn.active{background:rgba(201,168,76,0.10)}
+.dock-btn .dico{font-size:20px;line-height:1}
+.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:rgba(255,255,255,0.45);text-transform:uppercase;transition:color .18s}
+.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold)}
+.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.06)}
 
-.dock-tray{background:rgba(0,0,0,0.35);-webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.2);backdrop-filter:blur(24px) saturate(1.8) brightness(1.2);border-top:1px solid rgba(255,255,255,0.15);border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
+body.light-mode #sacDockBar{background:rgba(253,246,236,0.97);border-top:2px solid var(--gold)}
+body.light-mode .dock-tray{background:rgba(255,248,230,0.98);border-top:2px solid var(--gold)}
+body.light-mode .dock-btn .dlbl{color:rgba(0,0,0,0.35)}
+body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold)}
+body.light-mode .dt-label{color:rgba(0,0,0,0.3)}
+body.light-mode .dt-close{color:rgba(0,0,0,0.25)}
+body.light-mode .dt-close:hover{color:rgba(0,0,0,0.7)}
+body.light-mode .dt-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000}
+body.light-mode .dt-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2)}
+body.light-mode .dt-time{color:rgba(0,0,0,0.4)}
+body.light-mode .dt-seek{background:rgba(0,0,0,0.12)}
+body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000}
+
+
+/* ── Pill UI (classic) ── */
+.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.4);white-space:nowrap;}
+.pill-base.hidden{display:none;}
+#audioPill{bottom:20px;left:14px;width:min(200px,calc(50vw - 18px));}
+#scrollPill{bottom:20px;right:14px;}
+.pill-header{display:flex;align-items:center;justify-content:space-between;padding:5px 10px 3px;gap:6px;}
+.pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
+.pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
+.pill-close:hover{color:rgba(255,255,255,0.8);}
+.pill-audio-top{display:flex;align-items:center;gap:8px;padding:6px 10px 4px;}
+.pill-audio-seek-row{padding:2px 10px 4px;display:flex;align-items:center;}
+.pill-audio-time{display:flex;justify-content:space-between;padding:1px 10px 8px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;}
+.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:6px 12px 9px;}
+.audio-play-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.audio-play-btn:hover{opacity:.8;}
+.audio-val-wrap{display:inline-flex;align-items:center;cursor:pointer;}
+.audio-val-num{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:32px;text-align:center;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);}
+.audio-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
+.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;}
+.audio-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none;}
+.scroll-play-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.scroll-play-btn:hover{opacity:.8;}
+.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);}
+.tab-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.25);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4);color:rgba(255,255,255,0.92);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;}
+.pill-tab.hidden{display:none;}
+#audioTab{bottom:20px;left:14px;}
+#scrollTab{bottom:20px;right:14px;}
+.back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));color:var(--deep,#08060f);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.back-top.visible{display:flex;}
+body.light-mode .pill-base{background:rgba(255,248,230,0.90);border-color:rgba(0,0,0,0.1);}
+body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
+body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
+body.light-mode .pill-tab{background:rgba(255,248,230,0.95);border-color:rgba(0,0,0,0.15);color:rgba(0,0,0,0.8);}
+body.light-mode .scroll-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
+body.light-mode .scroll-speed-val{color:#3a2000;}
+body.light-mode .audio-val-num{color:#3a2000;}
+body.light-mode .pill-audio-time{color:rgba(0,0,0,0.4);}
+
+/* ═══════════════════════════════════════════════════
+   A/B UI TOGGLE
+   ═══════════════════════════════════════════════════ */
+
+/* ── PILL mode (default) ── */
+body.ui-pill .pill-base,
+body.ui-pill .pill-tab,
+body.ui-pill .back-top { display:revert !important }
+body.ui-pill #sacDock  { display:none !important }
+body.ui-pill main      { padding-bottom:80px !important }
+body.ui-pill #spFab    { bottom:18px !important }
+
+/* ── DOCK mode ── */
+body.ui-dock .pill-base,
+body.ui-dock .pill-tab,
+body.ui-dock .back-top,
+body.ui-dock .scroll-bar,
+body.ui-dock .scroll-bar-open-btn { display:none !important }
+body.ui-dock #sacDock  { display:flex !important }
+body.ui-dock main      { padding-bottom:130px !important }
+body.ui-dock #spFab    { bottom:72px !important }
+
+/* ── Toggle button ── */
+#uiToggleBtn {
+  position:fixed;
+  top:60px;
+  right:10px;
+  z-index:800;
+  background:var(--card,#130f1e);
+  border:1px solid var(--gold,#c9a84c);
+  color:var(--gold,#c9a84c);
+  font-family:'Cinzel',serif;
+  font-size:9px;
+  letter-spacing:1px;
+  padding:5px 9px;
+  border-radius:20px;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 2px 12px rgba(0,0,0,0.4);
+  transition:all .2s;
+  opacity:0.75;
+}
+#uiToggleBtn:hover { opacity:1; background:rgba(201,168,76,0.15); }
+body.light-mode #uiToggleBtn {
+  background:var(--card,#fff6e0);
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* ── DOCK styles (only visible in ui-dock mode) ── */
+#sacDock { position:fixed;bottom:0;left:0;right:0;z-index:700;flex-direction:column;display:none }
+
+.dock-tray{background:var(--bg,#0a0812);border-top:1px solid var(--gold,#c9a84c);border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
 .dock-tray.open{max-height:200px}
+.dt-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px}
+.dt-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase}
+.dt-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer;line-height:1;padding:2px 4px;transition:color .15s}
+.dt-close:hover{color:rgba(255,255,255,0.8)}
+.dt-audio-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 14px 4px}
+.dt-play-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+.dt-play-btn:hover{opacity:.85}
+.dt-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s}
+.dt-speed-btn:hover{background:rgba(255,255,255,0.18)}
+.dt-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:36px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s}
+.dt-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6)}
+.dt-seek-row{padding:2px 14px 2px;display:flex;align-items:center}
+.dt-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer}
+.dt-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
+.dt-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
+.dt-time{display:flex;justify-content:space-between;padding:1px 14px 6px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px}
+.dt-scroll-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px 12px}
+.dt-scroll-play{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
+.dt-scroll-play:hover{opacity:.85}
+.dt-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none}
 
-body.light-mode #sacDockBar{background:rgba(255,255,255,0.25);-webkit-backdrop-filter:blur(24px) saturate(1.8) brightness(1.1);backdrop-filter:blur(24px) saturate(1.8) brightness(1.1);border-top:1px solid rgba(0,0,0,0.12)}
-body.light-mode .dock-tray{background:rgba(255,255,255,0.35);-webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);border-top:1px solid rgba(0,0,0,0.12)}
-body.light-mode .dock-btn .dlbl{color:rgba(30,15,0,0.9);text-shadow:0 1px 3px rgba(255,255,255,0.8)}
-body.light-mode .dock-btn .dico{filter:drop-shadow(0 1px 2px rgba(255,255,255,0.8))}
-body.light-mode .dock-btn:hover,.body.light-mode .dock-btn.active{background:rgba(0,0,0,0.08)}
-body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold);text-shadow:none}
+#sacDockBar{display:flex;align-items:stretch;background:var(--bg,#0a0812);border-top:1px solid var(--gold,#c9a84c);position:relative}
+#sacDockBar::before{content:'';position:absolute;inset:0;background:var(--gold,#c9a84c);opacity:0.07;pointer-events:none}
+.dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px 10px;background:transparent;border:none;cursor:pointer;transition:background .18s;-webkit-tap-highlight-color:transparent;position:relative;z-index:1}
+.dock-btn:hover,.dock-btn.active{background:rgba(255,255,255,0.07)}
+.dock-btn .dico{font-size:22px;line-height:1;color:var(--gold,#c9a84c);filter:drop-shadow(0 0 6px rgba(201,168,76,0.5))}
+.dock-btn.active .dico{filter:drop-shadow(0 0 10px var(--gold,#c9a84c)) drop-shadow(0 0 4px var(--gold,#c9a84c))}
+.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:rgba(255,255,255,0.9);text-transform:uppercase;transition:color .18s}
+.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold,#c9a84c)}
+.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.08)}
+
+body.light-mode #sacDockBar{background:var(--bg,#fdf6ec);border-top:1px solid var(--gold,#c9a84c)}
+body.light-mode #sacDockBar::before{opacity:0.06}
+body.light-mode .dock-tray{background:var(--bg,#fdf6ec);border-top:1px solid var(--gold,#c9a84c)}
+body.light-mode .dock-btn .dlbl{color:rgba(0,0,0,0.75)}
+body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold,#c9a84c)}
 body.light-mode .dt-label{color:rgba(0,0,0,0.45)}
 body.light-mode .dt-close{color:rgba(0,0,0,0.3)}
 body.light-mode .dt-close:hover{color:rgba(0,0,0,0.7)}
@@ -349,7 +484,52 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 
 </main>
 
-</div></div>
+</div>
+
+<!-- ♪ AUDIO PILL (bottom-left) -->
+<div class="pill-base hidden" id="audioPill">
+  <div class="pill-header">
+    <span class="pill-label">&#9834; Audio</span>
+    <button class="pill-close" onclick="hideAudioPill()" title="Hide">&#10005;</button>
+  </div>
+  <div class="pill-audio-top">
+    <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">&#9654;</button>
+    <button class="scroll-speed-btn" id="audioSpeedDown" title="Slower">&#8722;</button>
+    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))">
+      <span class="audio-val-num" id="audioSpeedVal">1&times;</span>
+    </div>
+    <button class="scroll-speed-btn" id="audioSpeedUp" title="Faster">+</button>
+  </div>
+  <div class="pill-audio-seek-row">
+    <input type="range" class="audio-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
+  </div>
+  <div class="pill-audio-time">
+    <span id="audioTimeCur">0:00</span>
+    <span id="audioTimeDur">0:00</span>
+  </div>
+</div>
+<button class="pill-tab" id="audioTab">
+  <span class="tab-dot"></span>Audio
+</button>
+
+<!-- ↕ SCROLL PILL (bottom-right) -->
+<div class="pill-base hidden" id="scrollPill">
+  <div class="pill-header">
+    <span class="pill-label">&#8597; Scroll</span>
+    <button class="pill-close" onclick="hideScrollPill()" title="Hide">&#10005;</button>
+  </div>
+  <div class="pill-scroll-row">
+    <button class="scroll-play-btn" id="scrollPlayBtn" title="Start / Stop">&#8659;</button>
+    <button class="scroll-speed-btn" id="speedDown" title="Slower">&#8722;</button>
+    <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)">1.6&times;</span>
+    <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
+  </div>
+</div>
+<button class="pill-tab" id="scrollTab">
+  <span class="tab-dot"></span>Scroll
+</button>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8679;</button>
 <audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/lakshmi_sahasranamam.mp3"></audio>
 <script src="audio-controller.js"></script>
 <script src="scroll-controller.js"></script>
@@ -622,13 +802,13 @@ function toggleAudio() {
 <div id="sacDock">
   <div class="dock-tray" id="dockAudioTray">
     <div class="dt-header">
-      <span class="dt-label">♪ Audio</span>
-      <button class="dt-close" id="dockAudioClose">✕</button>
+      <span class="dt-label">&#9834; Audio</span>
+      <button class="dt-close" id="dockAudioClose">&#10005;</button>
     </div>
     <div class="dt-audio-controls">
-      <button class="dt-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
-      <button class="dt-speed-btn" id="audioSpeedDown">−</button>
-      <span class="dt-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)">1×</span>
+      <button class="dt-play-btn" id="audioPlayBtn" title="Play / Pause">&#9654;</button>
+      <button class="dt-speed-btn" id="audioSpeedDown">&#8722;</button>
+      <span class="dt-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)">1&times;</span>
       <button class="dt-speed-btn" id="audioSpeedUp">+</button>
     </div>
     <div class="dt-seek-row">
@@ -641,43 +821,78 @@ function toggleAudio() {
   </div>
   <div class="dock-tray" id="dockScrollTray">
     <div class="dt-header">
-      <span class="dt-label">↕ Auto-Scroll</span>
-      <button class="dt-close" id="dockScrollClose">✕</button>
+      <span class="dt-label">&#8597; Auto-Scroll</span>
+      <button class="dt-close" id="dockScrollClose">&#10005;</button>
     </div>
     <div class="dt-scroll-controls">
-      <button class="dt-scroll-play" id="scrollPlayBtn" title="Start / Stop">⇓</button>
-      <button class="dt-speed-btn" id="speedDown">−</button>
-      <span class="dt-speed-val" id="speedVal" onclick="editSpeed(this)">1.6×</span>
+      <button class="dt-scroll-play" id="scrollPlayBtn" title="Start / Stop">&#8659;</button>
+      <button class="dt-speed-btn" id="speedDown">&#8722;</button>
+      <span class="dt-speed-val" id="speedVal" onclick="editSpeed(this)">1.6&times;</span>
       <button class="dt-speed-btn" id="speedUp">+</button>
     </div>
   </div>
   <div id="sacDockBar">
     <button class="dock-btn" id="dockHomeBtn" onclick="window.location.href='index.html'">
-      <span class="dico">🏠</span><span class="dlbl">Home</span>
+      <span class="dico">&#8962;</span><span class="dlbl">Home</span>
     </button>
     <button class="dock-btn" id="dockAudioBtn">
-      <span class="dico">🎵</span><span class="dlbl">Audio</span>
+      <span class="dico">&#9835;</span><span class="dlbl">Audio</span>
     </button>
     <button class="dock-btn" id="dockScrollBtn">
-      <span class="dico">↕</span><span class="dlbl">Scroll</span>
+      <span class="dico">&#8645;</span><span class="dlbl">Scroll</span>
     </button>
     <button class="dock-btn" id="dockTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <span class="dico">↑</span><span class="dlbl">Top</span>
+      <span class="dico">&#8679;</span><span class="dlbl">Top</span>
     </button>
   </div>
 </div>
 <!-- END DOCK -->
 
+<!-- ════ A/B TOGGLE BUTTON ════ -->
+<button id="uiToggleBtn" title="Switch UI">&#11041; New UI</button>
+
 <script>
+// ── A/B UI toggle ─────────────────────────────────────────────────────────────
+(function(){
+  var KEY = 'sacredUI';
+  var btn = document.getElementById('uiToggleBtn');
+
+  function applyUI(mode) {
+    document.body.classList.remove('ui-pill','ui-dock');
+    document.body.classList.add('ui-' + mode);
+    if (btn) btn.innerHTML = mode === 'dock' ? '&#11041; Classic' : '&#11041; New UI';
+    localStorage.setItem(KEY, mode);
+  }
+
+  var saved = localStorage.getItem(KEY) || 'pill';
+  applyUI(saved);
+
+  if (btn) {
+    var touched = false;
+    btn.addEventListener('touchend', function(e){
+      e.preventDefault(); touched = true;
+      applyUI(document.body.classList.contains('ui-dock') ? 'pill' : 'dock');
+      setTimeout(function(){ touched = false; }, 400);
+    }, {passive:false});
+    btn.addEventListener('click', function(e){
+      if (touched) return;
+      applyUI(document.body.classList.contains('ui-dock') ? 'pill' : 'dock');
+    });
+  }
+})();
+
+// ── Dock controller ───────────────────────────────────────────────────────────
 (function(){
   var audioOpen=false,scrollOpen=false;
   function openAudio(){audioOpen=true;scrollOpen=false;document.getElementById('dockAudioTray').classList.add('open');document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.add('active');document.getElementById('dockScrollBtn').classList.remove('active');}
   function closeAudio(){audioOpen=false;document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.remove('active');}
   function openScroll(){scrollOpen=true;audioOpen=false;document.getElementById('dockScrollTray').classList.add('open');document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.add('active');document.getElementById('dockAudioBtn').classList.remove('active');}
   function closeScroll(){scrollOpen=false;document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.remove('active');}
-  window.showAudioPill=openAudio;window.hideAudioPill=closeAudio;
-  window.showScrollPill=openScroll;window.hideScrollPill=closeScroll;
-  window.showScrollBar=openScroll;window.hideScrollBar=closeScroll;
+
+  window.showAudioPill=openAudio; window.hideAudioPill=closeAudio;
+  window.showScrollPill=openScroll; window.hideScrollPill=closeScroll;
+  window.showScrollBar=openScroll; window.hideScrollBar=closeScroll;
+
   function wireToggle(id,openFn,closeFn,getOpen){
     var btn=document.getElementById(id);if(!btn)return;
     var touched=false;
@@ -688,12 +903,35 @@ function toggleAudio() {
   wireToggle('dockScrollBtn',openScroll,closeScroll,function(){return scrollOpen;});
   document.getElementById('dockAudioClose').addEventListener('click',closeAudio);
   document.getElementById('dockScrollClose').addEventListener('click',closeScroll);
-  document.addEventListener('click',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
-  document.addEventListener('touchend',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
+  document.addEventListener('click',function(e){if(!e.target.closest('#sacDock')&&!e.target.closest('#uiToggleBtn')){closeAudio();closeScroll();}},{passive:true});
+  document.addEventListener('touchend',function(e){if(!e.target.closest('#sacDock')&&!e.target.closest('#uiToggleBtn')){closeAudio();closeScroll();}},{passive:true});
   var autoTimer=null;
   function resetAC(){clearTimeout(autoTimer);autoTimer=setTimeout(function(){closeAudio();closeScroll();},10000);}
   document.getElementById('sacDock').addEventListener('touchend',resetAC,{passive:true});
   document.getElementById('sacDock').addEventListener('click',resetAC);
+})();
+</script>
+<script>
+// ── Pill auto-hide (classic mode) ─────────────────────────────────────────────
+(function(){
+  var _timer=null,_hA=true,_hS=true;
+  function maybeHide(){if(!_hA){_hA=true;hideAudioPill();}if(!_hS){_hS=true;hideScrollPill();}}
+  function reset(){clearTimeout(_timer);_timer=setTimeout(maybeHide,10000);}
+  function wireTab(id,showFn,setH){
+    var t=document.getElementById(id);if(!t)return;
+    var touched=false;
+    t.addEventListener('touchend',function(e){e.stopPropagation();touched=true;setH(false);showFn();reset();setTimeout(function(){touched=false;},400);},{passive:true});
+    t.addEventListener('click',function(e){if(touched)return;setH(false);showFn();reset();});
+  }
+  wireTab('audioTab',function(){showAudioPill();},function(v){_hA=v;});
+  wireTab('scrollTab',function(){showScrollPill();},function(v){_hS=v;});
+  function onTap(e){
+    var t=e.target;if(!t)return;
+    if(t.closest('#audioPill')||t.closest('#scrollPill')||t.closest('#audioTab')||t.closest('#scrollTab')||t.closest('#uiToggleBtn'))return;
+    if(!_hA){_hA=true;hideAudioPill();}if(!_hS){_hS=true;hideScrollPill();}clearTimeout(_timer);
+  }
+  document.addEventListener('click',onTap,{passive:true});
+  document.addEventListener('touchend',onTap,{passive:true});
 })();
 </script>
 </body>
