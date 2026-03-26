@@ -915,8 +915,8 @@ function toggleAudio() {
   function wireTab(id,showFn,setH){
     var t=document.getElementById(id);if(!t)return;
     var touched=false;
-    t.addEventListener('touchend',function(e){e.stopPropagation();touched=true;setH(false);showFn();reset();setTimeout(function(){touched=false;},400);},{passive:true});
-    t.addEventListener('click',function(e){if(touched)return;setH(false);showFn();reset();});
+    t.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();touched=true;setH(false);showFn();reset();setTimeout(function(){touched=false;},400);},{passive:false});
+    t.addEventListener('click',function(e){if(touched){e.preventDefault();return;}setH(false);showFn();reset();});
   }
   wireTab('audioTab',function(){showAudioPill();},function(v){_hA=v;});
   wireTab('scrollTab',function(){showScrollPill();},function(v){_hS=v;});
