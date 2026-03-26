@@ -912,7 +912,7 @@ function toggleAudio() {
 </script>
 <script>
 // ── Pill UI wiring (classic mode) ─────────────────────────────────────────────
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   function wire(id, fn) {
     var b = document.getElementById(id); if (!b) return;
     var t = false;
@@ -931,17 +931,10 @@ function toggleAudio() {
   wire('audioCloseBtn',  function(){ hideAudioPill(); });
   wire('scrollCloseBtn', function(){ hideScrollPill(); });
 
-  // ── Audio controls ──
-  wire('audioPlayBtn',   function(){ if(typeof toggleAudio==='function') toggleAudio(); });
-  wire('audioSpeedDown', function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(-1); });
-  wire('audioSpeedUp',   function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(1); });
+  // Note: audioPlayBtn, audioSpeedDown/Up, scrollPlayBtn, speedDown/Up
+  // are wired by scroll-controller.js — we don't double-wire them here.
 
-  // ── Scroll controls ──
-  wire('scrollPlayBtn', function(){ if(typeof toggleScroll==='function') toggleScroll(); });
-  wire('speedDown',     function(){ if(typeof adjustSpeed==='function') adjustSpeed(-1); });
-  wire('speedUp',       function(){ if(typeof adjustSpeed==='function') adjustSpeed(1); });
-
-  // ── Speed val: tap to edit ──
+  // ── Speed val: tap to edit (scroll-controller doesn't wire these) ──
   var sv = document.getElementById('speedVal');
   if (sv) sv.addEventListener('click', function(){ if(typeof editSpeed==='function') editSpeed(this); });
   var av = document.getElementById('audioSpeedVal');
@@ -964,7 +957,7 @@ function toggleAudio() {
   }
   document.addEventListener('click',    onOutsideTap, {passive:true});
   document.addEventListener('touchend', onOutsideTap, {passive:true});
-})();
+});
 </script>
 </body>
 </html>
