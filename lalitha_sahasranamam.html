@@ -127,64 +127,6 @@ body.light-mode
 
 
 
-/* ═══════════════════════════════════════════════════
-   BOTTOM DOCK  (replaces floating pills + back-top)
-   ═══════════════════════════════════════════════════ */
-
-main{padding-bottom:130px!important}
-#spFab{bottom:72px!important}
-
-#sacDock{position:fixed;bottom:0;left:0;right:0;z-index:700;display:flex;flex-direction:column}
-
-.dock-tray{background:rgba(12,9,20,0.97);border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.08);border-right:1px solid rgba(255,255,255,0.08);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
-.dock-tray.open{max-height:200px}
-
-.dt-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px}
-.dt-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase}
-.dt-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer;line-height:1;padding:2px 4px;transition:color .15s}
-.dt-close:hover{color:rgba(255,255,255,0.8)}
-
-.dt-audio-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 14px 4px}
-.dt-play-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.dt-play-btn:hover{opacity:.85}
-.dt-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s}
-.dt-speed-btn:hover{background:rgba(255,255,255,0.18)}
-.dt-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:36px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s}
-.dt-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6)}
-
-.dt-seek-row{padding:2px 14px 2px;display:flex;align-items:center}
-.dt-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer}
-.dt-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
-.dt-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
-.dt-time{display:flex;justify-content:space-between;padding:1px 14px 6px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px}
-
-.dt-scroll-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px 12px}
-.dt-scroll-play{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.dt-scroll-play:hover{opacity:.85}
-.dt-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none}
-
-#sacDockBar{display:flex;align-items:stretch;background:rgba(9,7,15,0.97);border-top:2px solid var(--gold)}
-.dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px 10px;background:transparent;border:none;cursor:pointer;transition:background .18s;-webkit-tap-highlight-color:transparent}
-.dock-btn:hover,.dock-btn.active{background:rgba(201,168,76,0.10)}
-.dock-btn .dico{font-size:20px;line-height:1}
-.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:rgba(255,255,255,0.45);text-transform:uppercase;transition:color .18s}
-.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold)}
-.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.06)}
-
-body.light-mode #sacDockBar{background:rgba(253,246,236,0.97);border-top:2px solid var(--gold)}
-body.light-mode .dock-tray{background:rgba(255,248,230,0.98);border-top:2px solid var(--gold)}
-body.light-mode .dock-btn .dlbl{color:rgba(0,0,0,0.35)}
-body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold)}
-body.light-mode .dt-label{color:rgba(0,0,0,0.3)}
-body.light-mode .dt-close{color:rgba(0,0,0,0.25)}
-body.light-mode .dt-close:hover{color:rgba(0,0,0,0.7)}
-body.light-mode .dt-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000}
-body.light-mode .dt-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2)}
-body.light-mode .dt-time{color:rgba(0,0,0,0.4)}
-body.light-mode .dt-seek{background:rgba(0,0,0,0.12)}
-body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000}
-
-
 /* ── Pill UI (classic) ── */
 .pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.4);white-space:nowrap;}
 .pill-base.hidden{display:none;}
@@ -237,7 +179,7 @@ body.ui-pill .pill-base.hidden,
 body.ui-pill .pill-tab.hidden { display:none !important }
 body.ui-pill #sacDock  { display:none !important }
 body.ui-pill main      { padding-bottom:80px !important }
-body.ui-pill #spFab    { bottom:18px !important }
+/* spFab bottom in pill mode is managed by support-panel.js placeFab() */
 
 /* ── DOCK mode ── */
 body.ui-dock .pill-base,
@@ -247,7 +189,15 @@ body.ui-dock .scroll-bar,
 body.ui-dock .scroll-bar-open-btn { display:none !important }
 body.ui-dock #sacDock  { display:flex !important }
 body.ui-dock main      { padding-bottom:130px !important }
-body.ui-dock #spFab    { bottom:72px !important }
+body.ui-dock #spFab    { bottom:72px !important; z-index:750 !important }
+body.ui-pill #spFab    { z-index:750 !important }
+
+/* ── Pre-paint: html class covers the flash before DOMContentLoaded ── */
+html.ui-dock .pill-base,
+html.ui-dock .pill-tab,
+html.ui-dock .back-top { display:none !important }
+html.ui-dock #sacDock  { display:flex !important }
+html.ui-pill #sacDock  { display:none !important }
 
 /* ── Toggle button ── */
 #uiToggleBtn {
@@ -326,7 +276,19 @@ body.light-mode .dt-seek{background:rgba(0,0,0,0.12)}
 body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000}
 
 </style>
-</head>
+<script>
+// Apply saved UI mode before first paint — prevents flash and ensures
+// support-panel.js / placeFab() sees correct DOM state on load.
+(function(){
+  var m = localStorage.getItem('sacredUI') || 'pill';
+  document.documentElement.classList.add('ui-' + m);
+  // Move to body once body exists
+  document.addEventListener('DOMContentLoaded', function(){
+    document.documentElement.classList.remove('ui-pill','ui-dock');
+    document.body.classList.add('ui-' + m);
+  });
+})();
+</script></head>
 <body>
 <div class="progress-bar" id="progress"></div>
 <nav>
@@ -433,7 +395,7 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 </div>
 
 </main>
-</div>
+
 
 <!-- ♪ AUDIO PILL (bottom-left) -->
 <div class="pill-base hidden" id="audioPill">
@@ -742,34 +704,6 @@ function toggleAudio() {
 </script>
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
-<script>
-(function(){
-  var audioOpen=false,scrollOpen=false;
-  function openAudio(){audioOpen=true;scrollOpen=false;document.getElementById('dockAudioTray').classList.add('open');document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.add('active');document.getElementById('dockScrollBtn').classList.remove('active');}
-  function closeAudio(){audioOpen=false;document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.remove('active');}
-  function openScroll(){scrollOpen=true;audioOpen=false;document.getElementById('dockScrollTray').classList.add('open');document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.add('active');document.getElementById('dockAudioBtn').classList.remove('active');}
-  function closeScroll(){scrollOpen=false;document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.remove('active');}
-  window.showAudioPill=openAudio;window.hideAudioPill=closeAudio;
-  window.showScrollPill=openScroll;window.hideScrollPill=closeScroll;
-  window.showScrollBar=openScroll;window.hideScrollBar=closeScroll;
-  function wireToggle(id,openFn,closeFn,getOpen){
-    var btn=document.getElementById(id);if(!btn)return;
-    var touched=false;
-    btn.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();touched=true;getOpen()?closeFn():openFn();setTimeout(function(){touched=false;},400);},{passive:false});
-    btn.addEventListener('click',function(e){if(touched){e.preventDefault();return;}getOpen()?closeFn():openFn();});
-  }
-  wireToggle('dockAudioBtn',openAudio,closeAudio,function(){return audioOpen;});
-  wireToggle('dockScrollBtn',openScroll,closeScroll,function(){return scrollOpen;});
-  document.getElementById('dockAudioClose').addEventListener('click',closeAudio);
-  document.getElementById('dockScrollClose').addEventListener('click',closeScroll);
-  document.addEventListener('click',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
-  document.addEventListener('touchend',function(e){if(!e.target.closest('#sacDock')){closeAudio();closeScroll();}},{passive:true});
-  var autoTimer=null;
-  function resetAC(){clearTimeout(autoTimer);autoTimer=setTimeout(function(){closeAudio();closeScroll();},10000);}
-  document.getElementById('sacDock').addEventListener('touchend',resetAC,{passive:true});
-  document.getElementById('sacDock').addEventListener('click',resetAC);
-})();
-</script>
 
 <!-- ════════════════ BOTTOM DOCK ════════════════ -->
 <div id="sacDock">
@@ -859,8 +793,11 @@ function toggleAudio() {
     }
   }
 
-  var saved = localStorage.getItem(KEY) || 'pill';
-  applyUI(saved);
+  // Sync button label to current mode (body class already set by HEAD_SCRIPT)
+  document.addEventListener('DOMContentLoaded', function(){
+    var cur = document.body.classList.contains('ui-dock') ? 'dock' : 'pill';
+    if (btn) btn.innerHTML = cur === 'dock' ? '&#11041; Classic' : '&#11041; New UI';
+  });
 
   if (btn) {
     var touched = false;
