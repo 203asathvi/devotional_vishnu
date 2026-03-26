@@ -751,70 +751,6 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
   window.showScrollPill=openScroll; window.hideScrollPill=closeScroll;
   window.showScrollBar=openScroll; window.hideScrollBar=closeScroll;
 
-  // ── Dock control bridge — wire d-prefixed dock elements to same functions ──
-  // Uses DOMContentLoaded so scroll-controller.js functions are ready
-  document.addEventListener('DOMContentLoaded', function(){
-    var a = document.getElementById('pageAudio');
-
-    // Audio play/pause
-    function wireDockBtn(id, fn) {
-      var b = document.getElementById(id); if (!b) return;
-      var t = false;
-      b.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); t=true; fn(); setTimeout(function(){t=false;},400); }, {passive:false});
-      b.addEventListener('click', function(e){ if(t){e.preventDefault();return;} fn(); });
-    }
-    wireDockBtn('dAudioPlayBtn', function(){ if(typeof toggleAudio==='function') toggleAudio(); });
-    wireDockBtn('dAudioSpeedDown', function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(-1); });
-    wireDockBtn('dAudioSpeedUp', function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(1); });
-    wireDockBtn('dScrollPlayBtn', function(){ if(typeof toggleScroll==='function') toggleScroll(); });
-    wireDockBtn('dSpeedDown', function(){ if(typeof adjustSpeed==='function') adjustSpeed(-1); });
-    wireDockBtn('dSpeedUp', function(){ if(typeof adjustSpeed==='function') adjustSpeed(1); });
-
-    // Speed val display: mirror pill speedVal -> dSpeedVal and vice versa
-    function syncSpeedVals() {
-      var pv = document.getElementById('speedVal');
-      var dv = document.getElementById('dSpeedVal');
-      if (pv && dv) dv.textContent = pv.textContent;
-      var pav = document.getElementById('audioSpeedVal');
-      var dav = document.getElementById('dAudioSpeedVal');
-      if (pav && dav) dav.textContent = pav.textContent;
-    }
-    // Poll to keep dock speed labels in sync (cheap, runs every 500ms)
-    setInterval(syncSpeedVals, 500);
-    syncSpeedVals();
-
-    // Audio seek — dock seek mirrors pageAudio
-    var dSeek = document.getElementById('dAudioSeek');
-    var dCur  = document.getElementById('dAudioTimeCur');
-    var dDur  = document.getElementById('dAudioTimeDur');
-    function fmt(s){ if(!isFinite(s)||s<0)return'0:00'; return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
-    if (a && dSeek) {
-      a.addEventListener('loadedmetadata', function(){ dSeek.max=a.duration; dSeek.value=0; if(dDur)dDur.textContent=fmt(a.duration); });
-      a.addEventListener('timeupdate', function(){ if(!dSeek._drag){ dSeek.value=a.currentTime; if(dCur)dCur.textContent=fmt(a.currentTime); } });
-      dSeek._drag=false;
-      dSeek.addEventListener('mousedown', function(){ dSeek._drag=true; });
-      dSeek.addEventListener('touchstart', function(){ dSeek._drag=true; }, {passive:true});
-      dSeek.addEventListener('input', function(){ if(dCur)dCur.textContent=fmt(+dSeek.value); });
-      function commitDockSeek(){ dSeek._drag=false; a.currentTime=+dSeek.value; }
-      dSeek.addEventListener('change', commitDockSeek);
-      dSeek.addEventListener('mouseup', commitDockSeek);
-      dSeek.addEventListener('touchend', commitDockSeek, {passive:true});
-    }
-
-    // Scroll play button icon: mirror scrollPlayBtn -> dScrollPlayBtn
-    var spb = document.getElementById('scrollPlayBtn');
-    var dspb = document.getElementById('dScrollPlayBtn');
-    if (spb && dspb && window.MutationObserver) {
-      new MutationObserver(function(){ dspb.textContent = spb.textContent; }).observe(spb, {childList:true, characterData:true, subtree:true});
-    }
-    // Audio play button icon mirror
-    var apb = document.getElementById('audioPlayBtn');
-    var dapb = document.getElementById('dAudioPlayBtn');
-    if (apb && dapb && window.MutationObserver) {
-      new MutationObserver(function(){ dapb.textContent = apb.textContent; }).observe(apb, {childList:true, characterData:true, subtree:true});
-    }
-  });
-
   function dEditAudioSpeed(el){ if(typeof editAudioSpeed==='function') editAudioSpeed(el); }
   function dEditSpeed(el){ if(typeof editSpeed==='function') editSpeed(el); }
 
@@ -837,48 +773,87 @@ window.addEventListener('touchstart', e => { if (scrollActive && !e.target.close
 })();
 </script>
 <script>
-// ── Pill UI wiring (classic mode) ─────────────────────────────────────────────
+// ── Unified UI wiring — pill (classic) + dock (new) buttons → same functions ──
 document.addEventListener('DOMContentLoaded', function(){
+
+  // Single wire helper: touchend + click, no double-fire on mobile
   function wire(id, fn) {
     var b = document.getElementById(id); if (!b) return;
     var t = false;
     b.addEventListener('touchend', function(e){
       e.preventDefault(); e.stopPropagation(); t=true; fn();
-      setTimeout(function(){t=false;},400);
+      setTimeout(function(){ t=false; }, 400);
     }, {passive:false});
-    b.addEventListener('click', function(e){ if(t){e.preventDefault();return;} fn(); });
+    b.addEventListener('click', function(e){ if(t){ e.preventDefault(); return; } fn(); });
   }
 
-  // ── Tab buttons: open the pill panel ──
-  wire('audioTab',  function(){ showAudioPill();  resetPillTimer(); });
-  wire('scrollTab', function(){ showScrollPill(); resetPillTimer(); });
-
-  // ── Pill close buttons ──
-  wire('audioCloseBtn',  function(){ hideAudioPill(); });
-  wire('scrollCloseBtn', function(){ hideScrollPill(); });
-
-  // Note: audioPlayBtn, audioSpeedDown/Up, scrollPlayBtn, speedDown/Up
-  // are wired by scroll-controller.js — we don't double-wire them here.
-
-  // ── Speed val: tap to edit (scroll-controller doesn't wire these) ──
+  // ── PILL buttons (classic mode) ──────────────────────────────────────────
+  wire('audioTab',      function(){ showAudioPill(); resetPillTimer(); });
+  wire('scrollTab',     function(){ showScrollPill(); resetPillTimer(); });
+  wire('audioCloseBtn', function(){ hideAudioPill(); });
+  wire('scrollCloseBtn',function(){ hideScrollPill(); });
+  wire('backTop',       function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+  // Pill play/speed buttons are wired by scroll-controller.js — not duplicated here
+  // Speed val tap-to-edit (scroll-controller doesn't wire these clicks)
   var sv = document.getElementById('speedVal');
   if (sv) sv.addEventListener('click', function(){ if(typeof editSpeed==='function') editSpeed(this); });
   var av = document.getElementById('audioSpeedVal');
   if (av) av.addEventListener('click', function(){ if(typeof editAudioSpeed==='function') editAudioSpeed(this); });
 
-  // ── Back to top ──
-  wire('backTop', function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+  // ── DOCK buttons (new UI) — same functions as pill ───────────────────────
+  wire('dAudioPlayBtn',   function(){ toggleAudio(); });
+  wire('dAudioSpeedDown', function(){ adjustAudioSpeed(-1); });
+  wire('dAudioSpeedUp',   function(){ adjustAudioSpeed(1); });
+  wire('dScrollPlayBtn',  function(){ toggleScroll(); });
+  wire('dSpeedDown',      function(){ adjustSpeed(-1); });
+  wire('dSpeedUp',        function(){ adjustSpeed(1); });
+  var dsv = document.getElementById('dSpeedVal');
+  if (dsv) dsv.addEventListener('click', function(){ if(typeof editSpeed==='function') editSpeed(this); });
+  var dav = document.getElementById('dAudioSpeedVal');
+  if (dav) dav.addEventListener('click', function(){ if(typeof editAudioSpeed==='function') editAudioSpeed(this); });
 
-  // ── Auto-hide: tap outside pills hides them ──
-  var _timer = null;
-  function resetPillTimer(){
-    clearTimeout(_timer);
-    _timer = setTimeout(function(){ hideAudioPill(); hideScrollPill(); }, 10000);
+  // ── Dock seek slider — mirrors pageAudio directly ────────────────────────
+  var a = document.getElementById('pageAudio');
+  var dSeek = document.getElementById('dAudioSeek');
+  var dCur  = document.getElementById('dAudioTimeCur');
+  var dDur  = document.getElementById('dAudioTimeDur');
+  function fmt(s){ return !isFinite(s)||s<0 ? '0:00' : Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
+  if (a && dSeek) {
+    a.addEventListener('loadedmetadata', function(){ dSeek.max=a.duration; dSeek.value=0; if(dDur)dDur.textContent=fmt(a.duration); if(dCur)dCur.textContent='0:00'; });
+    a.addEventListener('timeupdate',     function(){ if(!dSeek._drag){ dSeek.value=a.currentTime; if(dCur)dCur.textContent=fmt(a.currentTime); } });
+    dSeek._drag=false;
+    dSeek.addEventListener('mousedown',  function(){ dSeek._drag=true; });
+    dSeek.addEventListener('touchstart', function(){ dSeek._drag=true; }, {passive:true});
+    dSeek.addEventListener('input',      function(){ if(dCur) dCur.textContent=fmt(+dSeek.value); });
+    function commitDSeek(){ dSeek._drag=false; a.currentTime=+dSeek.value; }
+    dSeek.addEventListener('change',   commitDSeek);
+    dSeek.addEventListener('mouseup',  commitDSeek);
+    dSeek.addEventListener('touchend', commitDSeek, {passive:true});
   }
+
+  // ── Mirror play button icons pill→dock ───────────────────────────────────
+  function mirrorText(srcId, dstId){
+    var s=document.getElementById(srcId), d=document.getElementById(dstId); if(!s||!d) return;
+    d.textContent=s.textContent;
+    if(window.MutationObserver) new MutationObserver(function(){ d.textContent=s.textContent; }).observe(s,{childList:true,characterData:true,subtree:true});
+  }
+  mirrorText('audioPlayBtn',  'dAudioPlayBtn');
+  mirrorText('scrollPlayBtn', 'dScrollPlayBtn');
+
+  // ── Mirror speed labels pill→dock every 500ms ────────────────────────────
+  setInterval(function(){
+    var pv=document.getElementById('speedVal'),     dv=document.getElementById('dSpeedVal');
+    var pa=document.getElementById('audioSpeedVal'),da=document.getElementById('dAudioSpeedVal');
+    if(pv&&dv) dv.textContent=pv.textContent;
+    if(pa&&da) da.textContent=pa.textContent;
+  }, 500);
+
+  // ── Pill auto-hide: tap outside closes pills ─────────────────────────────
+  var _timer = null;
+  function resetPillTimer(){ clearTimeout(_timer); _timer=setTimeout(function(){ hideAudioPill(); hideScrollPill(); },10000); }
   function onOutsideTap(e){
-    var t = e.target; if (!t) return;
-    if (t.closest && (t.closest('#audioPill')||t.closest('#scrollPill')||
-        t.closest('#audioTab')||t.closest('#scrollTab')||t.closest('#uiToggleBtn'))) return;
+    var el=e.target; if(!el||!el.closest) return;
+    if(el.closest('#audioPill')||el.closest('#scrollPill')||el.closest('#audioTab')||el.closest('#scrollTab')||el.closest('#uiToggleBtn')) return;
     hideAudioPill(); hideScrollPill(); clearTimeout(_timer);
   }
   document.addEventListener('click',    onOutsideTap, {passive:true});
