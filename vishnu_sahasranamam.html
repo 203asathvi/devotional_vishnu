@@ -1578,17 +1578,17 @@ function toggleAudio() {
       <button class="dt-close" id="dockAudioClose">&#10005;</button>
     </div>
     <div class="dt-audio-controls">
-      <button class="dt-play-btn" id="audioPlayBtn" title="Play / Pause">&#9654;</button>
-      <button class="dt-speed-btn" id="audioSpeedDown">&#8722;</button>
-      <span class="dt-speed-val" id="audioSpeedVal" onclick="editAudioSpeed(this)">1&times;</span>
-      <button class="dt-speed-btn" id="audioSpeedUp">+</button>
+      <button class="dt-play-btn" id="dAudioPlayBtn" title="Play / Pause">&#9654;</button>
+      <button class="dt-speed-btn" id="dAudioSpeedDown">&#8722;</button>
+      <span class="dt-speed-val" id="dAudioSpeedVal" onclick="dEditAudioSpeed(this)">1&times;</span>
+      <button class="dt-speed-btn" id="dAudioSpeedUp">+</button>
     </div>
     <div class="dt-seek-row">
-      <input type="range" class="dt-seek" id="audioSeek" min="0" max="100" step="0.1" value="0">
+      <input type="range" class="dt-seek" id="dAudioSeek" min="0" max="100" step="0.1" value="0">
     </div>
     <div class="dt-time">
-      <span id="audioTimeCur">0:00</span>
-      <span id="audioTimeDur">0:00</span>
+      <span id="dAudioTimeCur">0:00</span>
+      <span id="dAudioTimeDur">0:00</span>
     </div>
   </div>
   <div class="dock-tray" id="dockScrollTray">
@@ -1597,10 +1597,10 @@ function toggleAudio() {
       <button class="dt-close" id="dockScrollClose">&#10005;</button>
     </div>
     <div class="dt-scroll-controls">
-      <button class="dt-scroll-play" id="scrollPlayBtn" title="Start / Stop">&#8659;</button>
-      <button class="dt-speed-btn" id="speedDown">&#8722;</button>
-      <span class="dt-speed-val" id="speedVal" onclick="editSpeed(this)">1.6&times;</span>
-      <button class="dt-speed-btn" id="speedUp">+</button>
+      <button class="dt-scroll-play" id="dScrollPlayBtn" title="Start / Stop">&#8659;</button>
+      <button class="dt-speed-btn" id="dSpeedDown">&#8722;</button>
+      <span class="dt-speed-val" id="dSpeedVal" onclick="dEditSpeed(this)">1.6&times;</span>
+      <button class="dt-speed-btn" id="dSpeedUp">+</button>
     </div>
   </div>
   <div id="sacDockBar">
@@ -1689,6 +1689,73 @@ function toggleAudio() {
   window.showAudioPill=openAudio; window.hideAudioPill=closeAudio;
   window.showScrollPill=openScroll; window.hideScrollPill=closeScroll;
   window.showScrollBar=openScroll; window.hideScrollBar=closeScroll;
+
+  // ── Dock control bridge — wire d-prefixed dock elements to same functions ──
+  // Uses DOMContentLoaded so scroll-controller.js functions are ready
+  document.addEventListener('DOMContentLoaded', function(){
+    var a = document.getElementById('pageAudio');
+
+    // Audio play/pause
+    function wireDockBtn(id, fn) {
+      var b = document.getElementById(id); if (!b) return;
+      var t = false;
+      b.addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); t=true; fn(); setTimeout(function(){t=false;},400); }, {passive:false});
+      b.addEventListener('click', function(e){ if(t){e.preventDefault();return;} fn(); });
+    }
+    wireDockBtn('dAudioPlayBtn', function(){ if(typeof toggleAudio==='function') toggleAudio(); });
+    wireDockBtn('dAudioSpeedDown', function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(-1); });
+    wireDockBtn('dAudioSpeedUp', function(){ if(typeof adjustAudioSpeed==='function') adjustAudioSpeed(1); });
+    wireDockBtn('dScrollPlayBtn', function(){ if(typeof toggleScroll==='function') toggleScroll(); });
+    wireDockBtn('dSpeedDown', function(){ if(typeof adjustSpeed==='function') adjustSpeed(-1); });
+    wireDockBtn('dSpeedUp', function(){ if(typeof adjustSpeed==='function') adjustSpeed(1); });
+
+    // Speed val display: mirror pill speedVal -> dSpeedVal and vice versa
+    function syncSpeedVals() {
+      var pv = document.getElementById('speedVal');
+      var dv = document.getElementById('dSpeedVal');
+      if (pv && dv) dv.textContent = pv.textContent;
+      var pav = document.getElementById('audioSpeedVal');
+      var dav = document.getElementById('dAudioSpeedVal');
+      if (pav && dav) dav.textContent = pav.textContent;
+    }
+    // Poll to keep dock speed labels in sync (cheap, runs every 500ms)
+    setInterval(syncSpeedVals, 500);
+    syncSpeedVals();
+
+    // Audio seek — dock seek mirrors pageAudio
+    var dSeek = document.getElementById('dAudioSeek');
+    var dCur  = document.getElementById('dAudioTimeCur');
+    var dDur  = document.getElementById('dAudioTimeDur');
+    function fmt(s){ if(!isFinite(s)||s<0)return'0:00'; return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
+    if (a && dSeek) {
+      a.addEventListener('loadedmetadata', function(){ dSeek.max=a.duration; dSeek.value=0; if(dDur)dDur.textContent=fmt(a.duration); });
+      a.addEventListener('timeupdate', function(){ if(!dSeek._drag){ dSeek.value=a.currentTime; if(dCur)dCur.textContent=fmt(a.currentTime); } });
+      dSeek._drag=false;
+      dSeek.addEventListener('mousedown', function(){ dSeek._drag=true; });
+      dSeek.addEventListener('touchstart', function(){ dSeek._drag=true; }, {passive:true});
+      dSeek.addEventListener('input', function(){ if(dCur)dCur.textContent=fmt(+dSeek.value); });
+      function commitDockSeek(){ dSeek._drag=false; a.currentTime=+dSeek.value; }
+      dSeek.addEventListener('change', commitDockSeek);
+      dSeek.addEventListener('mouseup', commitDockSeek);
+      dSeek.addEventListener('touchend', commitDockSeek, {passive:true});
+    }
+
+    // Scroll play button icon: mirror scrollPlayBtn -> dScrollPlayBtn
+    var spb = document.getElementById('scrollPlayBtn');
+    var dspb = document.getElementById('dScrollPlayBtn');
+    if (spb && dspb && window.MutationObserver) {
+      new MutationObserver(function(){ dspb.textContent = spb.textContent; }).observe(spb, {childList:true, characterData:true, subtree:true});
+    }
+    // Audio play button icon mirror
+    var apb = document.getElementById('audioPlayBtn');
+    var dapb = document.getElementById('dAudioPlayBtn');
+    if (apb && dapb && window.MutationObserver) {
+      new MutationObserver(function(){ dapb.textContent = apb.textContent; }).observe(apb, {childList:true, characterData:true, subtree:true});
+    }
+  });
+
+  function dEditAudioSpeed(el){ if(typeof editAudioSpeed==='function') editAudioSpeed(el); }
+  function dEditSpeed(el){ if(typeof editSpeed==='function') editSpeed(el); }
 
   function wireToggle(id,openFn,closeFn,getOpen){
     var btn=document.getElementById(id);if(!btn)return;
