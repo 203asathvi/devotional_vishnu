@@ -2,8 +2,8 @@ name: Devotional Pages — Test Suite
 
 on:
   push:
-    branches: [dev]          # dev branch only — never runs on main/prod
-  workflow_dispatch:          # manual trigger from GitHub Actions UI
+    branches: [dev]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -21,12 +21,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: testing/package-lock.json
 
       - name: Install dependencies
         working-directory: testing
-        run: npm ci
+        run: npm install
 
       - name: Install Playwright browsers
         working-directory: testing
