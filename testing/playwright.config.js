@@ -4,7 +4,8 @@ module.exports = defineConfig({
   testMatch: 'devotional.test.js',
   timeout: 30000,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 2 : 4,
+  workers: process.env.CI ? 6 : 4,        // 6 parallel workers on CI
+  fullyParallel: true,                     // run tests within a file in parallel too
 
   reporter: [
     ['list'],
