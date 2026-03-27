@@ -1,21 +1,22 @@
 name: Devotional Pages — Test Suite
 
 on:
-  push:
-    branches: [dev]
   workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'URL to test (leave blank for dev)'
+        required: false
+        default: 'https://dev.devotional-vishnu.pages.dev'
 
 jobs:
   test:
     name: Playwright Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10              # tighter timeout now we're parallelised
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: dev
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,25 +28,24 @@ jobs:
         run: |
           npm install &
           NPM_PID=$!
-          # Pre-download chromium while npm installs
           npx --yes playwright install chromium --with-deps &
           PW_PID=$!
           wait $NPM_PID
           wait $PW_PID
 
-      - name: Wait for Cloudflare deployment
+      - name: Verify site is reachable
         run: |
-          TARGET_URL="https://dev.devotional-vishnu.pages.dev"
+          TARGET_URL="${{ github.event.inputs.target_url }}"
           echo "TARGET_URL=$TARGET_URL" >> $GITHUB_ENV
-          echo "Waiting for $TARGET_URL..."
-          for i in $(seq 1 20); do
+          echo "Checking $TARGET_URL..."
+          for i in $(seq 1 10); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L --max-redirs 5 "$TARGET_URL/index.html" || echo "000")
             echo "Attempt $i: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then
               echo "✅ Site is live"
               break
             fi
-            sleep 15
+            sleep 10
           done
 
       - name: Run Playwright tests
@@ -55,7 +55,7 @@ jobs:
         run: npx playwright test --workers=6
         continue-on-error: true
 
-      - name: Upload test report
+      - name: Upload HTML report
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -63,7 +63,36 @@ jobs:
           path: testing/test-report/
           retention-days: 14
 
+      - name: Upload JSON results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-json-${{ github.run_number }}
+          path: testing/test-results.json
+          retention-days: 14
+
       - name: Post summary
         if: always()
-        working-directory: testing
-        run: node summarise.js >> $GITHUB_STEP_SUMMARY
+        run: node testing/summarise.js >> $GITHUB_STEP_SUMMARY
+
+      - name: Slack notification
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK" ]; then
+            echo "No Slack webhook configured — skipping"
+            exit 0
+          fi
+          PASSED=$(node -e "
+            const r=require('./testing/test-results.json');
+            let p=0;function w(s){(s.specs||[]).forEach(sp=>(sp.tests||[]).forEach(t=>{if(t.results?.[0]?.status==='passed')p++;}));(s.suites||[]).forEach(w);}
+            (r.suites||[]).forEach(w);console.log(p);" 2>/dev/null || echo "?")
+          FAILED=$(node -e "
+            const r=require('./testing/test-results.json');
+            let f=0;function w(s){(s.specs||[]).forEach(sp=>(sp.tests||[]).forEach(t=>{if(t.results?.[0]?.status==='failed')f++;}));(s.suites||[]).forEach(w);}
+            (r.suites||[]).forEach(w);console.log(f);" 2>/dev/null || echo "?")
+          ICON=$([ "$FAILED" = "0" ] && echo "✅" || echo "❌")
+          MSG="$ICON Devotional Tests | URL: ${{ env.TARGET_URL }} | Passed: $PASSED | Failed: $FAILED | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$MSG\"}" "$SLACK_WEBHOOK"
