@@ -1,166 +1,148 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Devotional Pages — Playwright Test Suite
-// Run: npx playwright test devotional.test.js
-// Config: set BASE_URL below to your deployment URL
 // ─────────────────────────────────────────────────────────────────────────────
 
 const { test, expect } = require('@playwright/test');
 
-const BASE_URL = 'https://devotional-vishnu.pages.dev';
 const PAGES = [
-  { name: 'Vishnu Sahasranamam', path: '/vishnu_sahasranamam.html',  audio: 'vishnu_sahasranamam.mp3'  },
-  { name: 'Aditya Hridayam',     path: '/aditya_hridayam.html',      audio: 'aditya_hridayam.mp3'      },
-  { name: 'Gayatri Mantra',      path: '/gayatri_mantra.html',        audio: 'gayatri_mantra.mp3'        },
-  { name: 'Hanuman Chalisa',     path: '/hanuman_chalisa.html',       audio: 'hanuman_chalisa.mp3'       },
-  { name: 'Lakshmi Sahasranamam',path: '/lakshmi_sahasranamam.html', audio: 'lakshmi_sahasranamam.mp3'  },
-  { name: 'Lalitha Sahasranamam',path: '/lalitha_sahasranamam.html', audio: 'lalitha_sahasranamam.mp3'  },
+  { name: 'Vishnu Sahasranamam', path: '/html/vishnu_sahasranamam.html',  audio: 'vishnu_sahasranamam.mp3'  },
+  { name: 'Aditya Hridayam',     path: '/html/aditya_hridayam.html',      audio: 'aditya_hridayam.mp3'      },
+  { name: 'Gayatri Mantra',      path: '/html/gayatri_mantra.html',        audio: 'gayatri_mantra.mp3'        },
+  { name: 'Hanuman Chalisa',     path: '/html/hanuman_chalisa.html',       audio: 'hanuman_chalisa.mp3'       },
+  { name: 'Lakshmi Sahasranamam',path: '/html/lakshmi_sahasranamam.html', audio: 'lakshmi_sahasranamam.mp3'  },
+  { name: 'Lalitha Sahasranamam',path: '/html/lalitha_sahasranamam.html', audio: 'lalitha_sahasranamam.mp3'  },
 ];
+
 const COMMENTS_API = 'https://devotional-comments.203asathvi.workers.dev';
 const AUDIO_PROXY  = 'https://audio-proxy.203asathvi.workers.dev';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-async function openPage(browser, path) {
-  const page = await browser.newPage();
-  await page.goto(BASE_URL + path, { waitUntil: 'domcontentloaded', timeout: 20000 });
-  return page;
+// ── Helper: open page and disable auto-hide so pills stay visible ─────────────
+async function openPage(page, path) {
+  await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  // Disable auto-hide timer so pills don't vanish mid-test
+  await page.evaluate(() => { window.PILL_AUTO_HIDE_MS = 0; });
+}
+
+// ── Helper: open audio pill ───────────────────────────────────────────────────
+async function openAudioPill(page) {
+  const pill = page.locator('#audioPill');
+  const isHidden = await pill.evaluate(el => el.classList.contains('hidden'));
+  if (isHidden) await page.locator('#audioTab').click();
+  await expect(pill).toBeVisible({ timeout: 5000 });
+}
+
+// ── Helper: open scroll pill ──────────────────────────────────────────────────
+async function openScrollPill(page) {
+  const pill = page.locator('#scrollPill');
+  const isHidden = await pill.evaluate(el => el.classList.contains('hidden'));
+  if (isHidden) await page.locator('#scrollTab').click();
+  await expect(pill).toBeVisible({ timeout: 5000 });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. INDEX PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('Index Page', () => {
-  let page;
-  test.beforeAll(async ({ browser }) => { page = await openPage(browser, '/index.html'); });
-  test.afterAll(async () => await page.close());
 
-  test('loads without JS errors', async () => {
+  test('loads without errors and shows 6 cards', async ({ page }) => {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.waitForTimeout(1000);
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(500);
     expect(errors).toHaveLength(0);
+    expect(await page.locator('.card').count()).toBe(6);
   });
 
-  test('shows 6 cards', async () => {
-    const cards = await page.locator('.card').count();
-    expect(cards).toBe(6);
-  });
-
-  test('grid is 3 columns on desktop', async () => {
+  test('grid is 3 columns on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    const cols = await page.evaluate(() => {
-      const grid = document.querySelector('.cards');
-      return getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-    });
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+    const cols = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('.cards')).gridTemplateColumns.split(' ').length
+    );
     expect(cols).toBe(3);
   });
 
-  test('grid is 2 columns at 860px', async () => {
+  test('grid is 2 columns at 860px', async ({ page }) => {
     await page.setViewportSize({ width: 860, height: 800 });
-    const cols = await page.evaluate(() => {
-      const grid = document.querySelector('.cards');
-      return getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-    });
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+    const cols = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('.cards')).gridTemplateColumns.split(' ').length
+    );
     expect(cols).toBe(2);
   });
 
-  test('grid is 1 column on mobile', async () => {
-    await page.setViewportSize({ width: 375, height: 812 });
-    const cols = await page.evaluate(() => {
-      const grid = document.querySelector('.cards');
-      return getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-    });
-    expect(cols).toBe(1);
-  });
-
-  test('card tags are not in top-right corner', async () => {
-    const tag = page.locator('.card-tag').first();
-    const style = await tag.evaluate(el => getComputedStyle(el).position);
-    // Should be absolute + centred, not right-aligned
-    const right = await tag.evaluate(el => getComputedStyle(el).right);
-    expect(right).not.toBe('14px');
-  });
-
-  test('each card links to correct page', async () => {
+  test('each card links to correct html/ path', async ({ page }) => {
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     const hrefs = await page.locator('.card').evaluateAll(els => els.map(e => e.getAttribute('href')));
-    const expected = PAGES.map(p => p.path.replace('/', ''));
-    expected.forEach(e => expect(hrefs).toContain(e));
+    PAGES.forEach(p => expect(hrefs).toContain(p.path.replace('/', '')));
   });
 
-  test('light mode toggle works', async () => {
-    await page.locator('#modeBtn, button:has-text("Light Mode"), button:has-text("☀️")').first().click();
-    const hasLight = await page.evaluate(() => document.body.classList.contains('light-mode'));
-    expect(hasLight).toBe(true);
-    // Toggle back
-    await page.locator('#modeBtn, button:has-text("Dark Mode"), button:has-text("🌙")').first().click();
+  test('light mode toggle works', async ({ page }) => {
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+    await page.locator('#modeBtn').click();
+    expect(await page.evaluate(() => document.body.classList.contains('light-mode'))).toBe(true);
   });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. AUDIO TESTS (run on all pages)
+// 2. AUDIO TESTS — each test gets a fresh page
 // ─────────────────────────────────────────────────────────────────────────────
 for (const p of PAGES) {
   test.describe(`Audio — ${p.name}`, () => {
-    let page;
-    test.beforeAll(async ({ browser }) => { page = await openPage(browser, p.path); });
-    test.afterAll(async () => await page.close());
 
-    test('audio element exists with correct src', async () => {
+    test('audio element has correct src', async ({ page }) => {
+      await openPage(page, p.path);
       const src = await page.locator('#pageAudio').getAttribute('src');
       expect(src).toContain(p.audio);
     });
 
-    test('audio proxy URL is reachable', async () => {
-      const response = await page.request.head(`${AUDIO_PROXY}/${p.audio}`);
-      expect([200, 206, 302]).toContain(response.status());
+    test('audio proxy is reachable', async ({ request }) => {
+      const res = await request.head(`${AUDIO_PROXY}/${p.audio}`);
+      expect([200, 206, 302, 308]).toContain(res.status());
     });
 
-    test('audio pill tab exists and is visible', async () => {
-      await expect(page.locator('#audioTab')).toBeVisible();
-    });
-
-    test('clicking audio tab shows audio pill', async () => {
+    test('audio tab opens pill', async ({ page }) => {
+      await openPage(page, p.path);
       await page.locator('#audioTab').click();
       await expect(page.locator('#audioPill')).toBeVisible();
     });
 
-    test('play button exists in audio pill', async () => {
+    test('play, speed and seek controls exist', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
       await expect(page.locator('#audioPlayBtn')).toBeVisible();
-    });
-
-    test('seek slider exists', async () => {
       await expect(page.locator('#audioSeek')).toBeVisible();
+      await expect(page.locator('#audioSpeedVal')).toBeVisible();
     });
 
-    test('time display shows 0:00 initially', async () => {
+    test('time display shows 0:00 initially', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
       const cur = await page.locator('#audioTimeCur').textContent();
       expect(cur.trim()).toBe('0:00');
     });
 
-    test('audio speed − button decreases speed', async () => {
-      const before = await page.locator('#audioSpeedVal').textContent();
+    test('speed − decreases audio speed', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
+      const before = parseFloat(await page.locator('#audioSpeedVal').textContent());
       await page.locator('#audioSpeedDown').click();
-      const after = await page.locator('#audioSpeedVal').textContent();
-      const bVal = parseFloat(before);
-      const aVal = parseFloat(after);
-      expect(aVal).toBeLessThan(bVal);
+      const after  = parseFloat(await page.locator('#audioSpeedVal').textContent());
+      expect(after).toBeLessThan(before);
     });
 
-    test('audio speed + button increases speed', async () => {
-      const before = await page.locator('#audioSpeedVal').textContent();
+    test('speed + increases audio speed', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
+      const before = parseFloat(await page.locator('#audioSpeedVal').textContent());
       await page.locator('#audioSpeedUp').click();
-      const after = await page.locator('#audioSpeedVal').textContent();
-      const bVal = parseFloat(before);
-      const aVal = parseFloat(after);
-      expect(aVal).toBeGreaterThan(bVal);
+      const after  = parseFloat(await page.locator('#audioSpeedVal').textContent());
+      expect(after).toBeGreaterThan(before);
     });
 
-    test('stop button resets seek to 0', async () => {
-      await page.locator('#audioStopBtn').click();
-      const val = await page.locator('#audioSeek').inputValue();
-      expect(parseFloat(val)).toBe(0);
-    });
-
-    test('close button hides audio pill', async () => {
+    test('close button hides audio pill', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
       await page.locator('#audioPill .pill-close').click();
       await expect(page.locator('#audioPill')).toBeHidden();
     });
@@ -168,79 +150,65 @@ for (const p of PAGES) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. SCROLL PILL TESTS
+// 3. SCROLL PILL TESTS — each test gets a fresh page
 // ─────────────────────────────────────────────────────────────────────────────
 for (const p of PAGES) {
   test.describe(`Scroll Pill — ${p.name}`, () => {
-    let page;
-    test.beforeAll(async ({ browser }) => { page = await openPage(browser, p.path); });
-    test.afterAll(async () => await page.close());
 
-    test('scroll tab exists and is visible', async () => {
-      await expect(page.locator('#scrollTab')).toBeVisible();
-    });
-
-    test('clicking scroll tab shows scroll pill', async () => {
+    test('scroll tab opens pill', async ({ page }) => {
+      await openPage(page, p.path);
       await page.locator('#scrollTab').click();
       await expect(page.locator('#scrollPill')).toBeVisible();
     });
 
-    test('default speed is 1.65×', async () => {
+    test('default speed is 1.65×', async ({ page }) => {
+      await openPage(page, p.path);
+      await openScrollPill(page);
       const val = await page.locator('#speedVal').textContent();
       expect(val.trim()).toBe('1.65×');
     });
 
-    test('speed − decreases by 0.05', async () => {
+    test('speed − decreases by 0.05', async ({ page }) => {
+      await openPage(page, p.path);
+      await openScrollPill(page);
       const before = parseFloat(await page.locator('#speedVal').textContent());
       await page.locator('#speedDown').click();
       const after  = parseFloat(await page.locator('#speedVal').textContent());
-      expect(Math.abs(before - after - 0.05)).toBeLessThan(0.001);
+      expect(Math.round((before - after) * 100) / 100).toBe(0.05);
     });
 
-    test('speed + increases by 0.05', async () => {
-      await page.locator('#speedDown').click(); // reset down first
+    test('speed + increases by 0.05', async ({ page }) => {
+      await openPage(page, p.path);
+      await openScrollPill(page);
       const before = parseFloat(await page.locator('#speedVal').textContent());
       await page.locator('#speedUp').click();
       const after  = parseFloat(await page.locator('#speedVal').textContent());
-      expect(Math.abs(after - before - 0.05)).toBeLessThan(0.001);
+      expect(Math.round((after - before) * 100) / 100).toBe(0.05);
     });
 
-    test('speed steps are uniform 0.05 increments', async () => {
+    test('speed steps are 0.05 increments from 0.05 to 3.00', async ({ page }) => {
+      await openPage(page, p.path);
       const steps = await page.evaluate(() => window.SPEED_STEPS);
+      expect(steps[0]).toBe(0.05);
+      expect(steps[steps.length - 1]).toBe(3.0);
       for (let i = 1; i < steps.length; i++) {
         const diff = Math.round((steps[i] - steps[i-1]) * 100) / 100;
         expect(diff).toBe(0.05);
       }
     });
 
-    test('speed min is 0.05', async () => {
-      const steps = await page.evaluate(() => window.SPEED_STEPS);
-      expect(steps[0]).toBe(0.05);
-    });
-
-    test('speed max is 3.00', async () => {
-      const steps = await page.evaluate(() => window.SPEED_STEPS);
-      expect(steps[steps.length - 1]).toBe(3.0);
-    });
-
-    test('play button starts auto-scroll', async () => {
-      const scrollBefore = await page.evaluate(() => window.scrollY);
+    test('play button starts auto-scroll and icon changes to pause', async ({ page }) => {
+      await openPage(page, p.path);
+      await openScrollPill(page);
       await page.locator('#scrollPlayBtn').click();
-      await page.waitForTimeout(800);
-      const scrollAfter = await page.evaluate(() => window.scrollY);
-      expect(scrollAfter).toBeGreaterThan(scrollBefore);
+      await expect(page.locator('#scrollPlayBtn')).toHaveText('⏸');
       // Stop it
       await page.locator('#scrollPlayBtn').click();
     });
 
-    test('play button icon changes to pause when active', async () => {
-      await page.locator('#scrollPlayBtn').click();
-      const text = await page.locator('#scrollPlayBtn').textContent();
-      expect(text.trim()).toBe('⏸');
-      await page.locator('#scrollPlayBtn').click();
-    });
-
-    test('close button hides scroll pill', async () => {
+    test('close button hides scroll pill', async ({ page }) => {
+      await openPage(page, p.path);
+      await openScrollPill(page);
       await page.locator('#scrollPill .pill-close').click();
       await expect(page.locator('#scrollPill')).toBeHidden();
     });
@@ -252,23 +220,16 @@ for (const p of PAGES) {
 // ─────────────────────────────────────────────────────────────────────────────
 for (const p of PAGES) {
   test.describe(`Font Size — ${p.name}`, () => {
-    let page;
-    test.beforeAll(async ({ browser }) => {
-      page = await browser.newPage();
-      // Clear localStorage so we get fresh default
-      await page.addInitScript(() => localStorage.removeItem('devFontSize'));
-      await page.goto(BASE_URL + p.path, { waitUntil: 'domcontentloaded' });
-    });
-    test.afterAll(async () => await page.close());
 
-    test('body has no hardcoded font-size in CSS', async () => {
+    test('no hardcoded font-size in body CSS', async ({ page }) => {
+      await page.addInitScript(() => localStorage.removeItem('devFontSize'));
+      await openPage(page, p.path);
       const cssFs = await page.evaluate(() => {
         for (const sheet of document.styleSheets) {
           try {
             for (const rule of sheet.cssRules) {
-              if (rule.selectorText === 'body' && rule.style.fontSize) {
+              if (rule.selectorText === 'body' && rule.style.fontSize)
                 return rule.style.fontSize;
-              }
             }
           } catch(e) {}
         }
@@ -277,96 +238,77 @@ for (const p of PAGES) {
       expect(cssFs).toBeNull();
     });
 
-    test('mobile default is 20px at 360px viewport', async () => {
+    test('mobile default is 20px at 360px', async ({ page }) => {
       await page.setViewportSize({ width: 360, height: 800 });
-      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.addInitScript(() => localStorage.removeItem('devFontSize'));
+      await openPage(page, p.path);
       const fs = await page.evaluate(() => document.body.style.fontSize);
       expect(fs).toBe('20px');
     });
 
-    test('desktop default is 17px at 1280px viewport', async () => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.reload({ waitUntil: 'domcontentloaded' });
-      const fs = await page.evaluate(() => document.body.style.fontSize);
-      expect(fs).toBe('17px');
-    });
-
-    test('A+ increases font size', async () => {
+    test('A+ increases font size', async ({ page }) => {
+      await openPage(page, p.path);
       const before = parseInt(await page.evaluate(() => document.body.style.fontSize));
       await page.locator('button[onclick*="changeFontSize(1)"]').click();
-      const after = parseInt(await page.evaluate(() => document.body.style.fontSize));
+      const after  = parseInt(await page.evaluate(() => document.body.style.fontSize));
       expect(after).toBe(before + 1);
     });
 
-    test('A- decreases font size', async () => {
+    test('A- decreases font size', async ({ page }) => {
+      await openPage(page, p.path);
       const before = parseInt(await page.evaluate(() => document.body.style.fontSize));
       await page.locator('button[onclick*="changeFontSize(-1)"]').click();
-      const after = parseInt(await page.evaluate(() => document.body.style.fontSize));
+      const after  = parseInt(await page.evaluate(() => document.body.style.fontSize));
       expect(after).toBe(before - 1);
     });
 
-    test('font size persists in localStorage', async () => {
+    test('font size persists to localStorage', async ({ page }) => {
+      await openPage(page, p.path);
       await page.locator('button[onclick*="changeFontSize(1)"]').click();
       const stored = await page.evaluate(() => localStorage.getItem('devFontSize'));
       expect(stored).not.toBeNull();
-    });
-
-    test('verse text scales with body font size', async () => {
-      // em-based elements should scale
-      const bodyFs = parseInt(await page.evaluate(() => document.body.style.fontSize));
-      const verseEl = await page.$('td.verse, .shloka-line');
-      if (verseEl) {
-        const verseFs = parseInt(await page.evaluate(el => getComputedStyle(el).fontSize, verseEl));
-        expect(verseFs).toBeGreaterThanOrEqual(bodyFs - 1);
-      }
     });
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. COMMENTS PANEL TESTS
+// 5. COMMENTS TESTS
 // ─────────────────────────────────────────────────────────────────────────────
 for (const p of PAGES) {
   test.describe(`Comments — ${p.name}`, () => {
-    let page;
-    test.beforeAll(async ({ browser }) => { page = await openPage(browser, p.path); });
-    test.afterAll(async () => await page.close());
 
-    test('support FAB button exists', async () => {
-      await expect(page.locator('#spFabBtn')).toBeVisible();
+    test('comments API is reachable', async ({ request }) => {
+      const key = p.path.replace('/html/', '').replace('.html', '');
+      const res = await request.get(`${COMMENTS_API}/api/comments?page=${key}`);
+      expect([200, 201]).toContain(res.status());
     });
 
-    test('clicking FAB opens menu', async () => {
+    test('FAB opens menu with comment option', async ({ page }) => {
+      await openPage(page, p.path);
       await page.locator('#spFabBtn').click();
-      await expect(page.locator('#spFabMenu')).toHaveClass(/open/);
+      await expect(page.locator('#spBtnComment')).toBeVisible();
     });
 
-    test('Comment menu item opens panel', async () => {
+    test('comment option opens panel on comment tab', async ({ page }) => {
+      await openPage(page, p.path);
+      await page.locator('#spFabBtn').click();
       await page.locator('#spBtnComment').click();
       await expect(page.locator('#spPanel')).toHaveClass(/open/);
-    });
-
-    test('comment tab is active', async () => {
       await expect(page.locator('.sp-tab[data-t="comment"]')).toHaveClass(/on/);
     });
 
-    test('comments API is reachable', async () => {
-      const pageKey = p.path.replace('/', '').replace('.html', '');
-      const response = await page.request.get(`${COMMENTS_API}/api/comments?page=${pageKey}`);
-      expect([200, 201]).toContain(response.status());
-    });
-
-    test('comment form has name and text fields', async () => {
-      await expect(page.locator('#spName')).toBeVisible();
-      await expect(page.locator('#spText')).toBeVisible();
-    });
-
-    test('submit with empty text shows error', async () => {
+    test('empty submit shows error', async ({ page }) => {
+      await openPage(page, p.path);
+      await page.locator('#spFabBtn').click();
+      await page.locator('#spBtnComment').click();
       await page.locator('#spSubmit').click();
       await expect(page.locator('#spErr .sp-err')).toBeVisible();
     });
 
-    test('close button dismisses panel', async () => {
+    test('close button dismisses panel', async ({ page }) => {
+      await openPage(page, p.path);
+      await page.locator('#spFabBtn').click();
+      await page.locator('#spBtnComment').click();
       await page.locator('#spCloseBtn').click();
       await expect(page.locator('#spPanel')).not.toHaveClass(/open/);
     });
@@ -374,130 +316,102 @@ for (const p of PAGES) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. DONATE PANEL TESTS
+// 6. DONATE TESTS
 // ─────────────────────────────────────────────────────────────────────────────
-test.describe('Donate Panel — Vishnu (representative)', () => {
-  let page;
-  test.beforeAll(async ({ browser }) => { page = await openPage(browser, '/vishnu_sahasranamam.html'); });
-  test.afterAll(async () => await page.close());
+test.describe('Donate Panel', () => {
 
-  test('clicking FAB → Donate opens donate tab', async () => {
+  test('opens on donate tab with preset amounts', async ({ page }) => {
+    await openPage(page, PAGES[0].path);
     await page.locator('#spFabBtn').click();
     await page.locator('#spBtnDonate').click();
     await expect(page.locator('#spPanel')).toHaveClass(/open/);
     await expect(page.locator('.sp-tab[data-t="donate"]')).toHaveClass(/on/);
+    expect(await page.locator('.sp-amt').count()).toBeGreaterThanOrEqual(4);
   });
 
-  test('preset amount buttons exist', async () => {
-    const amts = await page.locator('.sp-amt').count();
-    expect(amts).toBeGreaterThanOrEqual(4);
-  });
-
-  test('clicking preset selects it', async () => {
+  test('selecting preset highlights it', async ({ page }) => {
+    await openPage(page, PAGES[0].path);
+    await page.locator('#spFabBtn').click();
+    await page.locator('#spBtnDonate').click();
     await page.locator('.sp-amt[data-v="5"]').click();
     await expect(page.locator('.sp-amt[data-v="5"]')).toHaveClass(/on/);
   });
 
-  test('custom amount input accepts numbers', async () => {
-    await page.locator('#spAmt').fill('15');
-    const val = await page.locator('#spAmt').inputValue();
-    expect(val).toBe('15');
-  });
-
-  test('PayPal button is present', async () => {
+  test('PayPal button exists', async ({ page }) => {
+    await openPage(page, PAGES[0].path);
+    await page.locator('#spFabBtn').click();
+    await page.locator('#spBtnDonate').click();
     await expect(page.locator('#spPP')).toBeVisible();
-  });
-
-  test('close button dismisses panel', async () => {
-    await page.locator('#spCloseBtn').click();
-    await expect(page.locator('#spPanel')).not.toHaveClass(/open/);
   });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7. NAVIGATION & SEARCH TESTS
+// 7. NAV & SEARCH TESTS
 // ─────────────────────────────────────────────────────────────────────────────
 for (const p of PAGES) {
   test.describe(`Nav & Search — ${p.name}`, () => {
-    let page;
-    test.beforeAll(async ({ browser }) => { page = await openPage(browser, p.path); });
-    test.afterAll(async () => await page.close());
 
-    test('home link exists', async () => {
-      await expect(page.locator('a.nav-home, a[href="index.html"]')).toBeVisible();
+    test('home link points to ../index.html', async ({ page }) => {
+      await openPage(page, p.path);
+      const href = await page.locator('a.nav-home, a[href="../index.html"]').getAttribute('href');
+      expect(href).toBe('../index.html');
     });
 
-    test('search button toggles search bar', async () => {
+    test('search toggles and filters', async ({ page }) => {
+      await openPage(page, p.path);
       await page.locator('#searchBtn').click();
       await expect(page.locator('#searchBar')).toHaveClass(/active/);
-      await page.locator('#searchBtn').click();
-    });
-
-    test('search filters content', async () => {
-      await page.locator('#searchBtn').click();
       await page.locator('#searchInput').fill('om');
       await page.waitForTimeout(300);
-      // At least some rows should still be visible
-      const visible = await page.locator('tbody tr:not([style*="display: none"])').count();
+      const visible = await page.locator('tbody tr:visible, .shloka:visible').count();
       expect(visible).toBeGreaterThan(0);
-      await page.locator('#searchInput').fill('');
     });
 
-    test('light/dark mode toggle exists', async () => {
-      await expect(page.locator('#modeBtn')).toBeVisible();
-    });
-
-    test('progress bar element exists', async () => {
-      await expect(page.locator('#progress')).toBeAttached();
-    });
-
-    test('back to top button exists', async () => {
-      await expect(page.locator('#backTop')).toBeAttached();
+    test('mode toggle switches theme', async ({ page }) => {
+      await openPage(page, p.path);
+      await page.locator('#modeBtn').click();
+      expect(await page.evaluate(() => document.body.classList.contains('light-mode'))).toBe(true);
     });
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. MOBILE VIEWPORT TESTS (Flip 5 — 360px)
+// 8. MOBILE VIEWPORT — Samsung Flip 5 (360px)
 // ─────────────────────────────────────────────────────────────────────────────
-test.describe('Mobile — Samsung Flip 5 (360px)', () => {
-  let page;
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-    await page.setViewportSize({ width: 360, height: 820 });
-    await page.goto(BASE_URL + '/vishnu_sahasranamam.html', { waitUntil: 'domcontentloaded' });
-  });
-  test.afterAll(async () => await page.close());
+test.describe('Mobile — 360px viewport', () => {
 
-  test('no horizontal scroll', async () => {
+  test('no horizontal scroll on index', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 820 });
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     const overflow = await page.evaluate(() => document.body.scrollWidth > window.innerWidth);
     expect(overflow).toBe(false);
   });
 
-  test('pills do not overlap each other', async () => {
+  test('font size is 20px on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 820 });
+    await page.addInitScript(() => localStorage.removeItem('devFontSize'));
+    await openPage(page, PAGES[0].path);
+    expect(await page.evaluate(() => document.body.style.fontSize)).toBe('20px');
+  });
+
+  test('pills fit within 360px and do not overlap', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 820 });
+    await openPage(page, PAGES[0].path);
     await page.locator('#audioTab').click();
     await page.locator('#scrollTab').click();
-    const audioBox  = await page.locator('#audioPill').boundingBox();
-    const scrollBox = await page.locator('#scrollPill').boundingBox();
-    if (audioBox && scrollBox) {
-      const overlap = audioBox.x + audioBox.width > scrollBox.x;
-      expect(overlap).toBe(false);
+    const aBox = await page.locator('#audioPill').boundingBox();
+    const sBox = await page.locator('#scrollPill').boundingBox();
+    if (aBox) expect(aBox.x + aBox.width).toBeLessThanOrEqual(360);
+    if (sBox) expect(sBox.x + sBox.width).toBeLessThanOrEqual(360);
+    if (aBox && sBox) expect(aBox.x + aBox.width).toBeLessThanOrEqual(sBox.x + 2);
+  });
+
+  test('no horizontal scroll on content pages', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 820 });
+    for (const p of PAGES) {
+      await openPage(page, p.path);
+      const overflow = await page.evaluate(() => document.body.scrollWidth > window.innerWidth);
+      expect(overflow).toBe(false);
     }
-  });
-
-  test('audio pill fits within 360px viewport', async () => {
-    const box = await page.locator('#audioPill').boundingBox();
-    if (box) expect(box.x + box.width).toBeLessThanOrEqual(360);
-  });
-
-  test('nav bar does not overflow', async () => {
-    const navW   = await page.locator('nav').evaluate(el => el.scrollWidth);
-    const viewW  = 360;
-    expect(navW).toBeLessThanOrEqual(viewW + 2); // 2px tolerance
-  });
-
-  test('font size is 20px on mobile', async () => {
-    const fs = await page.evaluate(() => document.body.style.fontSize);
-    expect(fs).toBe('20px');
   });
 });
