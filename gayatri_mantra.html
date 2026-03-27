@@ -60,16 +60,16 @@ main{position:relative;z-index:1;padding:0 14px 120px;max-width:960px;margin:0 a
 .section-toggle.collapsed{transform:rotate(-90deg);}
 .note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--sun);margin:9px 0 12px;background:rgba(240,160,48,0.04);border-radius:0 4px 4px 0;line-height:1.6;}
 .tbl-wrap{overflow-x:auto;margin-bottom:12px;border:1px solid var(--border);border-radius:8px;}
-table{width:100%;border-collapse:collapse;font-size:16px;}
+table{width:100%;border-collapse:collapse;font-size:inherit;}
 table th{font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--sun);text-transform:uppercase;padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;background:rgba(240,160,48,0.07);}
 table td{padding:11px 14px;border-bottom:1px solid rgba(240,160,48,0.1);vertical-align:top;line-height:1.65;}
 table tbody tr:last-child td{border-bottom:none;}
 table tbody tr:hover td{background:rgba(240,160,48,0.05);}
 td.num{font-family:'Cinzel',serif;font-size:10px;color:var(--sun);opacity:.75;width:80px;white-space:nowrap;padding-top:14px;}
-td.verse{font-size:17px;}
-td.verse .devanagari{display:block;font-size:22px;color:var(--sun3);letter-spacing:1px;margin-bottom:6px;line-height:1.5;}
+td.verse{font-size:1em;}
+td.verse .devanagari{display:block;font-size:1.2em;color:var(--sun3);letter-spacing:1px;margin-bottom:6px;line-height:1.5;}
 td.verse .l2{color:#d4c49a;padding-left:12px;display:block;margin-top:2px;}
-td.meaning{font-style:italic;color:var(--muted);font-size:15px;border-left:2px solid rgba(240,160,48,0.25);padding-left:16px;}
+td.meaning{font-style:italic;color:var(--muted);font-size:0.85em;border-left:2px solid rgba(240,160,48,0.25);padding-left:16px;}
 tr.hl td{background:rgba(240,160,48,0.1) !important;}
 .rep-label{font-family:'Cinzel',serif;font-size:9px;color:var(--sun);letter-spacing:1px;opacity:.55;display:block;margin-top:4px;}
 .sig-card{background:rgba(240,160,48,0.05);border:1px solid rgba(240,160,48,0.15);border-radius:10px;padding:18px 20px;margin-bottom:14px;line-height:1.75;}
@@ -85,7 +85,7 @@ body.light-mode{--bg:#fdf6ec;--card:#fff8f0;--text:#2a1a00;--muted:#7a5020;--bor
 body.light-mode td.verse .l2{color:#5a3a08;}
 body.light-mode td.meaning{color:#5a4010;}
 body.light-mode td.verse .devanagari{color:#b07818;}
-@media(max-width:640px){body{font-size:20px;}td.verse{font-size:20px;}td.meaning{font-size:17px;}td.num{width:52px;font-size:9px;}}
+@media(max-width:640px){body{font-size:20px;}td.num{width:52px;font-size:9px;}}
 /* ── Pills ── */
 .pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--sun);border-radius:12px;box-shadow:0 4px 20px rgba(240,160,48,0.35);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
@@ -165,8 +165,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
     <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
-    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)" title="Smaller">A−</button><span id="fontSizeVal" style="font-family:'Cinzel',serif;font-size:10px;color:var(--sun);opacity:.7;min-width:28px;text-align:center;display:inline-block;vertical-align:middle;"></span><button class="nav-btn" onclick="changeFontSize(1)" title="Larger">A+</button>
     <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
   </div>
 </nav>
@@ -509,8 +508,20 @@ function toggle(bodyId, togId) {
   t.classList.toggle('collapsed', vis);
 }
 
-let fs = 17;
-function changeFontSize(d) { fs = Math.max(12, Math.min(26, fs + d)); document.body.style.fontSize = fs + 'px'; }
+var _defaultFs = window.innerWidth <= 640 ? 20 : 17;
+var fs = parseInt(localStorage.getItem('devFontSize')) || _defaultFs;
+(function(){ document.body.style.fontSize = fs + 'px'; })();
+function changeFontSize(d) {
+  fs = Math.max(12, Math.min(32, fs + d));
+  document.body.style.fontSize = fs + 'px';
+  localStorage.setItem('devFontSize', fs);
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+});
 
 function toggleMode() {
   const isLight = document.body.classList.toggle('light-mode');
