@@ -1,0 +1,18 @@
+{
+  "name": "devotional-vishnu-tests",
+  "version": "1.0.0",
+  "description": "Playwright tests — dev only",
+  "scripts": {
+    "test":          "playwright test",
+    "test:audio":    "playwright test -g 'Audio'",
+    "test:scroll":   "playwright test -g 'Scroll'",
+    "test:comments": "playwright test -g 'Comments'",
+    "test:donate":   "playwright test -g 'Donate'",
+    "test:font":     "playwright test -g 'Font'",
+    "test:mobile":   "playwright test -g 'Mobile'",
+    "test:report":   "playwright show-report test-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}
