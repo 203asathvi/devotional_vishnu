@@ -55,7 +55,7 @@ body.light-mode .shloka-line.indent{color:#004d30;}
 .back-top.visible{display:flex;}
 body.light-mode{--bg:#f0fdf8;--card:#e0faf2;--text:#002a1a;--muted:#4a8070;--border:rgba(40,140,110,0.25);}
 mark{background:rgba(60,185,155,0.3);color:inherit;border-radius:2px;}
-@media(max-width:600px){body{font-size:20px;}.shloka-line{font-size:20px;}.shloka-meaning{font-size:17px;}.shloka{padding:11px 12px;}}
+@media(max-width:600px){body{font-size:20px;}.shloka{padding:11px 12px;}}
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
 .pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(60,185,155,0.35);transition:opacity .2s;white-space:nowrap;}
@@ -136,8 +136,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
     <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
-    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)" title="Smaller">A−</button><span id="fontSizeVal" style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold);opacity:.7;min-width:28px;text-align:center;display:inline-block;vertical-align:middle;"></span><button class="nav-btn" onclick="changeFontSize(1)" title="Larger">A+</button>
     <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
   </div>
 </nav>
@@ -578,8 +577,22 @@ function toggle(id,tid){
   t.classList.toggle('collapsed',!c);
 }
 function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
-let fs=17;
-function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
+var _defaultFs = window.innerWidth <= 640 ? 20 : 17;
+var fs = parseInt(localStorage.getItem('devFontSize')) || _defaultFs;
+(function(){
+  document.body.style.fontSize = fs + 'px';
+})();
+function changeFontSize(d) {
+  fs = Math.max(12, Math.min(32, fs + d));
+  document.body.style.fontSize = fs + 'px';
+  localStorage.setItem('devFontSize', fs);
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+});
 function toggleMode(){
   document.body.classList.toggle('light-mode');
   document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';

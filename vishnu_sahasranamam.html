@@ -72,7 +72,7 @@ table tbody tr:last-child td{border-bottom:none;}
 table tbody tr:hover td{background:rgba(201,168,76,0.04);}
 td.num{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);opacity:.75;width:80px;white-space:nowrap;padding-top:14px;}
 td.verse .l2{color:#c8b880;padding-left:12px;display:block;margin-top:2px;}
-td.meaning{font-style:italic;color:var(--muted);font-size:15px;border-left:2px solid rgba(201,168,76,0.25);padding-left:16px;}
+td.meaning{font-style:italic;color:var(--muted);font-size:0.85em;border-left:2px solid rgba(201,168,76,0.25);padding-left:16px;}
 tr.hl td{background:rgba(201,168,76,0.1) !important;}
 tr.speaker-row td{padding:0;border:none;}
 
@@ -122,7 +122,7 @@ body.light-mode .nc{background:rgba(160,110,40,0.08);border-color:rgba(160,110,4
 body.light-mode .nc:hover,.nc.active{background:rgba(160,110,40,0.18);}
 body.light-mode .nama-popup{background:#fff6e0;border-color:#b07820;}
 mark{background:rgba(201,168,76,0.3);color:inherit;border-radius:2px;}
-@media(max-width:640px){body{font-size:20px;}td.verse{font-size:20px;}td.meaning{font-size:17px;}td.num{width:56px;font-size:9px;}}
+@media(max-width:640px){body{font-size:20px;}td.num{width:56px;font-size:9px;}}
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
 .pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(201,168,76,0.35);transition:opacity .2s;white-space:nowrap;}
@@ -203,8 +203,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
     <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
-    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)" title="Smaller">A−</button><span id="fontSizeVal" style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold);opacity:.7;min-width:28px;text-align:center;display:inline-block;vertical-align:middle;"></span><button class="nav-btn" onclick="changeFontSize(1)" title="Larger">A+</button>
     <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
   </div>
 </nav>
@@ -1394,8 +1393,22 @@ function toggle(id,tid){
   t.classList.toggle('collapsed',!c);
 }
 function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
-let fs=17;
-function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
+var _defaultFs = window.innerWidth <= 640 ? 20 : 17;
+var fs = parseInt(localStorage.getItem('devFontSize')) || _defaultFs;
+(function(){
+  document.body.style.fontSize = fs + 'px';
+})();
+function changeFontSize(d) {
+  fs = Math.max(12, Math.min(32, fs + d));
+  document.body.style.fontSize = fs + 'px';
+  localStorage.setItem('devFontSize', fs);
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+});
 function toggleMode(){
   document.body.classList.toggle('light-mode');
   document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';

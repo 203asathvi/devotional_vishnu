@@ -73,7 +73,7 @@ main{position:relative;z-index:1;padding:0 14px 120px;max-width:960px;margin:0 a
 .shloka-line{line-height:1.7;}
 .shloka-line.indent{padding-left:14px;color:#d4be90;}
 body.light-mode .shloka-line.indent{color:#7a3a00;}
-.shloka-meaning{font-style:italic;color:var(--muted);font-size:15px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(232,160,32,0.15);line-height:1.6;}
+.shloka-meaning{font-style:italic;color:var(--muted);font-size:0.85em;margin-top:8px;padding-top:8px;border-top:1px solid rgba(232,160,32,0.15);line-height:1.6;}
 body.light-mode 
 /* View switching via CSS */
 
@@ -81,7 +81,7 @@ body.light-mode
 .back-top.visible{display:flex;}
 body.light-mode{--bg:#fffaf0;--card:#fff6e0;--text:#2a1a00;--muted:#80601a;--border:rgba(180,120,20,0.25);}
 mark{background:rgba(232,160,32,0.3);color:inherit;border-radius:2px;}
-@media(max-width:640px){body{font-size:20px;}.shloka-line{font-size:20px;}.shloka-meaning{font-size:17px;}}
+@media(max-width:640px){body{font-size:20px;}}
 
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
@@ -169,8 +169,7 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
     <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)">A−</button>
-    <button class="nav-btn" onclick="changeFontSize(1)">A+</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)" title="Smaller">A−</button><span id="fontSizeVal" style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold);opacity:.7;min-width:28px;text-align:center;display:inline-block;vertical-align:middle;"></span><button class="nav-btn" onclick="changeFontSize(1)" title="Larger">A+</button>
     <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
   </div>
 </nav>
@@ -446,8 +445,22 @@ function toggle(id,tid){
   t.classList.toggle('collapsed',!c);
 }
 function gotoSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
-let fs=17;
-function changeFontSize(d){fs=Math.max(12,Math.min(26,fs+d));document.body.style.fontSize=fs+'px';}
+var _defaultFs = window.innerWidth <= 640 ? 20 : 17;
+var fs = parseInt(localStorage.getItem('devFontSize')) || _defaultFs;
+(function(){
+  document.body.style.fontSize = fs + 'px';
+})();
+function changeFontSize(d) {
+  fs = Math.max(12, Math.min(32, fs + d));
+  document.body.style.fontSize = fs + 'px';
+  localStorage.setItem('devFontSize', fs);
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var lbl = document.getElementById('fontSizeVal');
+  if (lbl) lbl.textContent = fs + 'px';
+});
 function toggleMode(){
   document.body.classList.toggle('light-mode');
   document.getElementById('modeBtn').textContent=document.body.classList.contains('light-mode')?'🌙':'☀️';
