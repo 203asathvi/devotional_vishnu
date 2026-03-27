@@ -51,245 +51,84 @@ body.light-mode .shloka-line.indent{color:#004d30;}
 .speaker{font-family:'Cinzel',serif;font-size:10px;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;margin:14px 0 7px;display:flex;align-items:center;gap:8px;}
 .speaker::after{content:'';flex:1;height:1px;background:rgba(128,212,184,0.25);}
 .note{font-style:italic;color:var(--muted);padding:7px 12px;border-left:2px solid var(--gold);margin:9px 0;background:rgba(60,185,155,0.04);border-radius:0 4px 4px 0;}
-
-
+.back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:var(--gold);color:var(--deep);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(60,185,155,0.4);}
+.back-top.visible{display:flex;}
 body.light-mode{--bg:#f0fdf8;--card:#e0faf2;--text:#002a1a;--muted:#4a8070;--border:rgba(40,140,110,0.25);}
 mark{background:rgba(60,185,155,0.3);color:inherit;border-radius:2px;}
-@media(max-width:600px){body{font-size:16px;}.shloka{padding:11px 12px;}}
+@media(max-width:600px){body{font-size:20px;}.shloka-line{font-size:20px;}.shloka-meaning{font-size:17px;}.shloka{padding:11px 12px;}}
 
 /* ── TWO FLOATING PILLS ─────────────────────────────────────────────── */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.audio-skip-val{display:none;}
-
-body.light-mode 
-body.light-mode 
-body.light-mode 
-
-body.light-mode 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-body.light-mode 
-
-
-
-/* ── Pill UI (classic) ── */
-.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.4);white-space:nowrap;}
+.pill-base{position:fixed;bottom:20px;z-index:600;display:flex;flex-direction:column;align-items:stretch;background:rgba(15,10,25,0.20);border:1px solid rgba(255,255,255,0.10);border-top:2px solid var(--gold);border-radius:12px;box-shadow:0 4px 20px rgba(60,185,155,0.35);transition:opacity .2s;white-space:nowrap;}
 .pill-base.hidden{display:none;}
-#audioPill{bottom:20px;left:14px;width:min(200px,calc(50vw - 18px));}
-#scrollPill{bottom:20px;right:14px;}
+#audioPill{top:auto;bottom:20px;left:14px;right:auto;width:min(200px,calc(50vw - 18px));border-radius:12px;border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:1px solid rgba(255,255,255,0.10);flex-direction:column;align-items:stretch;padding:0;gap:0;box-sizing:border-box;}
+#scrollPill{top:auto;bottom:20px;right:14px;left:auto;border-radius:12px;border-top:2px solid var(--gold);border-left:1px solid rgba(255,255,255,0.10);border-right:1px solid rgba(255,255,255,0.10);border-bottom:1px solid rgba(255,255,255,0.10);flex-direction:column;align-items:stretch;padding:0;gap:0;box-sizing:border-box;}
 .pill-header{display:flex;align-items:center;justify-content:space-between;padding:5px 10px 3px;gap:6px;}
 .pill-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.8px;color:rgba(255,255,255,0.35);text-transform:uppercase;line-height:1;}
 .pill-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:color .15s;}
 .pill-close:hover{color:rgba(255,255,255,0.8);}
+
+.audio-play-btn{background:linear-gradient(135deg,var(--gold),#00b478);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.audio-play-btn:hover{opacity:.8;}
 .pill-audio-top{display:flex;align-items:center;gap:8px;padding:6px 10px 4px;}
 .pill-audio-seek-row{padding:2px 10px 4px;display:flex;align-items:center;}
-.pill-audio-time{display:flex;justify-content:space-between;padding:1px 10px 8px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;}
-.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:6px 12px 9px;}
-.audio-play-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
-.audio-play-btn:hover{opacity:.8;}
+.pill-audio-time{display:flex;justify-content:space-between;padding:1px 10px 8px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px;}
+.audio-play-btn{background:linear-gradient(135deg,var(--sun),var(--sun2));border:none;color:var(--deep);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
+.audio-play-btn:hover{opacity:.85;}
 .audio-val-wrap{display:inline-flex;align-items:center;cursor:pointer;}
-.audio-val-num{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:32px;text-align:center;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);}
-.audio-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
-.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;}
-.audio-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none;}
-.scroll-play-btn{background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);width:34px;height:34px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
-.scroll-play-btn:hover{opacity:.8;}
-.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
-.scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);}
-.tab-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;}
-.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.25);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4);color:rgba(255,255,255,0.92);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;}
+.audio-val-num{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:32px;text-align:center;letter-spacing:.3px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(255,255,255,0.6);}
+.audio-val-label{display:none;}
+.audio-seek{-webkit-appearance:none;appearance:none;width:100%;flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;}
+.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.audio-seek::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--sun),var(--sun2));cursor:pointer;border:none;}
+.audio-skip-val{display:none;}
+.audio-speed-val{display:none;}
+body.light-mode .audio-seek{background:rgba(0,0,0,0.12);}
+body.light-mode .audio-val-num{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);background:none;border:none;border-bottom:1px dashed rgba(0,0,0,0.2);}
+body.light-mode .audio-val-wrap:hover .audio-val-num{border-bottom-color:rgba(0,0,0,0.5);}
+
+body.light-mode .pill-audio-time{color:rgba(0,0,0,0.35);}
+@media(max-width:400px){.audio-play-btn{width:34px;height:34px;font-size:14px;}}
+@media(max-width:400px){.audio-ctrl-btn{width:28px;height:28px;font-size:12px;}}
+.pill-scroll-row{display:flex;align-items:center;gap:8px;padding:6px 12px 9px;}
+.pill-tab{position:fixed;bottom:20px;z-index:600;display:flex;align-items:center;gap:5px;padding:8px 12px;background:rgba(15,10,25,0.75);border:1px solid rgba(255,255,255,0.25);border-top:2px solid var(--gold);border-radius:10px;box-shadow:0 4px 16px rgba(60,185,155,0.35);color:rgba(255,255,255,0.92);font-size:11px;font-family:'Cinzel',serif;cursor:pointer;letter-spacing:.8px;transition:opacity .2s;}
+.pill-tab:hover{opacity:1;background:rgba(15,10,25,0.90);}
 .pill-tab.hidden{display:none;}
-#audioTab{bottom:20px;left:14px;}
-#scrollTab{bottom:20px;right:14px;}
-.back-top{position:fixed;bottom:80px;right:18px;z-index:200;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));color:var(--deep,#08060f);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;}
-.back-top.visible{display:flex;}
-body.light-mode .pill-base{background:rgba(255,248,230,0.90);border-color:rgba(0,0,0,0.1);}
+#audioTab{top:auto;bottom:20px;left:14px;}
+#scrollTab{top:auto;bottom:20px;right:14px;}
+.tab-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#00b478);flex-shrink:0;}
+.audio-play-btn{background:linear-gradient(135deg,var(--gold),#00b478);border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.audio-play-btn:hover{opacity:.8;}
+.scroll-play-btn{background:linear-gradient(135deg,var(--gold),#00b478);border:none;color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;}
+.scroll-play-btn:hover{opacity:.8;}
+.scroll-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
+.scroll-speed-btn:hover{background:rgba(255,255,255,0.18);}
+.scroll-speed-val{color:#e8d8ff;font-size:13px;font-family:'Cinzel',serif;min-width:40px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.scroll-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
+.scroll-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none;}
+
+.scroll-speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#00b478);cursor:pointer;}
+.scroll-speed-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#00b478);cursor:pointer;border:none;}
+
+.audio-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#00b478);cursor:pointer;}
+.audio-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#00b478);cursor:pointer;border:none;}
+.audio-time{color:rgba(255,255,255,0.5);font-size:10px;font-family:'Cinzel',serif;white-space:nowrap;min-width:66px;text-align:center;}
+.audio-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:34px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s;}
+.audio-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6);}
+body.light-mode .pill-base{background:rgba(255,248,230,0.20);border:1px solid rgba(0,0,0,0.10);border-top:2px solid var(--gold);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
 body.light-mode .pill-label{color:rgba(0,0,0,0.3);}
 body.light-mode .pill-close{color:rgba(0,0,0,0.25);}
-body.light-mode .pill-tab{background:rgba(255,248,230,0.95);border-color:rgba(0,0,0,0.15);color:rgba(0,0,0,0.8);}
+body.light-mode .pill-close:hover{color:rgba(0,0,0,0.65);}
+body.light-mode .pill-tab{background:rgba(255,248,230,0.90);border:1px solid rgba(0,0,0,0.18);border-top:2px solid var(--gold);color:rgba(0,0,0,0.80);}
 body.light-mode .scroll-speed-btn{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.12);color:#3a2000;}
-body.light-mode .scroll-speed-val{color:#3a2000;}
-body.light-mode .audio-val-num{color:#3a2000;}
-body.light-mode .pill-audio-time{color:rgba(0,0,0,0.4);}
-
-/* ═══════════════════════════════════════════════════
-   A/B UI TOGGLE
-   ═══════════════════════════════════════════════════ */
-
-/* ── PILL mode (default) ── */
-body.ui-pill .pill-base:not(.hidden) { display:flex !important }
-body.ui-pill .pill-tab:not(.hidden)  { display:flex !important }
-body.ui-pill .back-top               { display:flex !important }
-body.ui-pill .pill-base.hidden,
-body.ui-pill .pill-tab.hidden        { display:none !important }
-body.ui-pill #sacDock  { display:none !important }
-body.ui-pill main      { padding-bottom:80px !important }
-/* spFab bottom in pill mode is managed by support-panel.js placeFab() */
-
-/* ── DOCK mode ── */
-body.ui-dock .pill-base,
-body.ui-dock .pill-tab,
-body.ui-dock .back-top,
-body.ui-dock .scroll-bar,
-body.ui-dock .scroll-bar-open-btn { display:none !important }
-body.ui-dock #sacDock  { display:flex !important }
-body.ui-dock main      { padding-bottom:130px !important }
-body.ui-dock #spFab    { bottom:72px !important; z-index:750 !important }
-body.ui-pill #spFab    { z-index:750 !important }
-
-/* ── Pre-paint: html class covers the flash before DOMContentLoaded ── */
-html.ui-dock .pill-base,
-html.ui-dock .pill-tab,
-html.ui-dock .back-top { display:none !important }
-html.ui-dock #sacDock  { display:flex !important }
-html.ui-pill #sacDock  { display:none !important }
-
-/* ── Toggle button ── */
-#uiToggleBtn {
-  position:fixed;
-  top:60px;
-  right:10px;
-  z-index:800;
-  background:var(--card,#130f1e);
-  border:1px solid var(--gold,#c9a84c);
-  color:var(--gold,#c9a84c);
-  font-family:'Cinzel',serif;
-  font-size:9px;
-  letter-spacing:1px;
-  padding:5px 9px;
-  border-radius:20px;
-  cursor:pointer;
-  white-space:nowrap;
-  box-shadow:0 2px 12px rgba(0,0,0,0.4);
-  transition:all .2s;
-  opacity:0.75;
-}
-#uiToggleBtn:hover { opacity:1; background:rgba(201,168,76,0.15); }
-body.light-mode #uiToggleBtn {
-  background:var(--card,#fff6e0);
-  box-shadow:0 2px 8px rgba(0,0,0,0.15);
-}
-
-/* ── DOCK styles (only visible in ui-dock mode) ── */
-#sacDock { position:fixed;bottom:0;left:0;right:0;z-index:700;flex-direction:column;display:none }
-
-.dock-tray{background:var(--bg,#0a0812);border-top:1px solid var(--gold,#c9a84c);border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);padding:0;max-height:0;overflow:hidden;transition:max-height .28s cubic-bezier(.4,0,.2,1)}
-.dock-tray.open{max-height:200px}
-.dt-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px}
-.dt-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase}
-.dt-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:14px;cursor:pointer;line-height:1;padding:2px 4px;transition:color .15s}
-.dt-close:hover{color:rgba(255,255,255,0.8)}
-.dt-audio-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 14px 4px}
-.dt-play-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.dt-play-btn:hover{opacity:.85}
-.dt-speed-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#e0d8f0;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s}
-.dt-speed-btn:hover{background:rgba(255,255,255,0.18)}
-.dt-speed-val{color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;min-width:36px;text-align:center;letter-spacing:.5px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.2);transition:border-color .15s}
-.dt-speed-val:hover{border-bottom-color:rgba(255,255,255,0.6)}
-.dt-seek-row{padding:2px 14px 2px;display:flex;align-items:center}
-.dt-seek{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer}
-.dt-seek::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
-.dt-seek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
-.dt-time{display:flex;justify-content:space-between;padding:1px 14px 6px;color:rgba(255,255,255,0.4);font-size:9px;font-family:'Cinzel',serif;letter-spacing:.3px}
-.dt-scroll-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px 12px}
-.dt-scroll-play{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light,#f5d78a));border:none;color:var(--deep,#08060f);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.dt-scroll-play:hover{opacity:.85}
-.dt-speed-input{width:44px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);border-radius:4px;color:#e8d8ff;font-size:12px;font-family:'Cinzel',serif;text-align:center;padding:1px 3px;outline:none}
-
-#sacDockBar{display:flex;align-items:stretch;background:var(--bg,#0a0812);border-top:1px solid var(--gold,#c9a84c);position:relative}
-#sacDockBar::before{content:'';position:absolute;inset:0;background:var(--gold,#c9a84c);opacity:0.07;pointer-events:none}
-.dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px 10px;background:transparent;border:none;cursor:pointer;transition:background .18s;-webkit-tap-highlight-color:transparent;position:relative;z-index:1}
-.dock-btn:hover,.dock-btn.active{background:rgba(255,255,255,0.07)}
-.dock-btn .dico{font-size:22px;line-height:1;color:var(--gold,#c9a84c);filter:drop-shadow(0 0 6px rgba(201,168,76,0.5))}
-.dock-btn.active .dico{filter:drop-shadow(0 0 10px var(--gold,#c9a84c)) drop-shadow(0 0 4px var(--gold,#c9a84c))}
-.dock-btn .dlbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.2px;color:rgba(255,255,255,0.9);text-transform:uppercase;transition:color .18s}
-.dock-btn.active .dlbl,.dock-btn:hover .dlbl{color:var(--gold,#c9a84c)}
-.dock-btn+.dock-btn{border-left:1px solid rgba(255,255,255,0.08)}
-
-body.light-mode #sacDockBar{background:var(--bg,#fdf6ec);border-top:1px solid var(--gold,#c9a84c)}
-body.light-mode #sacDockBar::before{opacity:0.06}
-body.light-mode .dock-tray{background:var(--bg,#fdf6ec);border-top:1px solid var(--gold,#c9a84c)}
-body.light-mode .dock-btn .dlbl{color:rgba(0,0,0,0.75)}
-body.light-mode .dock-btn.active .dlbl,body.light-mode .dock-btn:hover .dlbl{color:var(--gold,#c9a84c)}
-body.light-mode .dt-label{color:rgba(0,0,0,0.45)}
-body.light-mode .dt-close{color:rgba(0,0,0,0.3)}
-body.light-mode .dt-close:hover{color:rgba(0,0,0,0.7)}
-body.light-mode .dt-speed-btn{background:rgba(0,0,0,0.07);border-color:rgba(0,0,0,0.15);color:#3a2000}
-body.light-mode .dt-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2)}
-body.light-mode .dt-time{color:rgba(0,0,0,0.45)}
-body.light-mode .dt-seek{background:rgba(0,0,0,0.12)}
-body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000}
-
+body.light-mode .scroll-speed-btn:hover{background:rgba(0,0,0,0.12);}
+body.light-mode .scroll-speed-val,body.light-mode .audio-speed-val{color:#3a2000;border-bottom-color:rgba(0,0,0,0.2);}
+body.light-mode .audio-time{color:rgba(0,0,0,0.4);}
+body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.3);color:#3a2000;}
+@media(max-width:480px){.audio-time{display:none;}}
+@media(max-width:400px){.audio-time{display:none;}.pill-scroll-row{gap:6px;padding:0 10px 8px;}.scroll-speed-btn{width:26px;height:26px;font-size:14px;}.scroll-play-btn{width:32px;height:32px;font-size:13px;}}
 </style>
-<script>
-// Apply saved UI mode before first paint — prevents flash and ensures
-// support-panel.js / placeFab() sees correct DOM state on load.
-(function(){
-  var m = localStorage.getItem('sacredUI') || 'pill';
-  document.documentElement.classList.add('ui-' + m);
-  // Move to body once body exists
-  document.addEventListener('DOMContentLoaded', function(){
-    document.documentElement.classList.remove('ui-pill','ui-dock');
-    document.body.classList.add('ui-' + m);
-  });
-})();
-</script></head>
+</head>
 <body>
 <div class="progress-bar" id="progress"></div>
 <nav>
@@ -448,19 +287,20 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 
 </main>
 
-
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- ♪ AUDIO PILL (bottom-left) -->
 <div class="pill-base hidden" id="audioPill">
   <div class="pill-header">
-    <span class="pill-label">&#9834; Audio</span>
-    <button class="pill-close" id="audioCloseBtn" title="Hide">&#10005;</button>
+    <span class="pill-label">♪ Audio</span>
+    <button class="pill-close" onclick="hideAudioPill()" title="Hide">✕</button>
   </div>
   <div class="pill-audio-top">
-    <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">&#9654;</button>
-    <button class="scroll-speed-btn" id="audioSpeedDown" title="Slower">&#8722;</button>
-    <div class="audio-val-wrap">
-      <span class="audio-val-num" id="audioSpeedVal">1&times;</span>
+    <button class="audio-play-btn" id="audioPlayBtn" title="Play / Pause">▶</button>
+    <button class="scroll-speed-btn" id="audioSpeedDown" title="Slower">−</button>
+    <div class="audio-val-wrap" onclick="editAudioSpeed(document.getElementById('audioSpeedVal'))" title="Click to change playback speed">
+      <span class="audio-val-num" id="audioSpeedVal">1×</span>
+      <span class="audio-val-label">speed</span>
     </div>
     <button class="scroll-speed-btn" id="audioSpeedUp" title="Faster">+</button>
   </div>
@@ -479,24 +319,93 @@ body.light-mode .dt-speed-input{background:rgba(0,0,0,0.06);border-color:rgba(0,
 <!-- ↕ SCROLL PILL (bottom-right) -->
 <div class="pill-base hidden" id="scrollPill">
   <div class="pill-header">
-    <span class="pill-label">&#8597; Scroll</span>
-    <button class="pill-close" id="scrollCloseBtn" title="Hide">&#10005;</button>
+    <span class="pill-label">↕ Scroll</span>
+    <button class="pill-close" onclick="hideScrollPill()" title="Hide">✕</button>
   </div>
   <div class="pill-scroll-row">
-    <button class="scroll-play-btn" id="scrollPlayBtn" title="Start / Stop">&#8659;</button>
-    <button class="scroll-speed-btn" id="speedDown" title="Slower">&#8722;</button>
-    <span class="scroll-speed-val" id="speedVal">1.6&times;</span>
+    <button class="scroll-play-btn" id="scrollPlayBtn" title="Play / Pause auto-scroll">⇓</button>
+    <button class="scroll-speed-btn" id="speedDown" title="Slower">−</button>
+    <span class="scroll-speed-val" id="speedVal" onclick="editSpeed(this)" title="Click to enter custom speed">1.6×</span>
     <button class="scroll-speed-btn" id="speedUp" title="Faster">+</button>
   </div>
 </div>
 <button class="pill-tab" id="scrollTab">
   <span class="tab-dot"></span>Scroll
 </button>
-
-<button class="back-top" id="backTop">&#8679;</button>
 <audio id="pageAudio" preload="auto" src="https://audio-proxy.203asathvi.workers.dev/lakshmi_sahasranamam.mp3"></audio>
 <script src="audio-controller.js"></script>
 <script src="scroll-controller.js"></script>
+<script>
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  AUTO-HIDE CONFIGURATION — edit the value below                 ║
+// ║  Time in milliseconds before pills hide when idle               ║
+// ║  Examples: 5000 = 5s,  10000 = 10s,  0 = disable auto-hide     ║
+// ╚══════════════════════════════════════════════════════════════════╝
+var PILL_AUTO_HIDE_MS = 10000;
+
+(function() {
+  if (!PILL_AUTO_HIDE_MS) return;
+  var _timer        = null;
+  var _hiddenAudio  = false;
+  var _hiddenScroll = false;
+
+  function maybeHide() {
+    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
+  }
+
+  function resetTimer() {
+    clearTimeout(_timer);
+    _timer = setTimeout(maybeHide, PILL_AUTO_HIDE_MS);
+  }
+
+  // Pills start hidden — reflect that in state flags
+  _hiddenAudio  = true;
+  _hiddenScroll = true;
+  // No auto-hide timer needed at start since already hidden
+
+  // ── Tab buttons: each opens only its own pill, independently ──────────────
+  function wireTab(tabId, showFn, setHidden) {
+    var tab = document.getElementById(tabId);
+    if (!tab) return;
+    var touched = false;
+    tab.addEventListener('touchend', function(e) {
+      e.stopPropagation();
+      touched = true;
+      setHidden(false); showFn(); resetTimer();
+      setTimeout(function() { touched = false; }, 400);
+    }, { passive: true });
+    tab.addEventListener('click', function(e) {
+      if (touched) return;
+      setHidden(false); showFn(); resetTimer();
+    });
+  }
+  wireTab('audioTab',
+    function() { showAudioPill(); },
+    function(v) { _hiddenAudio = v; }
+  );
+  wireTab('scrollTab',
+    function() { showScrollPill(); },
+    function(v) { _hiddenScroll = v; }
+  );
+
+  // ── Click / tap anywhere on page hides both pills ─────────────────────────
+  // Exceptions: taps on the pills themselves or their tabs don't hide
+  function onPageTap(e) {
+    var t = e.target;
+    if (!t) return;
+    // Don't hide if tap is inside a pill or a tab
+    if (t.closest('#audioPill') || t.closest('#scrollPill') ||
+        t.closest('#audioTab')  || t.closest('#scrollTab'))  return;
+    // Hide whichever pills are currently visible
+    if (!_hiddenAudio)  { _hiddenAudio  = true; hideAudioPill();  }
+    if (!_hiddenScroll) { _hiddenScroll = true; hideScrollPill(); }
+    clearTimeout(_timer);
+  }
+  document.addEventListener('click',    onPageTap, { passive: true });
+  document.addEventListener('touchend', onPageTap, { passive: true });
+})();
+</script>
 <script>
 const S = [
   [1,"nityagatananta-nitya nandinijana-ranjanī |","nitya-prakashinī caiva svaprakasha-svarupiṇī || 1 ||"],
@@ -698,7 +607,7 @@ window.addEventListener('scroll',()=>{
   document.getElementById('backTop').classList.toggle('visible',s>400);
 });
 
-window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#sacDock')) stopScroll(); }, { passive: true });
+window.addEventListener('touchstart', e => { if (scrollActive && !e.target.closest('#scrollPill') && !e.target.closest('#audioPill') && !e.target.closest('#scrollTab') && !e.target.closest('#audioTab')) stopScroll(); }, { passive: true });
 
 // ── Audio error feedback ──────────────────────────────────────────────────────
 (function(){
@@ -733,235 +642,5 @@ function toggleAudio() {
 </script>
 
 <script src="support-panel.js" data-paypal-id="YOUR_PAYPAL_ID" data-api="https://devotional-comments.203asathvi.workers.dev"></script>
-
-<!-- ════════════════ BOTTOM DOCK ════════════════ -->
-<div id="sacDock">
-  <div class="dock-tray" id="dockAudioTray">
-    <div class="dt-header">
-      <span class="dt-label">&#9834; Audio</span>
-      <button class="dt-close" id="dockAudioClose">&#10005;</button>
-    </div>
-    <div class="dt-audio-controls">
-      <button class="dt-play-btn" id="dAudioPlayBtn" title="Play / Pause">&#9654;</button>
-      <button class="dt-speed-btn" id="dAudioSpeedDown">&#8722;</button>
-      <span class="dt-speed-val" id="dAudioSpeedVal" onclick="dEditAudioSpeed(this)">1&times;</span>
-      <button class="dt-speed-btn" id="dAudioSpeedUp">+</button>
-    </div>
-    <div class="dt-seek-row">
-      <input type="range" class="dt-seek" id="dAudioSeek" min="0" max="100" step="0.1" value="0">
-    </div>
-    <div class="dt-time">
-      <span id="dAudioTimeCur">0:00</span>
-      <span id="dAudioTimeDur">0:00</span>
-    </div>
-  </div>
-  <div class="dock-tray" id="dockScrollTray">
-    <div class="dt-header">
-      <span class="dt-label">&#8597; Auto-Scroll</span>
-      <button class="dt-close" id="dockScrollClose">&#10005;</button>
-    </div>
-    <div class="dt-scroll-controls">
-      <button class="dt-scroll-play" id="dScrollPlayBtn" title="Start / Stop">&#8659;</button>
-      <button class="dt-speed-btn" id="dSpeedDown">&#8722;</button>
-      <span class="dt-speed-val" id="dSpeedVal" onclick="dEditSpeed(this)">1.6&times;</span>
-      <button class="dt-speed-btn" id="dSpeedUp">+</button>
-    </div>
-  </div>
-  <div id="sacDockBar">
-    <button class="dock-btn" id="dockHomeBtn" onclick="window.location.href='index.html'">
-      <span class="dico">&#8962;</span><span class="dlbl">Home</span>
-    </button>
-    <button class="dock-btn" id="dockAudioBtn">
-      <span class="dico">&#9835;</span><span class="dlbl">Audio</span>
-    </button>
-    <button class="dock-btn" id="dockScrollBtn">
-      <span class="dico">&#8645;</span><span class="dlbl">Scroll</span>
-    </button>
-    <button class="dock-btn" id="dockTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <span class="dico">&#8679;</span><span class="dlbl">Top</span>
-    </button>
-  </div>
-</div>
-<!-- END DOCK -->
-
-<!-- ════ A/B TOGGLE BUTTON ════ -->
-<button id="uiToggleBtn" title="Switch UI">&#11041; New UI</button>
-
-<script>
-// ── A/B UI toggle ─────────────────────────────────────────────────────────────
-(function(){
-  var KEY = 'sacredUI';
-  var btn = document.getElementById('uiToggleBtn');
-
-  function applyUI(mode) {
-    document.body.classList.remove('ui-pill','ui-dock');
-    document.body.classList.add('ui-' + mode);
-    if (btn) btn.innerHTML = mode === 'dock' ? '&#11041; Classic' : '&#11041; New UI';
-    localStorage.setItem(KEY, mode);
-    if (mode === 'pill') {
-      // Reset pills to minimised (hidden panel, visible tab)
-      var ap = document.getElementById('audioPill');
-      var sp = document.getElementById('scrollPill');
-      var at = document.getElementById('audioTab');
-      var st = document.getElementById('scrollTab');
-      if (ap) ap.classList.add('hidden');
-      if (sp) sp.classList.add('hidden');
-      if (at) at.classList.remove('hidden');
-      if (st) st.classList.remove('hidden');
-    }
-    if (mode === 'dock') {
-      // Close dock trays when switching to dock
-      var dat = document.getElementById('dockAudioTray');
-      var dst = document.getElementById('dockScrollTray');
-      if (dat) dat.classList.remove('open');
-      if (dst) dst.classList.remove('open');
-      var dab = document.getElementById('dockAudioBtn');
-      var dsb = document.getElementById('dockScrollBtn');
-      if (dab) dab.classList.remove('active');
-      if (dsb) dsb.classList.remove('active');
-    }
-  }
-
-  // Sync button label to current mode (body class already set by HEAD_SCRIPT)
-  document.addEventListener('DOMContentLoaded', function(){
-    var cur = document.body.classList.contains('ui-dock') ? 'dock' : 'pill';
-    if (btn) btn.innerHTML = cur === 'dock' ? '&#11041; Classic' : '&#11041; New UI';
-  });
-
-  if (btn) {
-    var touched = false;
-    btn.addEventListener('touchend', function(e){
-      e.preventDefault(); touched = true;
-      applyUI(document.body.classList.contains('ui-dock') ? 'pill' : 'dock');
-      setTimeout(function(){ touched = false; }, 400);
-    }, {passive:false});
-    btn.addEventListener('click', function(e){
-      if (touched) return;
-      applyUI(document.body.classList.contains('ui-dock') ? 'pill' : 'dock');
-    });
-  }
-})();
-
-// ── Dock controller ───────────────────────────────────────────────────────────
-(function(){
-  var audioOpen=false,scrollOpen=false;
-  function openAudio(){audioOpen=true;scrollOpen=false;document.getElementById('dockAudioTray').classList.add('open');document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.add('active');document.getElementById('dockScrollBtn').classList.remove('active');}
-  function closeAudio(){audioOpen=false;document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockAudioBtn').classList.remove('active');}
-  function openScroll(){scrollOpen=true;audioOpen=false;document.getElementById('dockScrollTray').classList.add('open');document.getElementById('dockAudioTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.add('active');document.getElementById('dockAudioBtn').classList.remove('active');}
-  function closeScroll(){scrollOpen=false;document.getElementById('dockScrollTray').classList.remove('open');document.getElementById('dockScrollBtn').classList.remove('active');}
-
-  window.showAudioPill=openAudio; window.hideAudioPill=closeAudio;
-  window.showScrollPill=openScroll; window.hideScrollPill=closeScroll;
-  window.showScrollBar=openScroll; window.hideScrollBar=closeScroll;
-
-  function dEditAudioSpeed(el){ if(typeof editAudioSpeed==='function') editAudioSpeed(el); }
-  function dEditSpeed(el){ if(typeof editSpeed==='function') editSpeed(el); }
-
-  function wireToggle(id,openFn,closeFn,getOpen){
-    var btn=document.getElementById(id);if(!btn)return;
-    var touched=false;
-    btn.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();touched=true;getOpen()?closeFn():openFn();setTimeout(function(){touched=false;},400);},{passive:false});
-    btn.addEventListener('click',function(e){if(touched){e.preventDefault();return;}getOpen()?closeFn():openFn();});
-  }
-  wireToggle('dockAudioBtn',openAudio,closeAudio,function(){return audioOpen;});
-  wireToggle('dockScrollBtn',openScroll,closeScroll,function(){return scrollOpen;});
-  document.getElementById('dockAudioClose').addEventListener('click',closeAudio);
-  document.getElementById('dockScrollClose').addEventListener('click',closeScroll);
-  document.addEventListener('click',function(e){if(!e.target.closest('#sacDock')&&!e.target.closest('#uiToggleBtn')){closeAudio();closeScroll();}},{passive:true});
-  document.addEventListener('touchend',function(e){if(!e.target.closest('#sacDock')&&!e.target.closest('#uiToggleBtn')){closeAudio();closeScroll();}},{passive:true});
-  var autoTimer=null;
-  function resetAC(){clearTimeout(autoTimer);autoTimer=setTimeout(function(){closeAudio();closeScroll();},10000);}
-  document.getElementById('sacDock').addEventListener('touchend',resetAC,{passive:true});
-  document.getElementById('sacDock').addEventListener('click',resetAC);
-})();
-</script>
-<script>
-// ── Unified UI wiring — pill (classic) + dock (new) buttons → same functions ──
-document.addEventListener('DOMContentLoaded', function(){
-
-  // Single wire helper: touchend + click, no double-fire on mobile
-  function wire(id, fn) {
-    var b = document.getElementById(id); if (!b) return;
-    var t = false;
-    b.addEventListener('touchend', function(e){
-      e.preventDefault(); e.stopPropagation(); t=true; fn();
-      setTimeout(function(){ t=false; }, 400);
-    }, {passive:false});
-    b.addEventListener('click', function(e){ if(t){ e.preventDefault(); return; } fn(); });
-  }
-
-  // ── PILL buttons (classic mode) ──────────────────────────────────────────
-  wire('audioTab',      function(){ showAudioPill(); resetPillTimer(); });
-  wire('scrollTab',     function(){ showScrollPill(); resetPillTimer(); });
-  wire('audioCloseBtn', function(){ hideAudioPill(); });
-  wire('scrollCloseBtn',function(){ hideScrollPill(); });
-  wire('backTop',       function(){ window.scrollTo({top:0,behavior:'smooth'}); });
-  // Pill play/speed buttons are wired by scroll-controller.js — not duplicated here
-  // Speed val tap-to-edit (scroll-controller doesn't wire these clicks)
-  var sv = document.getElementById('speedVal');
-  if (sv) sv.addEventListener('click', function(){ if(typeof editSpeed==='function') editSpeed(this); });
-  var av = document.getElementById('audioSpeedVal');
-  if (av) av.addEventListener('click', function(){ if(typeof editAudioSpeed==='function') editAudioSpeed(this); });
-
-  // ── DOCK buttons (new UI) — same functions as pill ───────────────────────
-  wire('dAudioPlayBtn',   function(){ toggleAudio(); });
-  wire('dAudioSpeedDown', function(){ adjustAudioSpeed(-1); });
-  wire('dAudioSpeedUp',   function(){ adjustAudioSpeed(1); });
-  wire('dScrollPlayBtn',  function(){ toggleScroll(); });
-  wire('dSpeedDown',      function(){ adjustSpeed(-1); });
-  wire('dSpeedUp',        function(){ adjustSpeed(1); });
-  var dsv = document.getElementById('dSpeedVal');
-  if (dsv) dsv.addEventListener('click', function(){ if(typeof editSpeed==='function') editSpeed(this); });
-  var dav = document.getElementById('dAudioSpeedVal');
-  if (dav) dav.addEventListener('click', function(){ if(typeof editAudioSpeed==='function') editAudioSpeed(this); });
-
-  // ── Dock seek slider — mirrors pageAudio directly ────────────────────────
-  var a = document.getElementById('pageAudio');
-  var dSeek = document.getElementById('dAudioSeek');
-  var dCur  = document.getElementById('dAudioTimeCur');
-  var dDur  = document.getElementById('dAudioTimeDur');
-  function fmt(s){ return !isFinite(s)||s<0 ? '0:00' : Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
-  if (a && dSeek) {
-    a.addEventListener('loadedmetadata', function(){ dSeek.max=a.duration; dSeek.value=0; if(dDur)dDur.textContent=fmt(a.duration); if(dCur)dCur.textContent='0:00'; });
-    a.addEventListener('timeupdate',     function(){ if(!dSeek._drag){ dSeek.value=a.currentTime; if(dCur)dCur.textContent=fmt(a.currentTime); } });
-    dSeek._drag=false;
-    dSeek.addEventListener('mousedown',  function(){ dSeek._drag=true; });
-    dSeek.addEventListener('touchstart', function(){ dSeek._drag=true; }, {passive:true});
-    dSeek.addEventListener('input',      function(){ if(dCur) dCur.textContent=fmt(+dSeek.value); });
-    function commitDSeek(){ dSeek._drag=false; a.currentTime=+dSeek.value; }
-    dSeek.addEventListener('change',   commitDSeek);
-    dSeek.addEventListener('mouseup',  commitDSeek);
-    dSeek.addEventListener('touchend', commitDSeek, {passive:true});
-  }
-
-  // ── Mirror play button icons pill→dock ───────────────────────────────────
-  function mirrorText(srcId, dstId){
-    var s=document.getElementById(srcId), d=document.getElementById(dstId); if(!s||!d) return;
-    d.textContent=s.textContent;
-    if(window.MutationObserver) new MutationObserver(function(){ d.textContent=s.textContent; }).observe(s,{childList:true,characterData:true,subtree:true});
-  }
-  mirrorText('audioPlayBtn',  'dAudioPlayBtn');
-  mirrorText('scrollPlayBtn', 'dScrollPlayBtn');
-
-  // ── Mirror speed labels pill→dock every 500ms ────────────────────────────
-  setInterval(function(){
-    var pv=document.getElementById('speedVal'),     dv=document.getElementById('dSpeedVal');
-    var pa=document.getElementById('audioSpeedVal'),da=document.getElementById('dAudioSpeedVal');
-    if(pv&&dv) dv.textContent=pv.textContent;
-    if(pa&&da) da.textContent=pa.textContent;
-  }, 500);
-
-  // ── Pill auto-hide: tap outside closes pills ─────────────────────────────
-  var _timer = null;
-  function resetPillTimer(){ clearTimeout(_timer); _timer=setTimeout(function(){ hideAudioPill(); hideScrollPill(); },10000); }
-  function onOutsideTap(e){
-    var el=e.target; if(!el||!el.closest) return;
-    if(el.closest('#audioPill')||el.closest('#scrollPill')||el.closest('#audioTab')||el.closest('#scrollTab')||el.closest('#uiToggleBtn')) return;
-    hideAudioPill(); hideScrollPill(); clearTimeout(_timer);
-  }
-  document.addEventListener('click',    onOutsideTap, {passive:true});
-  document.addEventListener('touchend', onOutsideTap, {passive:true});
-});
-</script>
 </body>
 </html>
