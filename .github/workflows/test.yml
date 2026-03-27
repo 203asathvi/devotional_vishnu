@@ -9,7 +9,7 @@ jobs:
   test:
     name: Playwright Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10              # tighter timeout now we're parallelised
 
     steps:
       - name: Checkout
@@ -22,19 +22,22 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies + Playwright in parallel
         working-directory: testing
-        run: npm install
-
-      - name: Install Playwright browsers
-        working-directory: testing
-        run: npx playwright install chromium --with-deps
+        run: |
+          npm install &
+          NPM_PID=$!
+          # Pre-download chromium while npm installs
+          npx --yes playwright install chromium --with-deps &
+          PW_PID=$!
+          wait $NPM_PID
+          wait $PW_PID
 
       - name: Wait for Cloudflare deployment
         run: |
           TARGET_URL="https://dev.devotional-vishnu.pages.dev"
           echo "TARGET_URL=$TARGET_URL" >> $GITHUB_ENV
-          echo "Waiting for $TARGET_URL to be ready..."
+          echo "Waiting for $TARGET_URL..."
           for i in $(seq 1 20); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L --max-redirs 5 "$TARGET_URL/index.html" || echo "000")
             echo "Attempt $i: HTTP $STATUS"
@@ -49,7 +52,7 @@ jobs:
         working-directory: testing
         env:
           BASE_URL: ${{ env.TARGET_URL }}
-        run: npx playwright test
+        run: npx playwright test --workers=6
         continue-on-error: true
 
       - name: Upload test report
