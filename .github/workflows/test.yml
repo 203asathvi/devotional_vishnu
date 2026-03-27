@@ -34,12 +34,12 @@ jobs:
         run: |
           TARGET_URL="https://dev.devotional-vishnu.pages.dev"
           echo "TARGET_URL=$TARGET_URL" >> $GITHUB_ENV
-          echo "Waiting for $TARGET_URL..."
+          echo "Waiting for $TARGET_URL to be ready..."
           for i in $(seq 1 20); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL/index.html" || echo "000")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L --max-redirs 5 "$TARGET_URL/index.html" || echo "000")
             echo "Attempt $i: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then
-              echo "✅ Deployment is live"
+              echo "✅ Site is live"
               break
             fi
             sleep 15
