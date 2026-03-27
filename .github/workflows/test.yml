@@ -1,0 +1,87 @@
+name: Devotional Pages — Test Suite
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:       # manual trigger from GitHub UI
+
+jobs:
+  test:
+    name: Playwright Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── 1. Checkout repo ───────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Node setup ──────────────────────────────────────────────────────
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # ── 3. Install dependencies ────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Install Playwright browsers (chromium only — fastest) ──────────
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+
+      # ── 5. Wait for Cloudflare preview deployment to be ready ─────────────
+      #    On push to dev, Cloudflare Pages takes ~60s to build.
+      #    We poll the preview URL until it returns 200.
+      - name: Wait for Cloudflare deployment
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            TARGET_URL="https://devotional-vishnu.pages.dev"
+          else
+            # Dev branch preview URL — Cloudflare uses branch name in subdomain
+            TARGET_URL="https://dev.devotional-vishnu.pages.dev"
+          fi
+          echo "TARGET_URL=$TARGET_URL" >> $GITHUB_ENV
+          echo "Waiting for $TARGET_URL to be ready..."
+          for i in $(seq 1 20); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL/index.html" || echo "000")
+            echo "Attempt $i: HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Deployment is live"
+              break
+            fi
+            sleep 15
+          done
+
+      # ── 6. Run tests ───────────────────────────────────────────────────────
+      - name: Run Playwright tests
+        env:
+          BASE_URL: ${{ env.TARGET_URL }}
+        run: npx playwright test --config=tests/playwright.config.js
+        continue-on-error: true   # collect report even on failure
+
+      # ── 7. Upload HTML report as artifact ─────────────────────────────────
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ github.run_number }}
+          path: tests/test-report/
+          retention-days: 14
+
+      # ── 8. Upload raw JSON results ─────────────────────────────────────────
+      - name: Upload JSON results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ github.run_number }}
+          path: tests/test-results.json
+          retention-days: 14
+
+      # ── 9. Post summary to GitHub Actions step summary ────────────────────
+      - name: Post summary
+        if: always()
+        run: node tests/summarise.js >> $GITHUB_STEP_SUMMARY
