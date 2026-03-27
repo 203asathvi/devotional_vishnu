@@ -193,7 +193,8 @@ body.light-mode .scroll-speed-input{background:rgba(0,0,0,0.06);border-color:rgb
   <div class="nav-controls">
     <a class="nav-home" href="index.html">🏠 Home</a>
     <button class="nav-btn" onclick="toggleSearch()" id="searchBtn">🔍</button>
-    <button class="nav-btn" onclick="changeFontSize(-1)" title="Smaller">A−</button><span id="fontSizeVal" style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold);opacity:.7;min-width:28px;text-align:center;display:inline-block;vertical-align:middle;"></span><button class="nav-btn" onclick="changeFontSize(1)" title="Larger">A+</button>
+    <button class="nav-btn" onclick="changeFontSize(-1)" title="Smaller">A−</button>
+    <button class="nav-btn" onclick="changeFontSize(1)" title="Larger">A+</button>
     <button class="nav-btn" onclick="toggleMode()" id="modeBtn">☀️</button>
   </div>
 </nav>
@@ -514,12 +515,8 @@ function changeFontSize(d) {
   fs = Math.max(12, Math.min(32, fs + d));
   document.body.style.fontSize = fs + 'px';
   localStorage.setItem('devFontSize', fs);
-  var lbl = document.getElementById('fontSizeVal');
-  if (lbl) lbl.textContent = fs + 'px';
 }
 document.addEventListener('DOMContentLoaded', function() {
-  var lbl = document.getElementById('fontSizeVal');
-  if (lbl) lbl.textContent = fs + 'px';
 });
 function toggleMode(){
   document.body.classList.toggle('light-mode');
