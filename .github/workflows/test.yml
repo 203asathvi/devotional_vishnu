@@ -82,7 +82,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Index Page" --workers=2
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-index
@@ -120,7 +120,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Audio" --workers=3
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-audio
@@ -158,7 +158,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Scroll Pill" --workers=3
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-scroll
@@ -196,7 +196,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Font Size" --workers=3
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-font
@@ -234,7 +234,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Comments" --workers=3
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-comments
@@ -272,7 +272,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Donate" --workers=2
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-donate
@@ -310,7 +310,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Nav" --workers=3
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-nav
@@ -348,7 +348,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Mobile" --workers=2
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: report-mobile
@@ -443,12 +443,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
-          commit_message: "Test report — run #${{ github.run_number }}"
+        uses: actions/deploy-pages@v5
 
   summary:
     name: 📋 Summary & Notify
