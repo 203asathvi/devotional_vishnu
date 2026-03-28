@@ -373,14 +373,16 @@ jobs:
     if: always()
     timeout-minutes: 5
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v5
         with:
           ref: dev
 
       - name: Download all reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           path: all-reports/
         continue-on-error: true
@@ -434,8 +436,14 @@ jobs:
           </html>
           EOF
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
