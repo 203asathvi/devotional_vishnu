@@ -85,8 +85,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-index
-          path: testing/test-report/
+          name: blob-index
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -124,8 +124,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-audio
-          path: testing/test-report/
+          name: blob-audio
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -163,8 +163,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-scroll
-          path: testing/test-report/
+          name: blob-scroll
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -202,8 +202,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-font
-          path: testing/test-report/
+          name: blob-font
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -241,8 +241,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-comments
-          path: testing/test-report/
+          name: blob-comments
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -280,8 +280,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-donate
-          path: testing/test-report/
+          name: blob-donate
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -319,8 +319,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-nav
-          path: testing/test-report/
+          name: blob-nav
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -358,8 +358,8 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: report-mobile
-          path: testing/test-report/
+          name: blob-mobile
+          path: testing/blob-report/
           retention-days: 7
       - name: Notify Slack on failure
         if: failure() || cancelled()
@@ -387,23 +387,40 @@ jobs:
         with:
           ref: dev
 
-      - name: Download all reports
+      - uses: actions/setup-node@v5
+        with: { node-version: 22 }
+
+      - run: npm install
+        working-directory: testing
+
+      - name: Download all blob reports
         uses: actions/download-artifact@v7
         with:
-          path: all-reports/
+          path: all-blobs/
+          pattern: blob-*
+          merge-multiple: false
         continue-on-error: true
 
-      - name: Combine into single publish folder
+      - name: Merge blobs into single HTML report
         run: |
-          mkdir -p public
-          for name in index audio scroll font comments donate nav mobile; do
-            if [ -d "all-reports/report-$name" ]; then
-              echo "Copying report-$name"
-              cp -r "all-reports/report-$name/." "public/"
-            fi
+          mkdir -p all-blobs-flat
+          # Flatten all downloaded blob artifacts into one directory
+          for dir in all-blobs/blob-*/; do
+            [ -d "$dir" ] && cp -r "$dir/." all-blobs-flat/ 2>/dev/null || true
           done
-          ls public/ || echo "No report files found"
-
+          ls -la all-blobs-flat/ || echo "No blob files found"
+          # Merge into HTML report using playwright
+          cd testing
+          npx playwright merge-reports --reporter html ../all-blobs-flat || echo "Merge warnings above"
+          ls test-report/ || echo "test-report not generated"
+          cd ..
+          # Fallback if merge produced nothing
+          if [ ! -f "testing/test-report/index.html" ]; then
+            mkdir -p testing/test-report
+            echo "<html><body><h1>No test data available for this run</h1></body></html>" > testing/test-report/index.html
+          fi
+          mkdir -p public
+          cp -r testing/test-report/. public/
       - name: Create summary index page
         run: |
           cat > public/index.html << EOF
