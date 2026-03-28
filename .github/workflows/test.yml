@@ -65,7 +65,7 @@ jobs:
     needs: preflight
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with:
@@ -81,7 +81,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Index Page" --workers=2
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -104,7 +103,7 @@ jobs:
     needs: test-index
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
         with:
@@ -120,7 +119,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Audio" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -143,7 +141,7 @@ jobs:
     needs: test-audio
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
         with:
@@ -159,7 +157,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Scroll Pill" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -182,7 +179,7 @@ jobs:
     needs: test-scroll
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
         with:
@@ -198,7 +195,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Font Size" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -221,7 +217,7 @@ jobs:
     needs: test-font
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
         with:
@@ -237,7 +233,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Comments" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -260,7 +255,7 @@ jobs:
     needs: test-comments
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with:
@@ -276,7 +271,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Donate" --workers=2
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -299,7 +293,7 @@ jobs:
     needs: test-donate
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
         with:
@@ -315,7 +309,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Nav" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -338,7 +331,7 @@ jobs:
     needs: test-nav
     if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with:
@@ -354,7 +347,6 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Mobile" --workers=2
-        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -402,13 +394,26 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --workers=4
-        continue-on-error: true
 
       - name: Verify report was generated
         run: |
           echo "=== test-report contents ==="
           ls -la testing/test-report/ || echo "❌ No test-report directory"
           ls -la testing/test-report/index.html && echo "✅ index.html exists" || echo "❌ No index.html"
+
+      - name: Zip report for download
+        run: |
+          cd testing
+          zip -r ../playwright-report-run-${{ github.run_number }}.zip test-report/
+          echo "✅ Report zipped: playwright-report-run-${{ github.run_number }}.zip"
+          ls -lh ../playwright-report-run-${{ github.run_number }}.zip
+
+      - name: Upload report ZIP as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report-run-${{ github.run_number }}
+          path: playwright-report-run-${{ github.run_number }}.zip
+          retention-days: 30
 
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -463,7 +468,7 @@ jobs:
           elif echo "$ALL" | grep -q "failure";   then HDR="❌ Tests failed"
           else                                         HDR="✅ All tests passed"
           fi
-          MSG="$HDR\n$(e $R_INDEX) Index  $(e $R_AUDIO) Audio  $(e $R_SCROLL) Scroll  $(e $R_FONT) Font\n$(e $R_COMMENTS) Comments  $(e $R_DONATE) Donate  $(e $R_NAV) Nav  $(e $R_MOBILE) Mobile\nURL: ${{ env.TARGET_URL }}\n<${{ env.REPORT_URL }}|📊 View HTML Report>  <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>"
+          MSG="$HDR\n$(e $R_INDEX) Index  $(e $R_AUDIO) Audio  $(e $R_SCROLL) Scroll  $(e $R_FONT) Font\n$(e $R_COMMENTS) Comments  $(e $R_DONATE) Donate  $(e $R_NAV) Nav  $(e $R_MOBILE) Mobile\nURL: ${{ env.TARGET_URL }}\n<${{ env.REPORT_URL }}|📊 View HTML Report>  <${{ env.REPORT_URL }}|📊 HTML Report>  <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts|📥 Download ZIP>  <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>"
           HTTP=$(curl -s -o /tmp/slack_out.txt -w "%{http_code}" \
             -X POST -H 'Content-type: application/json' \
             --data "{\"text\":\"$MSG\"}" "$SLACK_WEBHOOK")
