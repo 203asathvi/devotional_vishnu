@@ -68,10 +68,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -82,7 +82,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Index Page" --workers=2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-index
@@ -106,10 +106,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -120,7 +120,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Audio" --workers=3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-audio
@@ -144,10 +144,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -158,7 +158,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Scroll Pill" --workers=3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-scroll
@@ -182,10 +182,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -196,7 +196,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Font Size" --workers=3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-font
@@ -220,10 +220,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -234,7 +234,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Comments" --workers=3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-comments
@@ -258,10 +258,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -272,7 +272,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Donate" --workers=2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-donate
@@ -296,10 +296,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -310,7 +310,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Nav" --workers=3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-nav
@@ -334,10 +334,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with: { node-version: 22 }
       - run: npm install
         working-directory: testing
@@ -348,7 +348,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Mobile" --workers=2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: report-mobile
@@ -375,12 +375,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: dev
 
       - name: Download all reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: all-reports/
         continue-on-error: true
