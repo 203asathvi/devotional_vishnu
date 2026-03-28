@@ -4,13 +4,17 @@ module.exports = defineConfig({
   testMatch: 'devotional.test.js',
   timeout: 30000,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 6 : 4,        // 6 parallel workers on CI
-  fullyParallel: true,                     // run tests within a file in parallel too
+  workers: process.env.CI ? 6 : 4,
+  fullyParallel: true,
 
-  reporter: [
+  reporter: process.env.CI ? [
+    // blob reporter collects results for merging later
+    ['blob', { outputDir: 'blob-report' }],
+    // list reporter shows progress in CI logs
     ['list'],
-    ['html',  { outputFolder: 'test-report', open: 'never' }],
-    ['json',  { outputFile: 'test-results.json' }],
+  ] : [
+    ['html', { outputFolder: 'test-report', open: 'never' }],
+    ['list'],
   ],
 
   use: {
