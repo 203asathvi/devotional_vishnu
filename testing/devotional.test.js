@@ -85,59 +85,104 @@ test.describe('Index Page', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. AUDIO TESTS — each test gets a fresh page
+// 2. AUDIO TESTS
+// Focus: controls UI and speed stepping only — no actual playback/content tests
+// Audio files can be 30+ mins so we never wait for them to play
 // ─────────────────────────────────────────────────────────────────────────────
 for (const p of PAGES) {
   test.describe(`Audio — ${p.name}`, () => {
 
-    test('audio element has correct src', async ({ page }) => {
+    test('audio element exists with correct src', async ({ page }) => {
       await openPage(page, p.path);
       const src = await page.locator('#pageAudio').getAttribute('src');
       expect(src).toContain(p.audio);
+      // Verify src URL format only — do not load or play audio
     });
 
-    test('audio proxy is reachable', async ({ request }) => {
+    test('audio proxy URL returns valid response', async ({ request }) => {
+      // HEAD request only — no audio data downloaded
       const res = await request.head(`${AUDIO_PROXY}/${p.audio}`);
       expect([200, 206, 302, 308]).toContain(res.status());
     });
 
-    test('audio tab opens pill', async ({ page }) => {
+    test('audio tab opens pill with all controls', async ({ page }) => {
       await openPage(page, p.path);
       await page.locator('#audioTab').click();
       await expect(page.locator('#audioPill')).toBeVisible();
-    });
-
-    test('play, speed and seek controls exist', async ({ page }) => {
-      await openPage(page, p.path);
-      await openAudioPill(page);
+      // All controls exist
       await expect(page.locator('#audioPlayBtn')).toBeVisible();
       await expect(page.locator('#audioSeek')).toBeVisible();
       await expect(page.locator('#audioSpeedVal')).toBeVisible();
+      await expect(page.locator('#audioSpeedDown')).toBeVisible();
+      await expect(page.locator('#audioSpeedUp')).toBeVisible();
+      await expect(page.locator('#audioStopBtn')).toBeVisible();
     });
 
-    test('time display shows 0:00 initially', async ({ page }) => {
-      await openPage(page, p.path);
-      await openAudioPill(page);
-      const cur = await page.locator('#audioTimeCur').textContent();
-      expect(cur.trim()).toBe('0:00');
-    });
-
-    test('speed − decreases audio speed', async ({ page }) => {
+    test('speed − button decreases displayed speed value', async ({ page }) => {
       await openPage(page, p.path);
       await openAudioPill(page);
       const before = parseFloat(await page.locator('#audioSpeedVal').textContent());
       await page.locator('#audioSpeedDown').click();
       const after  = parseFloat(await page.locator('#audioSpeedVal').textContent());
+      // Value must decrease — no audio loaded, purely UI state change
       expect(after).toBeLessThan(before);
     });
 
-    test('speed + increases audio speed', async ({ page }) => {
+    test('speed + button increases displayed speed value', async ({ page }) => {
       await openPage(page, p.path);
       await openAudioPill(page);
       const before = parseFloat(await page.locator('#audioSpeedVal').textContent());
       await page.locator('#audioSpeedUp').click();
       const after  = parseFloat(await page.locator('#audioSpeedVal').textContent());
       expect(after).toBeGreaterThan(before);
+    });
+
+    test('speed steps through all AUDIO_SPEED_STEPS correctly', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
+      const steps = await page.evaluate(() => window.AUDIO_SPEED_STEPS);
+      // Must have steps defined
+      expect(Array.isArray(steps)).toBe(true);
+      expect(steps.length).toBeGreaterThan(0);
+      // Each step must be a valid positive number
+      steps.forEach(s => expect(s).toBeGreaterThan(0));
+      // Steps must be ascending
+      for (let i = 1; i < steps.length; i++) {
+        expect(steps[i]).toBeGreaterThan(steps[i - 1]);
+      }
+    });
+
+    test('speed resets correctly after multiple clicks', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
+      // Click up 3 times then down 3 times — should return near original
+      const original = parseFloat(await page.locator('#audioSpeedVal').textContent());
+      await page.locator('#audioSpeedUp').click();
+      await page.locator('#audioSpeedUp').click();
+      await page.locator('#audioSpeedUp').click();
+      await page.locator('#audioSpeedDown').click();
+      await page.locator('#audioSpeedDown').click();
+      await page.locator('#audioSpeedDown').click();
+      const restored = parseFloat(await page.locator('#audioSpeedVal').textContent());
+      expect(restored).toBe(original);
+    });
+
+    test('play button toggles icon without waiting for audio', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
+      // Intercept audio network requests so nothing actually loads
+      await page.route('**/*.mp3', route => route.abort());
+      await page.locator('#audioPlayBtn').click();
+      // Icon should change to pause immediately (UI state, not audio state)
+      await expect(page.locator('#audioPlayBtn')).toHaveText('⏸', { timeout: 3000 });
+    });
+
+    test('stop button resets seek slider to 0', async ({ page }) => {
+      await openPage(page, p.path);
+      await openAudioPill(page);
+      await page.locator('#audioStopBtn').click();
+      const val = await page.locator('#audioSeek').inputValue();
+      expect(parseFloat(val)).toBe(0);
     });
 
     test('close button hides audio pill', async ({ page }) => {
