@@ -10,6 +10,7 @@ on:
 
 env:
   TARGET_URL: ${{ github.event.inputs.target_url || 'https://dev.devotional-vishnu.pages.dev' }}
+  REPORT_URL: https://203asathvi.github.io/devotional_vishnu
 
 jobs:
 
@@ -19,24 +20,45 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
+      - name: Debug — check Slack secret exists
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "⚠️ SLACK_WEBHOOK_URL secret is NOT set"
+          else
+            echo "✅ SLACK_WEBHOOK_URL secret exists"
+          fi
+
       - name: Notify Slack — tests starting
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          if [ -z "$SLACK_WEBHOOK" ]; then exit 0; fi
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
           curl -s -X POST -H 'Content-type: application/json' \
-            --data "{\"text\":\"🚀 Devotional Tests starting | URL: ${{ env.TARGET_URL }} | <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            --data "{\"text\":\"🚀 *Devotional Tests starting*\nURL: ${{ env.TARGET_URL }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
       - name: Check site is up
         run: |
           for i in $(seq 1 10); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L --max-redirs 5 "${{ env.TARGET_URL }}/index.html" || echo "000")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L --max-redirs 5 \
+              "${{ env.TARGET_URL }}/index.html" || echo "000")
             echo "Attempt $i: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then echo "✅ Site is live"; exit 0; fi
             sleep 10
           done
           echo "❌ Site not reachable"; exit 1
+
+      - name: Notify Slack — preflight failed
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"❌ *Preflight FAILED* — site not reachable\nURL: ${{ env.TARGET_URL }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 1. Index ─────────────────────────────────────────────────────────────────
   test-index:
@@ -57,13 +79,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Index Page" --workers=2
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-index
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Index Page* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 2. Audio ─────────────────────────────────────────────────────────────────
   test-audio:
@@ -84,13 +115,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Audio" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-audio
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Audio* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 3. Scroll ────────────────────────────────────────────────────────────────
   test-scroll:
@@ -111,13 +151,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Scroll Pill" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-scroll
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Scroll Pill* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 4. Font ──────────────────────────────────────────────────────────────────
   test-font:
@@ -138,13 +187,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Font Size" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-font
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Font Size* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 5. Comments ──────────────────────────────────────────────────────────────
   test-comments:
@@ -165,13 +223,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Comments" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-comments
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Comments* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 6. Donate ────────────────────────────────────────────────────────────────
   test-donate:
@@ -192,13 +259,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Donate" --workers=2
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-donate
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Donate* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 7. Nav ───────────────────────────────────────────────────────────────────
   test-nav:
@@ -219,13 +295,22 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Nav" --workers=3
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-nav
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Nav & Search* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
   # ── 8. Mobile ────────────────────────────────────────────────────────────────
   test-mobile:
@@ -246,50 +331,129 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Mobile" --workers=2
-        continue-on-error: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-mobile
           path: testing/test-report/
           retention-days: 7
+      - name: Notify Slack on failure
+        if: failure() || cancelled()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -z "$SLACK_WEBHOOK" ] && exit 0
+          ICON=$([ "${{ job.status }}" = "cancelled" ] && echo "⏹" || echo "❌")
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$ICON *Mobile* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
+            "$SLACK_WEBHOOK"
 
-  # ── 9. Summary + Slack ───────────────────────────────────────────────────────
-  summary:
-    name: 📋 Summary & Notify
+  # ── 9. Merge reports + publish to GitHub Pages ───────────────────────────────
+  publish-report:
+    name: 📊 Publish HTML Report
     needs: [test-index, test-audio, test-scroll, test-font, test-comments, test-donate, test-nav, test-mobile]
     runs-on: ubuntu-latest
-    if: always()   # runs even if jobs were cancelled
+    if: always()
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-reports/
+        continue-on-error: true
+
+      - name: Combine into single publish folder
+        run: |
+          mkdir -p public
+          # Copy each report into a named subfolder so all are accessible
+          for name in index audio scroll font comments donate nav mobile; do
+            if [ -d "all-reports/report-$name" ]; then
+              echo "Copying report-$name"
+              cp -r "all-reports/report-$name/." "public/"
+            fi
+          done
+          ls public/ || echo "No report files found"
+
+      - name: Create summary index page
+        run: |
+          cat > public/index.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Devotional Pages — Test Report #${{ github.run_number }}</title>
+            <style>
+              body{font-family:sans-serif;max-width:700px;margin:40px auto;padding:20px;background:#f8f8f8;color:#333}
+              h1{margin-bottom:4px}
+              .meta{color:#888;font-size:13px;margin-bottom:24px}
+              .meta a{color:#0066cc}
+              .card{background:white;border-radius:8px;padding:16px 20px;margin:10px 0;box-shadow:0 1px 4px rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
+              .label{font-weight:500}
+              .badge{font-size:12px;padding:3px 10px;border-radius:12px;background:#e8f5e9;color:#2e7d32}
+            </style>
+          </head>
+          <body>
+            <h1>📊 Devotional Tests</h1>
+            <div class="meta">
+              Run #${{ github.run_number }} &bull; ${{ env.TARGET_URL }} &bull;
+              <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View GitHub Actions run →</a>
+            </div>
+            <div class="card"><span class="label">🏠 Index Page</span><span class="badge">${{ needs.test-index.result }}</span></div>
+            <div class="card"><span class="label">🔊 Audio</span><span class="badge">${{ needs.test-audio.result }}</span></div>
+            <div class="card"><span class="label">↕ Scroll Pill</span><span class="badge">${{ needs.test-scroll.result }}</span></div>
+            <div class="card"><span class="label">🔤 Font Size</span><span class="badge">${{ needs.test-font.result }}</span></div>
+            <div class="card"><span class="label">💬 Comments</span><span class="badge">${{ needs.test-comments.result }}</span></div>
+            <div class="card"><span class="label">💛 Donate</span><span class="badge">${{ needs.test-donate.result }}</span></div>
+            <div class="card"><span class="label">🔍 Nav & Search</span><span class="badge">${{ needs.test-nav.result }}</span></div>
+            <div class="card"><span class="label">📱 Mobile 360px</span><span class="badge">${{ needs.test-mobile.result }}</span></div>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          commit_message: "Test report — run #${{ github.run_number }}"
+
+  summary:
+    name: 📋 Summary & Notify
+    needs: [test-index, test-audio, test-scroll, test-font, test-comments, test-donate, test-nav, test-mobile, publish-report]
+    runs-on: ubuntu-latest
+    if: always()
     timeout-minutes: 2
     steps:
       - name: Build summary table
         run: |
           echo "## 📋 Devotional Pages — Test Results" >> $GITHUB_STEP_SUMMARY
           echo "**URL tested:** ${{ env.TARGET_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Report:** ${{ env.REPORT_URL }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Job | Result |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 🏠 Index Page   | ${{ needs.test-index.result }}    |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔊 Audio        | ${{ needs.test-audio.result }}    |" >> $GITHUB_STEP_SUMMARY
-          echo "| ↕ Scroll Pill  | ${{ needs.test-scroll.result }}   |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔤 Font Size    | ${{ needs.test-font.result }}     |" >> $GITHUB_STEP_SUMMARY
-          echo "| 💬 Comments     | ${{ needs.test-comments.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| 💛 Donate       | ${{ needs.test-donate.result }}   |" >> $GITHUB_STEP_SUMMARY
-          echo "| 🔍 Nav & Search | ${{ needs.test-nav.result }}      |" >> $GITHUB_STEP_SUMMARY
-          echo "| 📱 Mobile 360px | ${{ needs.test-mobile.result }}   |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "> 📥 Download individual reports from Artifacts below" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏠 Index   | ${{ needs.test-index.result }}    |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔊 Audio   | ${{ needs.test-audio.result }}    |" >> $GITHUB_STEP_SUMMARY
+          echo "| ↕ Scroll  | ${{ needs.test-scroll.result }}   |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔤 Font    | ${{ needs.test-font.result }}     |" >> $GITHUB_STEP_SUMMARY
+          echo "| 💬 Comments| ${{ needs.test-comments.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 💛 Donate  | ${{ needs.test-donate.result }}   |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 Nav     | ${{ needs.test-nav.result }}      |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📱 Mobile  | ${{ needs.test-mobile.result }}   |" >> $GITHUB_STEP_SUMMARY
 
-      - name: Slack — final notification
+      - name: Slack — final summary with report link
+        if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          if [ -z "$SLACK_WEBHOOK" ]; then
-            echo "No Slack webhook — skipping"
-            exit 0
-          fi
+          [ -z "$SLACK_WEBHOOK" ] && echo "⚠️ SLACK_WEBHOOK_URL not set" && exit 0
 
-          # Collect each job result
           R_INDEX="${{ needs.test-index.result }}"
           R_AUDIO="${{ needs.test-audio.result }}"
           R_SCROLL="${{ needs.test-scroll.result }}"
@@ -299,48 +463,17 @@ jobs:
           R_NAV="${{ needs.test-nav.result }}"
           R_MOBILE="${{ needs.test-mobile.result }}"
 
-          # Map result to emoji
-          emoji() { [ "$1" = "success" ] && echo "✅" || ([ "$1" = "cancelled" ] && echo "⏹" || echo "❌"); }
+          e() { case "$1" in success) echo "✅";; failure) echo "❌";; cancelled) echo "⏹";; *) echo "⏭";; esac; }
 
-          # Overall status
           ALL="$R_INDEX $R_AUDIO $R_SCROLL $R_FONT $R_COMMENTS $R_DONATE $R_NAV $R_MOBILE"
-          if echo "$ALL" | grep -q "cancelled"; then
-            HEADER="⏹ Tests cancelled"
-          elif echo "$ALL" | grep -q "failure"; then
-            HEADER="❌ Tests completed with failures"
-          else
-            HEADER="✅ All tests passed"
+          if   echo "$ALL" | grep -q "cancelled"; then HDR="⏹ Tests cancelled"
+          elif echo "$ALL" | grep -q "failure";   then HDR="❌ Tests failed"
+          else                                         HDR="✅ All tests passed"
           fi
 
-          MSG=$(cat << SLACKMSG
-          {
-            "text": "$HEADER",
-            "blocks": [
-              {
-                "type": "header",
-                "text": { "type": "plain_text", "text": "$HEADER" }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*URL:* ${{ env.TARGET_URL }}\n$(emoji $R_INDEX) Index  |  $(emoji $R_AUDIO) Audio  |  $(emoji $R_SCROLL) Scroll  |  $(emoji $R_FONT) Font\n$(emoji $R_COMMENTS) Comments  |  $(emoji $R_DONATE) Donate  |  $(emoji $R_NAV) Nav  |  $(emoji $R_MOBILE) Mobile"
-                }
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "View Run" },
-                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  }
-                ]
-              }
-            ]
-          }
-          SLACKMSG
-          )
+          MSG="$HDR\n$(e $R_INDEX) Index  $(e $R_AUDIO) Audio  $(e $R_SCROLL) Scroll  $(e $R_FONT) Font\n$(e $R_COMMENTS) Comments  $(e $R_DONATE) Donate  $(e $R_NAV) Nav  $(e $R_MOBILE) Mobile\nURL: ${{ env.TARGET_URL }}\n<${{ env.REPORT_URL }}|📊 View HTML Report>  <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>"
 
-          curl -s -X POST -H 'Content-type: application/json' \
-            --data "$MSG" "$SLACK_WEBHOOK"
+          HTTP=$(curl -s -o /tmp/slack_out.txt -w "%{http_code}" \
+            -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"$MSG\"}" "$SLACK_WEBHOOK")
+          echo "Slack HTTP: $HTTP — $(cat /tmp/slack_out.txt)"
