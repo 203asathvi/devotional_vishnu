@@ -15,7 +15,6 @@ env:
 
 jobs:
 
-  # ── 0. Preflight ─────────────────────────────────────────────────────────────
   preflight:
     name: 🔍 Preflight — Site reachable
     runs-on: ubuntu-latest
@@ -61,10 +60,10 @@ jobs:
             --data "{\"text\":\"❌ *Preflight FAILED* — site not reachable\nURL: ${{ env.TARGET_URL }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 1. Index ─────────────────────────────────────────────────────────────────
   test-index:
     name: 🏠 Index Page
     needs: preflight
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -100,7 +99,6 @@ jobs:
             --data "{\"text\":\"$ICON *Index Page* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 2. Audio ─────────────────────────────────────────────────────────────────
   test-audio:
     name: 🔊 Audio
     needs: test-index
@@ -140,7 +138,6 @@ jobs:
             --data "{\"text\":\"$ICON *Audio* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 3. Scroll ────────────────────────────────────────────────────────────────
   test-scroll:
     name: ↕ Scroll Pill
     needs: test-audio
@@ -180,7 +177,6 @@ jobs:
             --data "{\"text\":\"$ICON *Scroll Pill* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 4. Font ──────────────────────────────────────────────────────────────────
   test-font:
     name: 🔤 Font Size
     needs: test-scroll
@@ -220,7 +216,6 @@ jobs:
             --data "{\"text\":\"$ICON *Font Size* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 5. Comments ──────────────────────────────────────────────────────────────
   test-comments:
     name: 💬 Comments
     needs: test-font
@@ -260,7 +255,6 @@ jobs:
             --data "{\"text\":\"$ICON *Comments* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 6. Donate ────────────────────────────────────────────────────────────────
   test-donate:
     name: 💛 Donate
     needs: test-comments
@@ -300,7 +294,6 @@ jobs:
             --data "{\"text\":\"$ICON *Donate* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 7. Nav ───────────────────────────────────────────────────────────────────
   test-nav:
     name: 🔍 Nav & Search
     needs: test-donate
@@ -340,7 +333,6 @@ jobs:
             --data "{\"text\":\"$ICON *Nav & Search* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 8. Mobile ────────────────────────────────────────────────────────────────
   test-mobile:
     name: 📱 Mobile 360px
     needs: test-nav
@@ -380,13 +372,11 @@ jobs:
             --data "{\"text\":\"$ICON *Mobile* tests ${{ job.status }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"}" \
             "$SLACK_WEBHOOK"
 
-  # ── 9. Merge reports + publish to GitHub Pages ───────────────────────────────
   publish-report:
     name: 📊 Publish HTML Report
     needs: [test-index, test-audio, test-scroll, test-font, test-comments, test-donate, test-nav, test-mobile]
     if: always()
     runs-on: ubuntu-latest
-    if: always()
     timeout-minutes: 5
     permissions:
       contents: read
@@ -406,7 +396,6 @@ jobs:
       - name: Combine into single publish folder
         run: |
           mkdir -p public
-          # Copy each report into a named subfolder so all are accessible
           for name in index audio scroll font comments donate nav mobile; do
             if [ -d "all-reports/report-$name" ]; then
               echo "Copying report-$name"
@@ -431,7 +420,9 @@ jobs:
               .meta a{color:#0066cc}
               .card{background:white;border-radius:8px;padding:16px 20px;margin:10px 0;box-shadow:0 1px 4px rgba(0,0,0,0.1);display:flex;justify-content:space-between;align-items:center}
               .label{font-weight:500}
-              .badge{font-size:12px;padding:3px 10px;border-radius:12px;background:#e8f5e9;color:#2e7d32}
+              .pass{background:#e8f5e9;color:#2e7d32}
+              .fail{background:#ffebee;color:#c62828}
+              .badge{font-size:12px;padding:3px 10px;border-radius:12px}
             </style>
           </head>
           <body>
@@ -440,14 +431,14 @@ jobs:
               Run #${{ github.run_number }} &bull; ${{ env.TARGET_URL }} &bull;
               <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View GitHub Actions run →</a>
             </div>
-            <div class="card"><span class="label">🏠 Index Page</span><span class="badge">${{ needs.test-index.result }}</span></div>
-            <div class="card"><span class="label">🔊 Audio</span><span class="badge">${{ needs.test-audio.result }}</span></div>
-            <div class="card"><span class="label">↕ Scroll Pill</span><span class="badge">${{ needs.test-scroll.result }}</span></div>
-            <div class="card"><span class="label">🔤 Font Size</span><span class="badge">${{ needs.test-font.result }}</span></div>
-            <div class="card"><span class="label">💬 Comments</span><span class="badge">${{ needs.test-comments.result }}</span></div>
-            <div class="card"><span class="label">💛 Donate</span><span class="badge">${{ needs.test-donate.result }}</span></div>
-            <div class="card"><span class="label">🔍 Nav & Search</span><span class="badge">${{ needs.test-nav.result }}</span></div>
-            <div class="card"><span class="label">📱 Mobile 360px</span><span class="badge">${{ needs.test-mobile.result }}</span></div>
+            <div class="card"><span class="label">🏠 Index Page</span><span class="badge ${{ needs.test-index.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-index.result }}</span></div>
+            <div class="card"><span class="label">🔊 Audio</span><span class="badge ${{ needs.test-audio.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-audio.result }}</span></div>
+            <div class="card"><span class="label">↕ Scroll Pill</span><span class="badge ${{ needs.test-scroll.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-scroll.result }}</span></div>
+            <div class="card"><span class="label">🔤 Font Size</span><span class="badge ${{ needs.test-font.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-font.result }}</span></div>
+            <div class="card"><span class="label">💬 Comments</span><span class="badge ${{ needs.test-comments.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-comments.result }}</span></div>
+            <div class="card"><span class="label">💛 Donate</span><span class="badge ${{ needs.test-donate.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-donate.result }}</span></div>
+            <div class="card"><span class="label">🔍 Nav & Search</span><span class="badge ${{ needs.test-nav.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-nav.result }}</span></div>
+            <div class="card"><span class="label">📱 Mobile 360px</span><span class="badge ${{ needs.test-mobile.result == 'success' && 'pass' || 'fail' }}">${{ needs.test-mobile.result }}</span></div>
           </body>
           </html>
           EOF
@@ -466,7 +457,6 @@ jobs:
     needs: [test-index, test-audio, test-scroll, test-font, test-comments, test-donate, test-nav, test-mobile, publish-report]
     if: always()
     runs-on: ubuntu-latest
-    if: always()
     timeout-minutes: 2
     steps:
       - name: Build summary table
@@ -486,13 +476,12 @@ jobs:
           echo "| 🔍 Nav     | ${{ needs.test-nav.result }}      |" >> $GITHUB_STEP_SUMMARY
           echo "| 📱 Mobile  | ${{ needs.test-mobile.result }}   |" >> $GITHUB_STEP_SUMMARY
 
-      - name: Slack — final summary with report link
+      - name: Slack — final summary
         if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           [ -z "$SLACK_WEBHOOK" ] && echo "⚠️ SLACK_WEBHOOK_URL not set" && exit 0
-
           R_INDEX="${{ needs.test-index.result }}"
           R_AUDIO="${{ needs.test-audio.result }}"
           R_SCROLL="${{ needs.test-scroll.result }}"
@@ -501,17 +490,13 @@ jobs:
           R_DONATE="${{ needs.test-donate.result }}"
           R_NAV="${{ needs.test-nav.result }}"
           R_MOBILE="${{ needs.test-mobile.result }}"
-
           e() { case "$1" in success) echo "✅";; failure) echo "❌";; cancelled) echo "⏹";; *) echo "⏭";; esac; }
-
           ALL="$R_INDEX $R_AUDIO $R_SCROLL $R_FONT $R_COMMENTS $R_DONATE $R_NAV $R_MOBILE"
           if   echo "$ALL" | grep -q "cancelled"; then HDR="⏹ Tests cancelled"
           elif echo "$ALL" | grep -q "failure";   then HDR="❌ Tests failed"
           else                                         HDR="✅ All tests passed"
           fi
-
           MSG="$HDR\n$(e $R_INDEX) Index  $(e $R_AUDIO) Audio  $(e $R_SCROLL) Scroll  $(e $R_FONT) Font\n$(e $R_COMMENTS) Comments  $(e $R_DONATE) Donate  $(e $R_NAV) Nav  $(e $R_MOBILE) Mobile\nURL: ${{ env.TARGET_URL }}\n<${{ env.REPORT_URL }}|📊 View HTML Report>  <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>"
-
           HTTP=$(curl -s -o /tmp/slack_out.txt -w "%{http_code}" \
             -X POST -H 'Content-type: application/json' \
             --data "{\"text\":\"$MSG\"}" "$SLACK_WEBHOOK")
