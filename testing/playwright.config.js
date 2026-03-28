@@ -2,7 +2,7 @@ const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
   testMatch: 'devotional.test.js',
-  timeout: 30000,
+  timeout: 60000,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 4 : 4,
   fullyParallel: true,

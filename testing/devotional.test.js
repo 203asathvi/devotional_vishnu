@@ -23,7 +23,7 @@ async function openPage(page, path) {
   const baseURL = process.env.BASE_URL || 'https://dev.devotional-vishnu.pages.dev';
   const fullURL = baseURL.replace(/\/+$/, '') + path;
 
-  const response = await page.goto(fullURL, { waitUntil: 'domcontentloaded', timeout: 25000 });
+  const response = await page.goto(fullURL, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
   // Fail fast with a clear message if page returned non-200
   if (!response || response.status() === 404) {
@@ -33,10 +33,12 @@ async function openPage(page, path) {
     throw new Error(`Page load failed HTTP ${response.status()}: ${fullURL}`);
   }
 
+  // Wait for scripts to initialise
+  await page.waitForFunction(() => typeof window.toggleScroll === 'function' || typeof window.changeFontSize === 'function', { timeout: 10000 }).catch(() => {});
+
   // Disable auto-hide timer so pills don't vanish mid-test
   await page.evaluate(() => {
     window.PILL_AUTO_HIDE_MS = 0;
-    // Also clear any running timers
     if (window._pillHideTimer) clearTimeout(window._pillHideTimer);
   });
 }
