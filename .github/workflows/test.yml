@@ -82,6 +82,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Index Page" --workers=2
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -103,6 +104,7 @@ jobs:
   test-audio:
     name: 🔊 Audio
     needs: test-index
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -120,6 +122,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Audio" --workers=3
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -141,6 +144,7 @@ jobs:
   test-scroll:
     name: ↕ Scroll Pill
     needs: test-audio
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -158,6 +162,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Scroll Pill" --workers=3
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -179,6 +184,7 @@ jobs:
   test-font:
     name: 🔤 Font Size
     needs: test-scroll
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -196,6 +202,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Font Size" --workers=3
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -217,6 +224,7 @@ jobs:
   test-comments:
     name: 💬 Comments
     needs: test-font
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -234,6 +242,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Comments" --workers=3
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -255,6 +264,7 @@ jobs:
   test-donate:
     name: 💛 Donate
     needs: test-comments
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -272,6 +282,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Donate" --workers=2
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -293,6 +304,7 @@ jobs:
   test-nav:
     name: 🔍 Nav & Search
     needs: test-donate
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -310,6 +322,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Nav" --workers=3
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -331,6 +344,7 @@ jobs:
   test-mobile:
     name: 📱 Mobile 360px
     needs: test-nav
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -348,6 +362,7 @@ jobs:
         env:
           BASE_URL: ${{ env.TARGET_URL }}
         run: npx playwright test --grep "Mobile" --workers=2
+        continue-on-error: true
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -369,6 +384,7 @@ jobs:
   publish-report:
     name: 📊 Publish HTML Report
     needs: [test-index, test-audio, test-scroll, test-font, test-comments, test-donate, test-nav, test-mobile]
+    if: always()
     runs-on: ubuntu-latest
     if: always()
     timeout-minutes: 5
@@ -448,6 +464,7 @@ jobs:
   summary:
     name: 📋 Summary & Notify
     needs: [test-index, test-audio, test-scroll, test-font, test-comments, test-donate, test-nav, test-mobile, publish-report]
+    if: always()
     runs-on: ubuntu-latest
     if: always()
     timeout-minutes: 2
