@@ -4,13 +4,15 @@
 
 const { test, expect } = require('@playwright/test');
 
+// PAGE_ROOT: update to '/html' once repo is restructured into html/ subfolder
+const PAGE_ROOT = '';
 const PAGES = [
-  { name: 'Vishnu Sahasranamam', path: '/html/vishnu_sahasranamam.html',  audio: 'vishnu_sahasranamam.mp3'  },
-  { name: 'Aditya Hridayam',     path: '/html/aditya_hridayam.html',      audio: 'aditya_hridayam.mp3'      },
-  { name: 'Gayatri Mantra',      path: '/html/gayatri_mantra.html',        audio: 'gayatri_mantra.mp3'        },
-  { name: 'Hanuman Chalisa',     path: '/html/hanuman_chalisa.html',       audio: 'hanuman_chalisa.mp3'       },
-  { name: 'Lakshmi Sahasranamam',path: '/html/lakshmi_sahasranamam.html', audio: 'lakshmi_sahasranamam.mp3'  },
-  { name: 'Lalitha Sahasranamam',path: '/html/lalitha_sahasranamam.html', audio: 'lalitha_sahasranamam.mp3'  },
+  { name: 'Vishnu Sahasranamam', path: `${PAGE_ROOT}/vishnu_sahasranamam.html`,  audio: 'vishnu_sahasranamam.mp3'  },
+  { name: 'Aditya Hridayam',     path: `${PAGE_ROOT}/aditya_hridayam.html`,      audio: 'aditya_hridayam.mp3'      },
+  { name: 'Gayatri Mantra',      path: `${PAGE_ROOT}/gayatri_mantra.html`,        audio: 'gayatri_mantra.mp3'        },
+  { name: 'Hanuman Chalisa',     path: `${PAGE_ROOT}/hanuman_chalisa.html`,       audio: 'hanuman_chalisa.mp3'       },
+  { name: 'Lakshmi Sahasranamam',path: `${PAGE_ROOT}/lakshmi_sahasranamam.html`, audio: 'lakshmi_sahasranamam.mp3'  },
+  { name: 'Lalitha Sahasranamam',path: `${PAGE_ROOT}/lalitha_sahasranamam.html`, audio: 'lalitha_sahasranamam.mp3'  },
 ];
 
 const COMMENTS_API = 'https://devotional-comments.203asathvi.workers.dev';
@@ -18,9 +20,25 @@ const AUDIO_PROXY  = 'https://audio-proxy.203asathvi.workers.dev';
 
 // ── Helper: open page and disable auto-hide so pills stay visible ─────────────
 async function openPage(page, path) {
-  await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  const baseURL = process.env.BASE_URL || 'https://dev.devotional-vishnu.pages.dev';
+  const fullURL = baseURL.replace(/\/+$/, '') + path;
+
+  const response = await page.goto(fullURL, { waitUntil: 'domcontentloaded', timeout: 25000 });
+
+  // Fail fast with a clear message if page returned non-200
+  if (!response || response.status() === 404) {
+    throw new Error(`Page not found (404): ${fullURL} — check PAGE_ROOT setting`);
+  }
+  if (response.status() >= 400) {
+    throw new Error(`Page load failed HTTP ${response.status()}: ${fullURL}`);
+  }
+
   // Disable auto-hide timer so pills don't vanish mid-test
-  await page.evaluate(() => { window.PILL_AUTO_HIDE_MS = 0; });
+  await page.evaluate(() => {
+    window.PILL_AUTO_HIDE_MS = 0;
+    // Also clear any running timers
+    if (window._pillHideTimer) clearTimeout(window._pillHideTimer);
+  });
 }
 
 // ── Helper: open audio pill ───────────────────────────────────────────────────
@@ -74,7 +92,13 @@ test.describe('Index Page', () => {
   test('each card links to correct html/ path', async ({ page }) => {
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     const hrefs = await page.locator('.card').evaluateAll(els => els.map(e => e.getAttribute('href')));
-    PAGES.forEach(p => expect(hrefs).toContain(p.path.replace('/', '')));
+    // Accepts both flat (vishnu_sahasranamam.html) and subfolder (html/vishnu_sahasranamam.html)
+    PAGES.forEach(p => {
+      const flat   = p.path.replace(/^\/html\//, '').replace(/^\//, '');
+      const nested = 'html/' + flat;
+      const found  = hrefs.includes(flat) || hrefs.includes(nested);
+      expect(found).toBe(true);
+    });
   });
 
   test('light mode toggle works', async ({ page }) => {
